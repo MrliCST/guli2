@@ -1,0 +1,271 @@
+services:
+  # =============================================
+  # 第一批 - 无依赖（同时启动）
+  # =============================================
+
+  # 分布式搜索和分析（提供健康检查供下游依赖）
+  elasticsearch:
+    image: ruoyi/ruoyi-elasticsearch:2.6.2
+    build:
+      context: ../dockerfiles/elasticsearch
+    container_name: guli-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      TZ: Asia/Shanghai
+      cluster.name: elasticsearch
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - ../data-home/mnt/elk/elasticsearch/plugins:/usr/share/elasticsearch/plugins
+      - ../data-home/mnt/elk/elasticsearch/data:/usr/share/elasticsearch/data
+      - ../data-home/mnt/elk/elasticsearch/logs:/usr/share/elasticsearch/logs
+    networks:
+      - gulimail
+
+  # RocketMQ消息队列路由中心（提供健康检查供下游依赖）
+  rmqnamesrv:
+    image: apache/rocketmq:5.2.0
+    container_name: guli-rmqnamesrv
+    ports:
+      - "9876:9876"
+    environment:
+      JAVA_OPT: -server -Xms512m -Xmx512m
+    command: sh mqnamesrv
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/9876' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - ../data-home/mnt/rocketmq/namesrv/logs:/home/rocketmq/logs/rocketmqlogs
+    networks:
+      - gulimail
+
+  # Kafka - 高吞吐分布式消息队列
+  kafka:
+    image: apache/kafka:3.9.1
+    container_name: guli-kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://guli-kafka:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@guli-kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"
+    volumes:
+      - ../data-home/mnt/kafka/data:/var/lib/kafka/data
+    networks:
+      - gulimail
+
+  # Prometheus - 指标监控系统
+  prometheus:
+    image: prom/prometheus:v2.40.1
+    container_name: guli-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../data-home/mnt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - gulimail
+
+  # Grafana - 监控可视化面板
+  grafana:
+    image: grafana/grafana:9.2.4
+    container_name: guli-grafana
+    environment:
+      TZ: Asia/Shanghai
+      GF_SERVER_ROOT_URL: ""
+      GF_SECURITY_ADMIN_PASSWORD: 123456
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../data-home/mnt/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ../data-home/mnt/grafana:/var/lib/grafana
+    networks:
+      - gulimail
+
+  # ShardingSphere Proxy 数据库分库分表代理（需要时取消注释启动）
+  # shardingproxy:
+  #   image: apache/shardingsphere-proxy:5.4.0
+  #   container_name: guli-shardingproxy
+  #   command: server /data
+  #   ports:
+  #     - "3307:3307"
+  #   volumes:
+  #     - ../data-home/mnt/shardingproxy/conf:/opt/shardingsphere-proxy/conf
+  #     - ../data-home/mnt/shardingproxy/ext-lib:/opt/shardingsphere-proxy/ext-lib
+  #   environment:
+  #     - JVM_OPTS="-Djava.awt.headless=true"
+  #   networks:
+  #     - gulimail
+
+  # =============================================
+  # 第二批 - 依赖第一批（elasticsearch 健康检查通过后启动）
+  # =============================================
+
+  #  Elasticsearch可视化界面
+  # 依赖: elasticsearch (service_healthy)
+  kibana:
+    image: kibana:7.17.6
+    container_name: guli-kibana
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      I18N_LOCALE: zh-CN
+    volumes:
+      - ../data-home/mnt/elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - gulimail
+
+  # 日志收集处理器
+  # 依赖: elasticsearch (service_healthy)
+  logstash:
+    image: ruoyi/ruoyi-logstash:2.6.2
+    build:
+      context: ../dockerfiles/logstash
+    container_name: guli-logstash
+    ports:
+      - "4560:4560"
+    environment:
+      TZ: Asia/Shanghai
+      LS_JAVA_OPTS: "-Xms256m -Xmx512m"
+    volumes:
+      - ../data-home/mnt/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ../data-home/mnt/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - gulimail
+
+  # RocketMQ消息存储和转发中心
+  # 依赖: rmqnamesrv (service_healthy)
+  rmqbroker1:
+    image: apache/rocketmq:5.2.0
+    container_name: guli-rmqbroker1
+    ports:
+      - "10911:10911"
+      - "10909:10909"
+      - "10912:10912"
+    environment:
+      JAVA_OPT: -server -Xms512M -Xmx512M
+      NAMESRV_ADDR: guli-rmqnamesrv:9876
+    command: sh mqbroker --enable-proxy -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+    depends_on:
+      rmqnamesrv:
+        condition: service_healthy
+    volumes:
+      - ../data-home/mnt/rocketmq/broker1/conf/broker.conf:/home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+      - ../data-home/mnt/rocketmq/broker1/logs:/home/rocketmq/logs/rocketmqlogs
+      - ../data-home/mnt/rocketmq/broker1/store:/home/rocketmq/store
+    privileged: true
+    networks:
+      - gulimail
+
+  # RocketMQ管理控制台
+  # 依赖: rmqnamesrv (service_healthy)
+  rmqconsole:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: guli-rmqconsole
+    ports:
+      - "19876:19876"
+    environment:
+      JAVA_OPTS: "-Xms512m -Xmx768m -Dserver.port=19876 -Drocketmq.namesrv.addr=guli-rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      rmqnamesrv:
+        condition: service_healthy
+    networks:
+      - gulimail
+
+  # SkyWalking OAP - 链路追踪分析服务器（提供健康检查供下游依赖）
+  # 依赖: elasticsearch (service_healthy)
+  sky-oap:
+    image: apache/skywalking-oap-server:9.7.0
+    container_name: guli-sky-oap
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    ports:
+      - "11800:11800"
+      - "12800:12800"
+    environment:
+      JAVA_OPTS: -Xms1G -Xmx2G
+      SW_CORE_RECORD_DATA_TTL: 7
+      SW_CORE_METRICS_DATA_TTL: 7
+      SW_STORAGE: elasticsearch
+      SW_STORAGE_ES_CLUSTER_NODES: guli-elasticsearch:9200
+      TZ: Asia/Shanghai
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/12800' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    networks:
+      - gulimail
+
+  # =============================================
+  # 第三批 - 依赖第二批（sky-oap 启动后启动）
+  # =============================================
+
+  # SkyWalking UI - 链路追踪可视化界面
+  # 依赖: sky-oap (service_healthy)
+  sky-ui:
+    image: apache/skywalking-ui:9.7.0
+    container_name: guli-sky-ui
+    ports:
+      - "18080:18080"
+    environment:
+      SW_SERVER_PORT: 18080
+      SW_OAP_ADDRESS: http://guli-sky-oap:12800
+      TZ: Asia/Shanghai
+    depends_on:
+      sky-oap:
+        condition: service_healthy
+    networks:
+      - gulimail
+
+  # 反向代理
+  nginx-web:
+    image: nginx:1.22.1
+    container_name: guli-nginx
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../data-home/mnt/nginx/cert:/etc/nginx/cert
+      - ../data-home/mnt/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ../data-home/mnt/nginx/html:/usr/share/nginx/html
+      - ../data-home/mnt/nginx/log:/var/log/nginx
+    privileged: true
+    networks:
+      - gulimail
+
+networks:
+  gulimail:
+    external: true

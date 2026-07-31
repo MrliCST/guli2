@@ -1,0 +1,166 @@
+services:
+  # 数据库基础设施
+  mysql:
+    image: mysql:8.0.42
+    container_name: guli-mysql
+    environment:
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8  # 注意必须使用utf8，否则中文会错误
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ry-cloud
+    ports:
+      - "3306:3306"
+    volumes:
+      - ../data-home/mnt/mysql/data/:/var/lib/mysql/
+      - ../data-home/mnt/mysql/conf/:/etc/mysql/conf.d/
+      - ../data-home/mnt/mysql/db/:/docker-entrypoint-initdb.d/  # 首次初始化时自动执行里面的 SQL
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    privileged: true
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306", "-ppassword"] # 必须等3306端口准备好
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - gulimail
+
+  # 缓存基础设施
+  redis:
+    image: redis:7.2.8
+    container_name: guli-redis
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../data-home/mnt/redis/conf:/redis/config
+      - ../data-home/mnt/redis/data/:/redis/data/
+    command: "redis-server /redis/config/redis.conf"
+    privileged: true
+    networks:
+      - gulimail
+
+  # 注册与配置中心
+  nacos:
+    image: ruoyi/ruoyi-nacos:2.6.2
+    build:
+      context: ../ruoyi-visual/ruoyi-nacos
+    container_name: guli-nacos
+    restart: on-failure
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    environment:
+      TZ: Asia/Shanghai
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8848/nacos/v1/console/health/readiness && bash -c 'echo > /dev/tcp/127.0.0.1/9848' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - ../data-home/mnt/nacos/logs/:/home/nacos/logs
+    networks:
+      - gulimail
+
+  # 跨微服务事务（依赖 nacos 提供配置）
+  seata-server:
+    image: ruoyi/ruoyi-seata-server:2.6.2
+    build:
+      context: ../ruoyi-visual/ruoyi-seata-server
+    container_name: guli-seata
+    depends_on:
+      nacos:
+        condition: service_healthy
+    ports:
+      - "7091:7091"
+      - "8091:8091"
+    environment:
+      TZ: Asia/Shanghai
+      JAVA_OPTS: "-Xms512m -Xmx768m"
+      SEATA_PORT: 8091
+    volumes:
+      - ../data-home/mnt/ruoyi-seata-server/logs/:/ruoyi/seata-server/logs
+      - ../data-home/mnt/skywalking/agent/:/ruoyi/skywalking/agent
+    privileged: true
+    networks:
+      - gulimail
+
+  # 消息队列（spring-cloud-bus）
+  rabbitmq:
+    image: ruoyi/ruoyi-rabbitmq:2.6.2
+    container_name: guli-rabbitmq
+    build:
+      context: ../dockerfiles/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ruoyi
+      RABBITMQ_DEFAULT_PASS: ruoyi123
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - ../data-home/mnt/rabbitmq/log:/var/log/rabbitmq
+      - ../data-home/mnt/rabbitmq/data:/var/lib/rabbitmq
+    networks:
+      - gulimail
+
+  # OSS 对象存储
+  minio:
+    image: pgsty/minio:RELEASE.2026-02-14T12-00-00Z
+    container_name: guli-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      TZ: Asia/Shanghai
+      MINIO_ROOT_USER: ruoyi
+      MINIO_ROOT_PASSWORD: ruoyi123
+      MINIO_COMPRESS: "off"
+      MINIO_COMPRESS_EXTENSIONS: ""
+      MINIO_COMPRESS_MIME_TYPES: ""
+    volumes:
+      - ../data-home/mnt/minio/data:/data
+      - ../data-home/mnt/minio/config:/root/.minio/
+    command: server --address ':9000' --console-address ':9001' /data
+    privileged: true
+    networks:
+      - gulimail
+
+  # 分布式任务调度
+  snailjob:
+    image: ruoyi/ruoyi-snailjob-server:2.6.2
+    build:
+      context: ../ruoyi-visual/ruoyi-snailjob-server
+    container_name: guli-snailjob
+    depends_on:
+      nacos:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      JAVA_OPTS: "-Xms512m -Xmx768m"
+    ports:
+      - "8800:8800"
+      - "17888:17888"
+    volumes:
+      - ../data-home/mnt/snailjob/logs/:/ruoyi/snailjob/logs
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8800 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    privileged: true
+    networks:
+      - gulimail
+
+networks:
+  gulimail:
+    external: true
