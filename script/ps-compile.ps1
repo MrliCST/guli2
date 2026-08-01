@@ -1,4 +1,4 @@
-﻿$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
@@ -93,9 +93,16 @@ Write-Host ""
 Write-Host "[2/2] 验证 JAR..." -ForegroundColor Yellow
 $hasError = $false
 "`n=== JAR 验证 ===" >> $LogFile
+
+
+
+
 foreach ($module in $SERVICE_MODULES) {
     $moduleName = Split-Path $module -Leaf
     $jarPath = Join-Path $ProjectRoot "$module\target\$moduleName.jar"
+    $classesDir = Join-Path $ProjectRoot "$module\target\classes"
+
+    # --- 1. 检查 JAR 存在且非空 ---
     if (-not (Test-Path -LiteralPath $jarPath)) {
         Write-Host "  缺失 $moduleName" -ForegroundColor Red
         "缺失 $moduleName" >> $LogFile
@@ -107,13 +114,15 @@ foreach ($module in $SERVICE_MODULES) {
         Write-Host "  失败 $moduleName - JAR 为空" -ForegroundColor Red
         "失败 $moduleName - JAR 为空" >> $LogFile
         $hasError = $true
-    } else {
-        Write-Host "  通过 $moduleName ($jarSize bytes)" -ForegroundColor Green
-        "通过 $moduleName ($jarSize bytes)" >> $LogFile
+        continue
     }
+
+    Write-Host "  通过 $moduleName ($jarSize bytes)" -ForegroundColor Green
+    "通过 $moduleName ($jarSize bytes)" >> $LogFile
 }
 
 if ($hasError) {
+    Write-Host ""
     Write-Host "JAR 验证失败!" -ForegroundColor Red
     "验证失败" >> $LogFile
     exit 1

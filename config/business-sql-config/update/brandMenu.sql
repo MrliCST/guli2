@@ -1,4 +1,6 @@
 -- 菜单 SQL
+USE `ry-cloud`;
+
 insert into sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
 values(2082848552891994113, '品牌', '2079714826489909250', '1', 'brand', 'guli/brand/index', 1, 0, 'C', '0', '0', 'guli:brand:list', '#', 103, 1, sysdate(), null, null, '品牌菜单');
 

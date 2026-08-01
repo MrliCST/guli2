@@ -181,8 +181,9 @@ sa-token:
 mybatis-plus:
   # 自定义配置 是否全局开启逻辑删除 关闭后 所有逻辑删除功能将失效
   enableLogicDelete: true
-  # 多包名使用 例如 org.dromara.**.mapper,org.xxx.**.mapper
-  mapperPackage: org.dromara.**.mapper
+  # Mapper 扫描包路径，保证 @MapperScan 能扫到所有模块的 Mapper 接口
+  # 多包名用逗号分隔：org.dromara.**.mapper（Ruoyi 平台）, com.atlearn.guli.**.mapper（Guli 业务）
+  mapperPackage: org.dromara.**.mapper,com.atlearn.guli.**.mapper
   # 对应的 XML 文件位置
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 实体扫描，多个package用逗号或者分号分隔

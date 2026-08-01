@@ -213,8 +213,9 @@ sa-token:
 mybatis-plus:
   # 自定义配置 是否全局开启逻辑删除 关闭后 所有逻辑删除功能将失效
   enableLogicDelete: true
-  # 多包名使用 例如 org.dromara.**.mapper,org.xxx.**.mapper
-  mapperPackage: org.dromara.**.mapper
+  # Mapper 扫描包路径，保证 @MapperScan 能扫到所有模块的 Mapper 接口
+  # 多包名用逗号分隔：org.dromara.**.mapper（Ruoyi 平台）, com.atlearn.guli.**.mapper（Guli 业务）
+  mapperPackage: org.dromara.**.mapper,com.atlearn.guli.**.mapper
   # 对应的 XML 文件位置
   mapperLocations: classpath*:mapper/**/*Mapper.xml
   # 实体扫描，多个package用逗号或者分号分隔
@@ -890,6 +891,25 @@ snail-job:
 (110, 'ruoyi-workflow.yml', 'DEFAULT_GROUP', '# 将项目路径：config/下对应文件中内容复制到此处', '2944a25cb97926efcaa43b3ad7a64cf0', '2022-01-09 15:23:00', '2022-01-09 15:23:00', NULL, '0:0:0:0:0:0:0:1', '', 'prod', '工作流服务', NULL, NULL, 'yaml', NULL, ''),
 (112, 'seata-server.properties', 'DEFAULT_GROUP', '# 将项目路径：config/下对应文件中内容复制到此处', '2944a25cb97926efcaa43b3ad7a64cf0', '2022-01-09 15:21:02', '2022-01-09 15:21:02', NULL, '0:0:0:0:0:0:0:1', '', 'prod', 'seata配置文件', NULL, NULL, 'properties', NULL, ''),
 (114, 'ruoyi-snailjob-server.yml', 'DEFAULT_GROUP', '# 将项目路径：config/下对应文件中内容复制到此处', '2944a25cb97926efcaa43b3ad7a64cf0', '2022-01-09 15:21:02', '2022-01-09 15:21:02', NULL, '0:0:0:0:0:0:0:1', '', 'prod', 'SJ定时任务控制台', NULL, NULL, 'yaml', NULL, '');
+-- ============================================
+-- 此处向后是业务
+-- ============================================
+insert into config_info(id, data_id, group_id, content, md5, gmt_create, gmt_modified, src_user, src_ip, app_name, tenant_id, c_desc, c_use, effect, type, c_schema, encrypted_data_key) values
+(15, 'guli-product.yml', 'DEFAULT_GROUP', 'spring:
+  datasource:
+    dynamic:
+      # 主数据源
+      primary: master
+      datasource:
+        master:
+          type: ${spring.datasource.type}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: ${datasource.system-master.url}
+          username: ${datasource.system-master.username}
+          password: ${datasource.system-master.password}', 'e5a7b3c9d1f8a2b4e6c8d0f2a4b6c8d0', '2026-08-01 09:40:00', '2026-08-01 09:40:00', NULL, '0:0:0:0:0:0:0:1', '', 'dev', '商城-商品模块', NULL, NULL, 'yaml', NULL, ''),
+(115, 'guli-product.yml', 'DEFAULT_GROUP', '# 将项目路径：config/下对应文件中内容复制到此处', '2944a25cb97926efcaa43b3ad7a64cf0', '2026-08-01 09:40:00', '2026-08-01 09:40:00', NULL, '0:0:0:0:0:0:0:1', '', 'prod', '商城-商品模块', NULL, NULL, 'yaml', NULL, '');
+
+
 
 /******************************************/
 /*   表名称 = config_info  since 2.5.0                */
