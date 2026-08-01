@@ -74,8 +74,11 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
         // 父节点cid -> 子节点列表
         Map<Long, List<PmsCategoryVo>> parentChildMap = list.stream()
                 .collect(Collectors.groupingBy(PmsCategoryVo::getParentCid));
+        Comparator<PmsCategoryVo> sortComparator = Comparator.comparing(
+                PmsCategoryVo::getSort, Comparator.nullsLast(Long::compareTo));
+
         parentChildMap.forEach((parentId, children) ->
-                children.sort(Comparator.comparing(PmsCategoryVo::getSort)));
+                children.sort(sortComparator));
 
         // 为每一个父节点填充已排序的子节点, 获取顶级父节点
         return list.stream()
@@ -84,7 +87,7 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
                     return vo;
                 })
                 .filter(vo -> vo.getParentCid() == 0L)
-                .sorted(Comparator.comparing(PmsCategoryVo::getSort))
+                .sorted(sortComparator)
                 .collect(Collectors.toList());
     }
 
