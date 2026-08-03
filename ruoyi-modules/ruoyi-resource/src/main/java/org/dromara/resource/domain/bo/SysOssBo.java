@@ -1,8 +1,11 @@
 package org.dromara.resource.domain.bo;
 
 import io.github.linpeilie.annotations.AutoMapper;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.resource.domain.SysOss;
 
@@ -12,6 +15,9 @@ import org.dromara.resource.domain.SysOss;
  * @author Lion Li
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = SysOss.class, reverseConvertGenerate = false)
 public class SysOssBo extends BaseEntity {

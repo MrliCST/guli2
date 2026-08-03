@@ -54,8 +54,9 @@ public class SysOssConfigServiceImpl implements ISysOssConfigService {
         for (SysOssConfig config : list) {
             String configKey = config.getConfigKey();
             if ("0".equals(config.getStatus())) {
-                RedisUtils.setCacheObject(OssConstant.DEFAULT_CONFIG_KEY, configKey);
+                RedisUtils.setCacheObject(OssConstant.DEFAULT_CONFIG_KEY, configKey);  //默认使用的 k
             }
+            // 各个SysOssConfig的 kv 对，构造并进入redis
             CacheUtils.put(CacheNames.SYS_OSS_CONFIG, config.getConfigKey(), JsonUtils.toJsonString(config));
         }
     }

@@ -35,6 +35,7 @@
             <artifactId>ruoyi-common-dubbo</artifactId>
         </dependency>
 
+
         <!-- 接口文档 -->
         <dependency>
             <groupId>org.dromara</groupId>

@@ -1,6 +1,5 @@
 package com.atlearn.guli.service;
 
-import com.atlearn.guli.domain.PmsBrand;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;

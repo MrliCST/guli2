@@ -61,3 +61,4 @@ export const delBrand = (brandId: string | number | Array<string | number>) => {
     method: 'delete'
   })
 }
+

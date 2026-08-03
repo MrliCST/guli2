@@ -41,9 +41,25 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="品牌id" align="center" prop="brandId" v-if="true" />
         <el-table-column label="品牌名" align="center" prop="name" />
-        <el-table-column label="品牌logo地址" align="center" prop="logo" />
+        <el-table-column label="品牌Logo" align="center" prop="logo">
+          <template #default="scope">
+            <el-image
+              v-if="scope.row.logo"
+              :src="scope.row.logo"
+              style="width: 48px; height: 48px; border-radius: 4px"
+              fit="cover"
+              :preview-src-list="[scope.row.logo]"
+              preview-teleported
+            />
+            <span v-else>暂无Logo</span>
+          </template>
+        </el-table-column>
         <el-table-column label="介绍" align="center" prop="descript" />
-        <el-table-column label="显示状态[0-不显示；1-显示]" align="center" prop="showStatus" />
+        <el-table-column label="显示状态" align="center" prop="showStatus">
+          <template #default="scope">
+            <DictTag :options="showStatusOptions" :value="scope.row.showStatus" />
+          </template>
+        </el-table-column>
         <el-table-column label="检索首字母" align="center" prop="firstLetter" />
         <el-table-column label="排序" align="center" prop="sort" />
         <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
@@ -61,13 +77,13 @@
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改品牌对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="brandFormRef" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="dialog.title" v-model="dialog.visible" width="800px" append-to-body>
+      <el-form ref="brandFormRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="品牌名" prop="name">
           <el-input v-model="form.name" placeholder="请输入品牌名" />
         </el-form-item>
-        <el-form-item label="品牌logo地址" prop="logo">
-          <el-input v-model="form.logo" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="品牌Logo" prop="logo">
+          <ImageUpload v-model="form.logo" :limit="1" :is-show-tip="false" />
         </el-form-item>
         <el-form-item label="介绍" prop="descript">
           <el-input v-model="form.descript" type="textarea" placeholder="请输入内容" />
@@ -94,6 +110,11 @@ import { listBrand, getBrand, delBrand, addBrand, updateBrand } from '@/api/guli
 import { BrandVO, BrandQuery, BrandForm } from '@/api/guli/brand/types'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
+
+const showStatusOptions = [
+  { value: '0', label: '隐藏', elTagType: 'info' as const },
+  { value: '1', label: '显示', elTagType: 'success' as const }
+]
 
 const brandList = ref<BrandVO[]>([])
 const buttonLoading = ref(false)

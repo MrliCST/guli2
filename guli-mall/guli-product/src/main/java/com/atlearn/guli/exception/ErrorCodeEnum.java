@@ -1,0 +1,27 @@
+package com.atlearn.guli.exception;
+
+import lombok.Getter;
+
+/**
+ * 业务错误码枚举
+ *
+ * @author mayao
+ * @date 2026-08-03
+ */
+@Getter
+public enum ErrorCodeEnum {
+
+    /** 参数校验失败 */
+    VALIDATION_FAILED(10001, "参数校验失败"),
+
+    /** 未知错误 */
+    UNKNOWN_ERROR(99999, "未知错误");
+
+    private final int code;
+    private final String msg;
+
+    ErrorCodeEnum(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+}

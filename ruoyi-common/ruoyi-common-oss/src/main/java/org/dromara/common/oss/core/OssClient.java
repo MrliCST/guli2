@@ -80,7 +80,7 @@ public class OssClient {
      * @param ossProperties Oss配置属性
      */
     public OssClient(String configKey, OssProperties ossProperties) {
-        this.configKey = configKey;
+        this.configKey = configKey;  // 多租户id + 指定configKey 
         this.properties = ossProperties;
         try {
             // 创建 AWS 认证信息
@@ -93,9 +93,9 @@ public class OssClient {
             // 创建AWS基于 Netty 的 S3 客户端
             this.client = S3AsyncClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .endpointOverride(URI.create(getEndpoint()))
-                .region(of())
-                .forcePathStyle(isStyle)
+                .endpointOverride(URI.create(getEndpoint())) // S3的访问点URI
+                .region(of())            // 区域对象
+                .forcePathStyle(isStyle) //是否使用/的路径方式访问，而不是.子域名的方式
                 .httpClient(NettyNioAsyncHttpClient.builder()
                     .connectionTimeout(Duration.ofSeconds(60))
                     .connectionAcquisitionTimeout(Duration.ofSeconds(30))
@@ -104,10 +104,10 @@ public class OssClient {
                     .build())
                 .build();
 
-            //AWS基于 CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端
+            // AWS基于 CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端
             this.transferManager = S3TransferManager.builder().s3Client(this.client).build();
 
-            // 创建 S3 配置对象
+            // 创建 S3 预签名URL生成器 的配置对象
             S3Configuration config = S3Configuration.builder().chunkedEncodingEnabled(false)
                 .pathStyleAccessEnabled(isStyle).build();
 

@@ -116,6 +116,7 @@ public class SysOssServiceImpl implements ISysOssService {
         return StringUtils.joinComma(list);
     }
 
+    @SuppressWarnings("null")
     private LambdaQueryWrapper<SysOss> buildQueryWrapper(SysOssBo bo) {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<SysOss> lqw = Wrappers.lambdaQuery();

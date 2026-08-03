@@ -80,6 +80,14 @@ public class R<T> implements Serializable {
         return restResult(null, code, msg);
     }
 
+    public static <T> R<T> fail(int code, T data) {
+        return restResult(data, code, "操作失败");
+    }
+
+    public static <T> R<T> fail(int code, String msg, T data) {
+        return restResult(data, code, msg);
+    }
+
     /**
      * 返回警告消息
      *

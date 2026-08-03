@@ -17,7 +17,6 @@ import com.atlearn.guli.mapper.PmsBrandMapper;
 import com.atlearn.guli.service.IPmsBrandService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Collection;
 
 /**
@@ -70,8 +69,8 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
         return baseMapper.selectVoList(lqw);
     }
 
+    @SuppressWarnings("null")
     private LambdaQueryWrapper<PmsBrand> buildQueryWrapper(PmsBrandBo bo) {
-        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PmsBrand> lqw = Wrappers.lambdaQuery();
         lqw.orderByAsc(PmsBrand::getBrandId);
         lqw.like(StringUtils.isNotBlank(bo.getName()), PmsBrand::getName, bo.getName());

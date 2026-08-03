@@ -45,26 +45,32 @@ public class RemoteFileServiceImpl implements RemoteFileService {
             String suffix = StringUtils.substring(originalFilename, originalFilename.lastIndexOf("."), originalFilename.length());
             OssClient storage = OssFactory.instance();
             UploadResult uploadResult = storage.uploadSuffix(file, suffix, contentType);
-            // 保存文件信息
-            SysOssBo oss = new SysOssBo();
-            oss.setUrl(uploadResult.getUrl());
-            oss.setFileSuffix(suffix);
-            oss.setFileName(uploadResult.getFilename());
-            oss.setOriginalName(originalFilename);
-            oss.setService(storage.getConfigKey());
+
+            // 构建扩展信息
             SysOssExt ext1 = new SysOssExt();
             ext1.setFileSize((long) file.length);
             String extStr = JsonUtils.toJsonString(ext1);
-            oss.setExt1(extStr);
+
+            // 保存文件信息到数据库
+            SysOssBo oss = SysOssBo.builder()
+                .url(uploadResult.getUrl())
+                .fileSuffix(suffix)
+                .fileName(uploadResult.getFilename())
+                .originalName(originalFilename)
+                .service(storage.getConfigKey())
+                .ext1(extStr)
+                .build();
             sysOssService.insertByBo(oss);
-            RemoteFile sysFile = new RemoteFile();
-            sysFile.setOssId(oss.getOssId());
-            sysFile.setName(uploadResult.getFilename());
-            sysFile.setUrl(uploadResult.getUrl());
-            sysFile.setOriginalName(originalFilename);
-            sysFile.setFileSuffix(suffix);
-            sysFile.setExt1(extStr);
-            return sysFile;
+
+            // 构建Dubbo返回值
+            return RemoteFile.builder()
+                .ossId(oss.getOssId())
+                .name(uploadResult.getFilename())
+                .url(uploadResult.getUrl())
+                .originalName(originalFilename)
+                .fileSuffix(suffix)
+                .ext1(extStr)
+                .build();
         } catch (Exception e) {
             log.error("上传文件失败", e);
             throw new ServiceException("上传文件失败");
