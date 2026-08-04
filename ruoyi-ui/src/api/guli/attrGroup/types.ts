@@ -17,7 +17,7 @@ export interface AttrGroupForm extends BaseEntity {
 }
 
 export interface AttrGroupQuery extends PageQuery {
-  attrGroupId?: string | number
+  catelogId?: string | number
   attrGroupName?: string
   params?: any
 }

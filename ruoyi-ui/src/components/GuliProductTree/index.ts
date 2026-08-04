@@ -34,6 +34,18 @@ export interface CategoryQuery {
   params?: any
 }
 
+// ======================== 暴露给父组件的 API ========================
+
+export interface TreeApi {
+  loadTree: () => Promise<void>
+  getTreeData: () => CategoryVO[]
+  getById: (catId: number) => Promise<CategoryVO>
+  add: (form: CategoryForm) => Promise<void>
+  update: (form: CategoryForm) => Promise<void>
+  remove: (ids: number | number[]) => Promise<void>
+  removeBatch: () => Promise<void>
+}
+
 // ======================== API 接口 ========================
 
 /** 查询商品三级分类列表 */

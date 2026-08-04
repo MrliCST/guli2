@@ -70,12 +70,13 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
         return baseMapper.selectVoList(lqw);
     }
 
+    @SuppressWarnings("null")
     private LambdaQueryWrapper<PmsAttrGroup> buildQueryWrapper(PmsAttrGroupBo bo) {
-        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PmsAttrGroup> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getAttrGroupId() != null, PmsAttrGroup::getAttrGroupId, bo.getAttrGroupId());
-        lqw.orderByAsc(PmsAttrGroup::getAttrGroupId);
+        lqw.eq(bo.getCatelogId() != null, PmsAttrGroup::getCatelogId, bo.getCatelogId());
         lqw.like(StringUtils.isNotBlank(bo.getAttrGroupName()), PmsAttrGroup::getAttrGroupName, bo.getAttrGroupName());
+        lqw.orderByAsc(PmsAttrGroup::getAttrGroupId);
         return lqw;
     }
 

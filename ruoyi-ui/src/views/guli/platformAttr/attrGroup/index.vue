@@ -1,15 +1,17 @@
 <template>
-  <div class="split-layout">
+  <div class="split-layout p-2">
     <el-card shadow="never" class="tree-card">
-      <GuliProductTree ref="treeComponentRef" :is-show-checkbox="false" :is-draggable="false" @clickedNodeData="onTreeClick" />
+      <div class="tree-wrapper">
+        <GuliProductTree :is-show-checkbox="false" :is-draggable="false" :call-api="onTreeApiReady" @clickedNodeData="onTreeClick" />
+      </div>
     </el-card>
     <div class="table-div">
       <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
         <div v-show="showSearch" class="mb-[10px]">
           <el-card shadow="hover">
             <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-              <el-form-item label="分组id" prop="attrGroupId">
-                <el-input v-model="queryParams.attrGroupId" placeholder="请输入分组id" clearable @keyup.enter="handleQuery" />
+              <el-form-item label="所属分类" prop="catelogId">
+                <el-input :model-value="selectedCategoryName" placeholder="点击左侧以选择" readonly disabled />
               </el-form-item>
               <el-form-item label="组名" prop="attrGroupName">
                 <el-input v-model="queryParams.attrGroupName" placeholder="请输入组名" clearable @keyup.enter="handleQuery" />
@@ -48,7 +50,6 @@
 
         <el-table v-loading="loading" border :data="attrGroupList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="分组id" align="center" prop="attrGroupId" v-if="true" />
           <el-table-column label="组名" align="center" prop="attrGroupName" />
           <el-table-column label="排序" align="center" prop="sort" />
           <el-table-column label="描述" align="center" prop="descript" />
@@ -84,8 +85,16 @@
           <el-form-item label="组图标" prop="icon">
             <el-input v-model="form.icon" placeholder="请输入组图标" />
           </el-form-item>
-          <el-form-item label="所属分类id" prop="catelogId">
-            <el-input v-model="form.catelogId" placeholder="请输入所属分类id" />
+          <el-form-item label="所属分类" prop="catelogId">
+            <el-tree-select
+              v-model="form.catelogId"
+              :data="treeSelectData"
+              node-key="catId"
+              :props="{ label: 'name', children: 'children' }"
+              placeholder="请选择所属分类"
+              check-strictly
+              clearable
+            />
           </el-form-item>
         </el-form>
         <template #footer>
@@ -102,19 +111,29 @@
 <script setup name="AttrGroup" lang="ts">
 import { listAttrGroup, getAttrGroup, delAttrGroup, addAttrGroup, updateAttrGroup } from '@/api/guli/attrGroup'
 import { AttrGroupVO, AttrGroupQuery, AttrGroupForm } from '@/api/guli/attrGroup/types'
-import type { CategoryVO } from '@/components/GuliProductTree/index'
+import type { CategoryVO, TreeApi } from '@/components/GuliProductTree/index'
+import type { Node } from 'element-plus/es/components/tree/src/model/node'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 
-const selectedCategory = ref<CategoryVO | null>(null)
-const attrGroupList = ref<AttrGroupVO[]>([])
+let getTreeData: () => CategoryVO[]
+const onTreeApiReady = (api: TreeApi) => {
+  getTreeData = api.getTreeData
+}
+
 const buttonLoading = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
-const ids = ref<Array<string | number>>([])
+
+// 单选/多选
 const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
+
+const selectedCategoryName = ref('点击左侧以选择')
+const treeSelectData = ref<CategoryVO[]>([])
+const attrGroupList = ref<AttrGroupVO[]>([])
+const ids = ref<Array<string | number>>([])
 
 const queryFormRef = ref<ElFormInstance>()
 const attrGroupFormRef = ref<ElFormInstance>()
@@ -137,24 +156,33 @@ const data = reactive<PageData<AttrGroupForm, AttrGroupQuery>>({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    attrGroupId: undefined,
+    catelogId: undefined,
     attrGroupName: undefined,
     params: {}
   },
-  rules: {
-    attrGroupId: [{ required: true, message: '分组id不能为空', trigger: 'blur' }]
-  }
+  rules: {}
 })
 
 const { queryParams, form, rules } = toRefs(data)
 
 /** 树节点被点击 */
-const onTreeClick = (data: CategoryVO) => {
-  selectedCategory.value = data
+const onTreeClick = (data: CategoryVO, nodePath: Node[]) => {
+  queryParams.value.catelogId = data.catId
+  // nodePath: [叶子, 父, 祖父, ...]
+  selectedCategoryName.value = nodePath
+    .reverse()
+    .map((n) => (n.data as CategoryVO).name)
+    .join('/')
 }
 
 /** 查询属性分组列表 */
 const getList = async () => {
+  if (!queryParams.value.catelogId) {
+    attrGroupList.value = []
+    total.value = 0
+    loading.value = false
+    return
+  }
   loading.value = true
   const res = await listAttrGroup(queryParams.value)
   attrGroupList.value = res.rows
@@ -196,6 +224,7 @@ const handleSelectionChange = (selection: AttrGroupVO[]) => {
 /** 新增按钮操作 */
 const handleAdd = () => {
   reset()
+  treeSelectData.value = getTreeData?.() ?? []
   dialog.visible = true
   dialog.title = '添加属性分组'
 }
@@ -203,6 +232,7 @@ const handleAdd = () => {
 /** 修改按钮操作 */
 const handleUpdate = async (row?: AttrGroupVO) => {
   reset()
+  treeSelectData.value = getTreeData?.() ?? []
   const _attrGroupId = row?.attrGroupId || ids.value[0]
   const res = await getAttrGroup(_attrGroupId)
   Object.assign(form.value, res.data)
@@ -239,7 +269,7 @@ const handleDelete = async (row?: AttrGroupVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'guli/attrGroup/export',
+    'guli/platformAttr/attrGroup/export',
     {
       ...queryParams.value
     },
@@ -257,8 +287,19 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 25% 1fr;
   gap: 12px;
-  padding: 12px;
-  min-height: calc(100vh - 84px);
+  height: 100vh;
+  overflow: hidden;
+}
+
+.tree-card {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tree-wrapper {
+  height: 100%;
+  contain: size;
+  overflow-y: auto;
 }
 
 .table-div {
@@ -266,6 +307,7 @@ onMounted(() => {
   grid-template-rows: auto 1fr;
   gap: 12px;
   min-height: 0;
+  overflow-y: auto;
 
   .el-card {
     overflow: auto;

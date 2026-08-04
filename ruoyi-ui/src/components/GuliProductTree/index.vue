@@ -28,17 +28,20 @@
 
 <script setup lang="ts">
 import { listTreeCategory, getCategory, addCategory, updateCategory, delCategory, updateBatchCategory } from './index'
-import type { CategoryVO, CategoryForm } from './index'
+import type { Node } from 'element-plus/es/components/tree/src/model/node'
+import type { CategoryVO, CategoryForm, TreeApi } from './index'
 
 const props = withDefaults(
   defineProps<{
     isShowCheckbox?: boolean
     isDraggable?: boolean
+    isOnlyLeafAllowClick?: boolean
+    callApi?: (api: TreeApi) => void
   }>(),
-  { isShowCheckbox: true, isDraggable: true }
+  { isShowCheckbox: true, isDraggable: true, isOnlyLeafAllowClick: true }
 )
 
-const emit = defineEmits<{ clickedNodeData: [data: CategoryVO] }>()
+const emit = defineEmits<{ clickedNodeData: [data: CategoryVO, nodePath: Node[]] }>()
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const treeRef = ref()
@@ -51,8 +54,18 @@ const loadTree = async () => {
   treeData.value = res.data
 }
 
-const onNodeClick = (data: CategoryVO) => {
-  emit('clickedNodeData', data)
+const onNodeClick = (data: CategoryVO, node: Node, _nodeInstance: any, _evt: MouseEvent) => {
+  if (props.isOnlyLeafAllowClick && !node.isLeaf) return
+  const nodePath: Node[] = []
+  let current: Node | null = node
+
+  // level>0 排除虚根（虚根 level=0）
+  while (current && current.level > 0) {
+    nodePath.push(current)
+    current = current.parent
+  }
+  // nodePath: [当前节点, 父节点, 祖父节点, ...]
+  emit('clickedNodeData', data, nodePath)
 }
 
 // ==================== 拖拽相关 ====================
@@ -81,6 +94,9 @@ const handleDrop = (_draggingNode: any, dropNode: any, _dropType: string) => {
 }
 
 // ====================  对外暴露的CRUD ====================
+
+/** 获取当前树数据 */
+const getTreeData = () => treeData.value
 
 /** 根据 ID 查询单个分类 */
 const getById = async (catId: number) => {
@@ -125,10 +141,10 @@ const removeBatch = async () => {
   await remove(checked.map((n) => n.catId as number))
 }
 
-// 暴露方法点
-defineExpose({ loadTree, getById, add, update, remove, removeBatch })
-
-onMounted(() => loadTree())
+onMounted(() => {
+  loadTree()
+  props.callApi?.({ loadTree, getTreeData, getById, add, update, remove, removeBatch }) // call the slot function with api object
+})
 </script>
 
 <style lang="scss" scoped>

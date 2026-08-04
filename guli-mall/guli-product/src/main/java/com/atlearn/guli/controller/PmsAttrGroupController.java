@@ -43,6 +43,10 @@ public class PmsAttrGroupController extends BaseController {
     @SaCheckPermission("guli:attrGroup:list")
     @GetMapping("/list")
     public TableDataInfo<PmsAttrGroupVo> list(PmsAttrGroupBo bo, PageQuery pageQuery) {
+        // 没有指定分类id，返回空兜底
+        if (bo.getCatelogId() == null) {
+            return TableDataInfo.build();
+        }
         return pmsAttrGroupService.queryPageList(bo, pageQuery);
     }
 
