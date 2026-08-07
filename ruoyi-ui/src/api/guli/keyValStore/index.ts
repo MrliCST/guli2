@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { AttrKeyValueVO, AttrKeyValueForm, AttrKeyValueQuery } from '@/api/guli/attrKeyValue/types';
+import { KeyValStoreVO, KeyValStoreForm, KeyValStoreQuery } from '@/api/guli/keyValStore/types';
 
 /**
  * 查询商品属性列表
@@ -8,9 +8,9 @@ import { AttrKeyValueVO, AttrKeyValueForm, AttrKeyValueQuery } from '@/api/guli/
  * @returns {*}
  */
 
-export const listAttrKeyValue = (query?: AttrKeyValueQuery): AxiosPromise<AttrKeyValueVO[]> => {
+export const listKeyValStore = (query?: KeyValStoreQuery): AxiosPromise<KeyValStoreVO[]> => {
   return request({
-    url: '/guli/platformAttr/attrKeyValue/list',
+    url: '/guli/attribute/keyValStore/list',
     method: 'get',
     params: query
   });
@@ -20,9 +20,9 @@ export const listAttrKeyValue = (query?: AttrKeyValueQuery): AxiosPromise<AttrKe
  * 查询商品属性详细
  * @param attrId
  */
-export const getAttrKeyValue = (attrId: string | number): AxiosPromise<AttrKeyValueVO> => {
+export const getKeyValStore = (attrId: string | number): AxiosPromise<KeyValStoreVO> => {
   return request({
-    url: '/guli/platformAttr/attrKeyValue/' + attrId,
+    url: '/guli/attribute/keyValStore/' + attrId,
     method: 'get'
   });
 };
@@ -31,9 +31,9 @@ export const getAttrKeyValue = (attrId: string | number): AxiosPromise<AttrKeyVa
  * 新增商品属性
  * @param data
  */
-export const addAttrKeyValue = (data: AttrKeyValueForm) => {
+export const addKeyValStore = (data: KeyValStoreForm) => {
   return request({
-    url: '/guli/platformAttr/attrKeyValue',
+    url: '/guli/attribute/keyValStore',
     method: 'post',
     data: data
   });
@@ -43,9 +43,9 @@ export const addAttrKeyValue = (data: AttrKeyValueForm) => {
  * 修改商品属性
  * @param data
  */
-export const updateAttrKeyValue = (data: AttrKeyValueForm) => {
+export const updateKeyValStore = (data: KeyValStoreForm) => {
   return request({
-    url: '/guli/platformAttr/attrKeyValue',
+    url: '/guli/attribute/keyValStore',
     method: 'put',
     data: data
   });
@@ -55,9 +55,9 @@ export const updateAttrKeyValue = (data: AttrKeyValueForm) => {
  * 删除商品属性
  * @param attrId
  */
-export const delAttrKeyValue = (attrId: string | number | Array<string | number>) => {
+export const delKeyValStore = (attrId: string | number | Array<string | number>) => {
   return request({
-    url: '/guli/platformAttr/attrKeyValue/' + attrId,
+    url: '/guli/attribute/keyValStore/' + attrId,
     method: 'delete'
   });
 };

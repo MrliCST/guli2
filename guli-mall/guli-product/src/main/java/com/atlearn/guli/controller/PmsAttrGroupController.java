@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/platformAttr/attrGroup")
+@RequestMapping("/attribute/attrGroup")
 public class PmsAttrGroupController extends BaseController {
 
     private final IPmsAttrGroupService pmsAttrGroupService;

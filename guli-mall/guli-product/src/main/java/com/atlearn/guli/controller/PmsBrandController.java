@@ -18,7 +18,9 @@ import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
+import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.service.IPmsBrandService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
@@ -36,6 +38,11 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsBrandController extends BaseController {
 
     private final IPmsBrandService pmsBrandService;
+
+    /*
+      50-100 基础brand的CURD
+      119-159 brand和category关联的CURD
+    */
 
     /**
      * 查询品牌列表
@@ -102,5 +109,63 @@ public class PmsBrandController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable("brandIds") Long[] brandIds) {
         return toAjax(pmsBrandService.deleteWithValidByIds(List.of(brandIds), true));
+    }
+
+    // =========   品牌分类关联业务  =========
+
+    /**
+     * 查询品牌分类关联列表
+     */
+    @SaCheckPermission("guli:categoryBrandRelation:list")
+    @GetMapping("/cbrList")
+    public TableDataInfo<PmsCategoryBrandRelationVo> listCbr(PmsCategoryBrandRelationBo bo, PageQuery pageQuery) {
+        return pmsBrandService.queryCbrPageList(bo, pageQuery);
+    }
+
+    /**
+     * 获取品牌分类关联详细信息
+     *
+     * @param cbrId 主键
+     */
+    @SaCheckPermission("guli:categoryBrandRelation:query")
+    @GetMapping("/cbr/{cbrId}")
+    public R<PmsCategoryBrandRelationVo> getCbr(@NotNull(message = "主键不能为空")
+                                                  @PathVariable("cbrId") Long cbrId) {
+        return R.ok(pmsBrandService.queryCbrById(cbrId));
+    }
+
+    /**
+     * 新增品牌分类关联
+     */
+    @SaCheckPermission("guli:categoryBrandRelation:add")
+    @Log(title = "品牌分类关联", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/cbr")
+    public R<Void> addCbr(@Validated(AddGroup.class) @RequestBody PmsCategoryBrandRelationBo bo) {
+        return toAjax(pmsBrandService.insertCbrByBo(bo));
+    }
+
+    /**
+     * 修改品牌分类关联
+     */
+    @SaCheckPermission("guli:categoryBrandRelation:edit")
+    @Log(title = "品牌分类关联", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PutMapping("/cbr")
+    public R<Void> editCbr(@Validated(EditGroup.class) @RequestBody PmsCategoryBrandRelationBo bo) {
+        return toAjax(pmsBrandService.updateCbrByBo(bo));
+    }
+
+    /**
+     * 删除品牌分类关联
+     *
+     * @param cbrIds 主键串
+     */
+    @SaCheckPermission("guli:categoryBrandRelation:remove")
+    @Log(title = "品牌分类关联", businessType = BusinessType.DELETE)
+    @DeleteMapping("/cbr/{cbrIds}")
+    public R<Void> removeCbr(@NotEmpty(message = "主键不能为空")
+                          @PathVariable("cbrIds") Long[] cbrIds) {
+        return toAjax(pmsBrandService.deleteCbrWithValidByIds(List.of(cbrIds), true));
     }
 }

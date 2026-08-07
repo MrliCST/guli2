@@ -457,13 +457,6 @@ spring:
               uri: lb://ruoyi-workflow
               predicates:
                 - Path=/warm-flow-ui/**,/warm-flow/**
-            # 演示服务
-            - id: ruoyi-demo
-              uri: lb://ruoyi-demo
-              predicates:
-                - Path=/demo/**
-              filters:
-                - StripPrefix=1
             # MQ演示服务
             - id: ruoyi-test-mq
               uri: lb://ruoyi-test-mq

@@ -24,7 +24,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
  * 商品属性
- * 前端访问路由地址为:/guli/attrKeyValue
+ * 前端访问路由地址为:/guli/keyValStore
  *
  * @author mayao
  * @date 2026-08-03
@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/platformAttr/attrKeyValue")
+@RequestMapping("/attribute/keyValStore")
 public class PmsAttrController extends BaseController {
 
     private final IPmsAttrService pmsAttrService;
@@ -40,7 +40,7 @@ public class PmsAttrController extends BaseController {
     /**
      * 查询商品属性列表
      */
-    @SaCheckPermission("guli:attrKeyValue:list")
+    @SaCheckPermission("guli:keyValStore:list")
     @GetMapping("/list")
     public TableDataInfo<PmsAttrVo> list(PmsAttrBo bo, PageQuery pageQuery) {
         return pmsAttrService.queryPageList(bo, pageQuery);
@@ -49,7 +49,7 @@ public class PmsAttrController extends BaseController {
     /**
      * 导出商品属性列表
      */
-    @SaCheckPermission("guli:attrKeyValue:export")
+    @SaCheckPermission("guli:keyValStore:export")
     @Log(title = "商品属性", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(PmsAttrBo bo, HttpServletResponse response) {
@@ -62,7 +62,7 @@ public class PmsAttrController extends BaseController {
      *
      * @param attrId 主键
      */
-    @SaCheckPermission("guli:attrKeyValue:query")
+    @SaCheckPermission("guli:keyValStore:query")
     @GetMapping("/{attrId}")
     public R<PmsAttrVo> getInfo(@NotNull(message = "主键不能为空")
                                      @PathVariable("attrId") Long attrId) {
@@ -72,7 +72,7 @@ public class PmsAttrController extends BaseController {
     /**
      * 新增商品属性
      */
-    @SaCheckPermission("guli:attrKeyValue:add")
+    @SaCheckPermission("guli:keyValStore:add")
     @Log(title = "商品属性", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -83,7 +83,7 @@ public class PmsAttrController extends BaseController {
     /**
      * 修改商品属性
      */
-    @SaCheckPermission("guli:attrKeyValue:edit")
+    @SaCheckPermission("guli:keyValStore:edit")
     @Log(title = "商品属性", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -96,7 +96,7 @@ public class PmsAttrController extends BaseController {
      *
      * @param attrIds 主键串
      */
-    @SaCheckPermission("guli:attrKeyValue:remove")
+    @SaCheckPermission("guli:keyValStore:remove")
     @Log(title = "商品属性", businessType = BusinessType.DELETE)
     @DeleteMapping("/{attrIds}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")

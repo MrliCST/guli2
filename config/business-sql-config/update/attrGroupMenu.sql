@@ -1,6 +1,6 @@
 -- 菜单 SQL
 insert into sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)
-values(2083927679432564737, '属性分组', '2083926009118793729', '1', 'attrGroup', 'guli/platformAttr/attrGroup/index', 1, 0, 'C', '0', '0', 'guli:attrGroup:list', '#', 103, 1, sysdate(), null, null, '属性分组菜单');
+values(2083927679432564737, '属性分组', '2083926009118793729', '1', 'attrGroup', 'guli/attribute/attrGroup/index', 1, 0, 'C', '0', '0', 'guli:attrGroup:list', '#', 103, 1, sysdate(), null, null, '属性分组菜单');
 
 -- 按钮 SQL
 insert into sys_menu (menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_dept, create_by, create_time, update_by, update_time, remark)

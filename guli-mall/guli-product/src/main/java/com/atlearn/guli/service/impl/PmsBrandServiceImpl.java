@@ -11,12 +11,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
+import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.PmsBrand;
+import com.atlearn.guli.domain.PmsCategoryBrandRelation;
 import com.atlearn.guli.mapper.PmsBrandMapper;
+import com.atlearn.guli.mapper.PmsCategoryBrandRelationMapper;
 import com.atlearn.guli.service.IPmsBrandService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Collection;
 
 /**
@@ -31,6 +36,7 @@ import java.util.Collection;
 public class PmsBrandServiceImpl implements IPmsBrandService {
 
     private final PmsBrandMapper baseMapper;
+    private final PmsCategoryBrandRelationMapper cbrMapper;
 
     /**
      * 查询品牌
@@ -127,5 +133,103 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+
+    /**
+     * 查询品牌分类关联
+     *
+     * @param id 主键
+     * @return 品牌分类关联
+     */
+    @Override
+    public PmsCategoryBrandRelationVo queryCbrById(Long id){
+        return cbrMapper.selectVoById(id);
+    }
+
+    /**
+     * 分页查询品牌分类关联列表
+     *
+     * @param bo        查询条件
+     * @param pageQuery 分页参数
+     * @return 品牌分类关联分页列表
+     */
+    @Override
+    public TableDataInfo<PmsCategoryBrandRelationVo> queryCbrPageList(PmsCategoryBrandRelationBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<PmsCategoryBrandRelation> lqw = buildQueryWrapper(bo);
+        Page<PmsCategoryBrandRelationVo> result = cbrMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
+    }
+
+    /**
+     * 查询符合条件的品牌分类关联列表
+     *
+     * @param bo 查询条件
+     * @return 品牌分类关联列表
+     */
+    @Override
+    public List<PmsCategoryBrandRelationVo> queryCbrList(PmsCategoryBrandRelationBo bo) {
+        LambdaQueryWrapper<PmsCategoryBrandRelation> lqw = buildQueryWrapper(bo);
+        return cbrMapper.selectVoList(lqw);
+    }
+
+    private LambdaQueryWrapper<PmsCategoryBrandRelation> buildQueryWrapper(PmsCategoryBrandRelationBo bo) {
+        Map<String, Object> params = bo.getParams();
+        LambdaQueryWrapper<PmsCategoryBrandRelation> lqw = Wrappers.lambdaQuery();
+        lqw.orderByAsc(PmsCategoryBrandRelation::getId);
+        lqw.eq(bo.getBrandId() != null, PmsCategoryBrandRelation::getBrandId, bo.getBrandId());
+        return lqw;
+    }
+
+    /**
+     * 新增品牌分类关联
+     *
+     * @param bo 品牌分类关联
+     * @return 是否新增成功
+     */
+    @Override
+    public Boolean insertCbrByBo(PmsCategoryBrandRelationBo bo) {
+        PmsCategoryBrandRelation add = MapstructUtils.convert(bo, PmsCategoryBrandRelation.class);
+        validEntityBeforeSave(add);
+        boolean flag = cbrMapper.insert(add) > 0;
+        if (flag) {
+            bo.setId(add.getId());
+        }
+        return flag;
+    }
+
+    /**
+     * 修改品牌分类关联
+     *
+     * @param bo 品牌分类关联
+     * @return 是否修改成功
+     */
+    @Override
+    public Boolean updateCbrByBo(PmsCategoryBrandRelationBo bo) {
+        PmsCategoryBrandRelation update = MapstructUtils.convert(bo, PmsCategoryBrandRelation.class);
+        validEntityBeforeSave(update);
+        return cbrMapper.updateById(update) > 0;
+    }
+
+    /**
+     * 保存前的数据校验
+     */
+    private void validEntityBeforeSave(PmsCategoryBrandRelation entity){
+        //TODO 做一些数据校验,如唯一约束
+    }
+
+    /**
+     * 校验并批量删除品牌分类关联信息
+     *
+     * @param ids     待删除的主键集合
+     * @param isValid 是否进行有效性校验
+     * @return 是否删除成功
+     */
+    @Override
+    public Boolean deleteCbrWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return cbrMapper.deleteByIds(ids) > 0;
     }
 }

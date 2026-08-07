@@ -2,7 +2,7 @@ import request from '@/utils/request'
 import { AxiosPromise } from 'axios'
 import { AttrGroupVO, AttrGroupForm, AttrGroupQuery } from '@/api/guli/attrGroup/types'
 
-const BASE = '/guli/platformAttr/attrGroup'
+const BASE = '/guli/attribute/attrGroup'
 
 /** 查询属性分组列表 */
 export const listAttrGroup = (query?: AttrGroupQuery): AxiosPromise<AttrGroupVO[]> => {

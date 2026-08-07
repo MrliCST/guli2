@@ -5,6 +5,7 @@
         <GuliProductTree :is-show-checkbox="false" :is-draggable="false" :call-api="onTreeApiReady" @clickedNodeData="onTreeClick" />
       </div>
     </el-card>
+
     <div class="table-div">
       <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
         <div v-show="showSearch" class="mb-[10px]">
@@ -85,6 +86,7 @@
 
         <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
       </el-card>
+
       <!-- 添加或修改品牌对话框 -->
       <el-dialog :title="dialog.title" v-model="dialog.visible" width="800px" append-to-body>
         <el-form ref="brandFormRef" :model="form" :rules="rules" label-width="100px">

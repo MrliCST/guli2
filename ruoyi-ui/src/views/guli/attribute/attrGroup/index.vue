@@ -269,7 +269,7 @@ const handleDelete = async (row?: AttrGroupVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'guli/platformAttr/attrGroup/export',
+    'guli/attribute/attrGroup/export',
     {
       ...queryParams.value
     },

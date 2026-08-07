@@ -1,4 +1,4 @@
-export interface AttrKeyValueVO {
+export interface KeyValStoreVO {
   /**
    * 属性id
    */
@@ -51,7 +51,7 @@ export interface AttrKeyValueVO {
 
 }
 
-export interface AttrKeyValueForm extends BaseEntity {
+export interface KeyValStoreForm extends BaseEntity {
   /**
    * 属性id
    */
@@ -104,7 +104,7 @@ export interface AttrKeyValueForm extends BaseEntity {
 
 }
 
-export interface AttrKeyValueQuery extends PageQuery {
+export interface KeyValStoreQuery extends PageQuery {
 
   /**
    * 所属分类id

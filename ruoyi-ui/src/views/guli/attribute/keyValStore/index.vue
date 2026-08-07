@@ -29,20 +29,20 @@
         <template #header>
           <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-              <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['guli:attrKeyValue:add']">新增</el-button>
+              <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['guli:keyValStore:add']">新增</el-button>
             </el-col>
             <el-col :span="1.5">
-              <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['guli:attrKeyValue:edit']"
+              <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['guli:keyValStore:edit']"
                 >修改</el-button
               >
             </el-col>
             <el-col :span="1.5">
-              <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['guli:attrKeyValue:remove']"
+              <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['guli:keyValStore:remove']"
                 >删除</el-button
               >
             </el-col>
             <el-col :span="1.5">
-              <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['guli:attrKeyValue:export']">导出</el-button>
+              <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['guli:keyValStore:export']">导出</el-button>
             </el-col>
             <el-col :span="1.5">
               <el-button type="primary" plain icon="Connection" @click="handleRelation">关联</el-button>
@@ -51,7 +51,7 @@
           </el-row>
         </template>
 
-        <el-table v-loading="loading" border :data="attrKeyValueList" @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" border :data="keyValStoreList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="属性名" align="center" prop="attrName" />
           <el-table-column label="是否需要检索" align="center" prop="searchType">
@@ -85,10 +85,10 @@
           <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-tooltip content="修改" placement="top">
-                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['guli:attrKeyValue:edit']"></el-button>
+                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['guli:keyValStore:edit']"></el-button>
               </el-tooltip>
               <el-tooltip content="删除" placement="top">
-                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['guli:attrKeyValue:remove']"></el-button>
+                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['guli:keyValStore:remove']"></el-button>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -99,7 +99,7 @@
 
       <!-- 添加或修改商品属性对话框 -->
       <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-        <el-form ref="attrKeyValueFormRef" :model="form" :rules="rules" label-width="80px">
+        <el-form ref="keyValStoreFormRef" :model="form" :rules="rules" label-width="80px">
           <el-form-item label="属性名" prop="attrName">
             <el-input v-model="form.attrName" placeholder="请输入属性名" />
           </el-form-item>
@@ -143,9 +143,9 @@
   </div>
 </template>
 
-<script setup name="AttrKeyValue" lang="ts">
-import { listAttrKeyValue, getAttrKeyValue, delAttrKeyValue, addAttrKeyValue, updateAttrKeyValue } from '@/api/guli/attrKeyValue'
-import { AttrKeyValueVO, AttrKeyValueQuery, AttrKeyValueForm } from '@/api/guli/attrKeyValue/types'
+<script setup name="KeyValStore" lang="ts">
+import { listKeyValStore, getKeyValStore, delKeyValStore, addKeyValStore, updateKeyValStore } from '@/api/guli/keyValStore'
+import { KeyValStoreVO, KeyValStoreQuery, KeyValStoreForm } from '@/api/guli/keyValStore/types'
 import type { CategoryVO, TreeApi } from '@/components/GuliProductTree/index'
 import type { Node } from 'element-plus/es/components/tree/src/model/node'
 
@@ -176,7 +176,7 @@ const showDescOptions = [
 
 const selectedCategoryName = ref('点击左侧以选择')
 const treeSelectData = ref<CategoryVO[]>([])
-const attrKeyValueList = ref<AttrKeyValueVO[]>([])
+const keyValStoreList = ref<KeyValStoreVO[]>([])
 
 let getTreeData: () => CategoryVO[]
 const onTreeApiReady = (api: TreeApi) => {
@@ -194,7 +194,7 @@ const total = ref(0)
 const ids = ref<Array<string | number>>([])
 
 const queryFormRef = ref<ElFormInstance>()
-const attrKeyValueFormRef = ref<ElFormInstance>()
+const keyValStoreFormRef = ref<ElFormInstance>()
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -206,7 +206,7 @@ const relationDialog = reactive<DialogOption>({
   title: '属性关联'
 })
 
-const initFormData: AttrKeyValueForm = {
+const initFormData: KeyValStoreForm = {
   attrId: undefined,
   attrName: undefined,
   searchType: undefined,
@@ -218,7 +218,7 @@ const initFormData: AttrKeyValueForm = {
   catelogId: undefined,
   showDesc: undefined
 }
-const data = reactive<PageData<AttrKeyValueForm, AttrKeyValueQuery>>({
+const data = reactive<PageData<KeyValStoreForm, KeyValStoreQuery>>({
   form: { ...initFormData },
   queryParams: {
     pageNum: 1,
@@ -246,14 +246,14 @@ const onTreeClick = (data: CategoryVO, nodePath: Node[]) => {
 /** 查询商品属性列表 */
 const getList = async () => {
   if (!queryParams.value.catelogId) {
-    attrKeyValueList.value = []
+    keyValStoreList.value = []
     total.value = 0
     loading.value = false
     return
   }
   loading.value = true
-  const res = await listAttrKeyValue(queryParams.value)
-  attrKeyValueList.value = res.rows
+  const res = await listKeyValStore(queryParams.value)
+  keyValStoreList.value = res.rows
   total.value = res.total
   loading.value = false
 }
@@ -267,7 +267,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData }
-  attrKeyValueFormRef.value?.resetFields()
+  keyValStoreFormRef.value?.resetFields()
 }
 
 /** 搜索按钮操作 */
@@ -283,7 +283,7 @@ const resetQuery = () => {
 }
 
 /** 多选框选中数据 */
-const handleSelectionChange = (selection: AttrKeyValueVO[]) => {
+const handleSelectionChange = (selection: KeyValStoreVO[]) => {
   ids.value = selection.map((item) => item.attrId)
   single.value = selection.length != 1
   multiple.value = !selection.length
@@ -298,11 +298,11 @@ const handleAdd = () => {
 }
 
 /** 修改按钮操作 */
-const handleUpdate = async (row?: AttrKeyValueVO) => {
+const handleUpdate = async (row?: KeyValStoreVO) => {
   reset()
   treeSelectData.value = getTreeData?.() ?? []
   const _attrId = row?.attrId || ids.value[0]
-  const res = await getAttrKeyValue(_attrId)
+  const res = await getKeyValStore(_attrId)
   Object.assign(form.value, res.data)
   dialog.visible = true
   dialog.title = '修改商品属性'
@@ -310,13 +310,13 @@ const handleUpdate = async (row?: AttrKeyValueVO) => {
 
 /** 提交按钮 */
 const submitForm = () => {
-  attrKeyValueFormRef.value?.validate(async (valid: boolean) => {
+  keyValStoreFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true
       if (form.value.attrId) {
-        await updateAttrKeyValue(form.value).finally(() => (buttonLoading.value = false))
+        await updateKeyValStore(form.value).finally(() => (buttonLoading.value = false))
       } else {
-        await addAttrKeyValue(form.value).finally(() => (buttonLoading.value = false))
+        await addKeyValStore(form.value).finally(() => (buttonLoading.value = false))
       }
       proxy?.$modal.msgSuccess('操作成功')
       dialog.visible = false
@@ -326,10 +326,10 @@ const submitForm = () => {
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (row?: AttrKeyValueVO) => {
+const handleDelete = async (row?: KeyValStoreVO) => {
   const _attrIds = row?.attrId || ids.value
   await proxy?.$modal.confirm('是否确认删除商品属性编号为"' + _attrIds + '"的数据项？').finally(() => (loading.value = false))
-  await delAttrKeyValue(_attrIds)
+  await delKeyValStore(_attrIds)
   proxy?.$modal.msgSuccess('删除成功')
   await getList()
 }
@@ -337,11 +337,11 @@ const handleDelete = async (row?: AttrKeyValueVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'guli/platformAttr/attrKeyValue/export',
+    'guli/attribute/keyValStore/export',
     {
       ...queryParams.value
     },
-    `attrKeyValue_${new Date().getTime()}.xlsx`
+    `keyValStore_${new Date().getTime()}.xlsx`
   )
 }
 
