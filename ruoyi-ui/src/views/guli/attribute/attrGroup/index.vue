@@ -2,7 +2,7 @@
   <div class="split-layout p-2">
     <el-card shadow="never" class="tree-card">
       <div class="tree-wrapper">
-        <GuliProductTree :is-show-checkbox="false" :is-draggable="false" :call-api="onTreeApiReady" @clickedNodeData="onTreeClick" />
+        <GuliProductTree :tree-data="treeData" :is-only-read="true" @clickedNodeData="onTreeClick" />
       </div>
     </el-card>
     <div class="table-div">
@@ -43,6 +43,11 @@
             </el-col>
             <el-col :span="1.5">
               <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['guli:attrGroup:export']">导出</el-button>
+            </el-col>
+            <el-col :span="1.5">
+              <el-button type="primary" plain icon="Connection" @click="handleRelation" :disabled="single" v-hasPermi="['guli:attrGroup:edit']"
+                >关联</el-button
+              >
             </el-col>
             <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
           </el-row>
@@ -104,22 +109,64 @@
           </div>
         </template>
       </el-dialog>
+
+      <!-- 属性分组关联对话框 -->
+      <el-dialog :title="relationDialog.title" v-model="relationDialog.visible" width="800px" append-to-body @opened="getRelationList">
+        <el-button type="primary" plain icon="Plus" class="mb8" @click="handleOpenAddRelation">新增关联</el-button>
+
+        <el-table v-loading="relationLoading" border :data="relationList">
+          <el-table-column label="关联ID" align="center" prop="id" />
+          <el-table-column label="属性名" align="center" prop="attrName" />
+          <el-table-column label="排序" align="center" prop="attrSort" />
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <template #default="scope">
+              <el-tooltip content="编辑" placement="top">
+                <el-button link type="primary" icon="Edit" @click="handleOpenEditRelation(scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip content="删除" placement="top">
+                <el-button link type="danger" icon="Delete" @click="handleDeleteRelation(scope.row)"></el-button>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+
+      <!-- 新增/编辑关联对话框 -->
+      <el-dialog :title="addRelationDialog.title" v-model="addRelationDialog.visible" width="500px" append-to-body>
+        <el-form label-width="80px">
+          <el-form-item label="属性分组">
+            <el-input :model-value="currentAttrGroup?.attrGroupName" disabled />
+          </el-form-item>
+          <el-form-item label="属性值储">
+            <el-select v-model="addAttrId" placeholder="请选择属性" clearable style="width: 100%" :disabled="isEditMode">
+              <el-option v-for="attr in availableAttrs" :key="attr.attrId" :label="attr.attrName" :value="attr.attrId" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="排序号">
+            <el-input v-model="addAttrSort" placeholder="请输入排序号" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button type="primary" :disabled="!addAttrId" @click="handleSubmitRelation">确 定</el-button>
+            <el-button @click="addRelationDialog.visible = false">取 消</el-button>
+          </div>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script setup name="AttrGroup" lang="ts">
-import { listAttrGroup, getAttrGroup, delAttrGroup, addAttrGroup, updateAttrGroup } from '@/api/guli/attrGroup'
-import { AttrGroupVO, AttrGroupQuery, AttrGroupForm } from '@/api/guli/attrGroup/types'
-import type { CategoryVO, TreeApi } from '@/components/GuliProductTree/index'
+import { listAttrGroup, getAttrGroup, delAttrGroup, addAttrGroup, updateAttrGroup, listTreeCategory } from '@/api/guli/attribute/attrGroup'
+import { AttrGroupVO, AttrGroupQuery, AttrGroupForm } from '@/api/guli/attribute/attrGroup/types'
+import type { CategoryVO } from '@/api/guli/category/types'
 import type { Node } from 'element-plus/es/components/tree/src/model/node'
+import { listRelations, addRelation, updateRelation, delRelation, listAvailableAttrs } from '@/api/guli/attribute/attrGroup'
+import type { AttrAttrgroupRelationVO } from '@/api/guli/attribute/attrGroup/types'
+import type { KeyValStoreVO } from '@/api/guli/attribute/keyValStore/types'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
-
-let getTreeData: () => CategoryVO[]
-const onTreeApiReady = (api: TreeApi) => {
-  getTreeData = api.getTreeData
-}
 
 const buttonLoading = ref(false)
 const loading = ref(true)
@@ -132,6 +179,7 @@ const total = ref(0)
 
 const selectedCategoryName = ref('点击左侧以选择')
 const treeSelectData = ref<CategoryVO[]>([])
+const treeData = ref<CategoryVO[]>([])
 const attrGroupList = ref<AttrGroupVO[]>([])
 const ids = ref<Array<string | number>>([])
 
@@ -222,9 +270,10 @@ const handleSelectionChange = (selection: AttrGroupVO[]) => {
 }
 
 /** 新增按钮操作 */
-const handleAdd = () => {
+const handleAdd = async () => {
   reset()
-  treeSelectData.value = getTreeData?.() ?? []
+  const res = await listTreeCategory()
+  treeSelectData.value = res.data
   dialog.visible = true
   dialog.title = '添加属性分组'
 }
@@ -232,7 +281,8 @@ const handleAdd = () => {
 /** 修改按钮操作 */
 const handleUpdate = async (row?: AttrGroupVO) => {
   reset()
-  treeSelectData.value = getTreeData?.() ?? []
+  const treeRes = await listTreeCategory()
+  treeSelectData.value = treeRes.data
   const _attrGroupId = row?.attrGroupId || ids.value[0]
   const res = await getAttrGroup(_attrGroupId)
   Object.assign(form.value, res.data)
@@ -277,7 +327,106 @@ const handleExport = () => {
   )
 }
 
-onMounted(() => {
+// ========== 关联业务 ==========
+
+const relationDialog = reactive<DialogOption>({
+  visible: false,
+  title: ''
+})
+const relationList = ref<AttrAttrgroupRelationVO[]>([])
+const relationLoading = ref(false)
+
+const addRelationDialog = reactive<DialogOption>({
+  visible: false,
+  title: ''
+})
+const availableAttrs = ref<KeyValStoreVO[]>([])
+const addAttrId = ref<string | number>('')
+const addAttrSort = ref(0)
+const isEditMode = ref(false)
+const editingRelationId = ref<string | number>('')
+const currentAttrGroup = ref<AttrGroupVO | null>(null)
+
+/** 打开关联对话框 */
+const handleRelation = async () => {
+  currentAttrGroup.value = attrGroupList.value.find((a) => a.attrGroupId === ids.value[0]) || null
+  if (!currentAttrGroup.value) return
+  relationDialog.title = `属性分组关联 - ${currentAttrGroup.value.attrGroupName}`
+  relationDialog.visible = true
+}
+
+/** 查询关联列表 */
+const getRelationList = async () => {
+  if (!currentAttrGroup.value) return
+  relationLoading.value = true
+  try {
+    const res = await listRelations({ attrGroupId: currentAttrGroup.value.attrGroupId })
+    relationList.value = res.data
+  } finally {
+    relationLoading.value = false
+  }
+}
+
+/** 打开新增关联对话框 */
+const handleOpenAddRelation = async () => {
+  if (!currentAttrGroup.value) return
+  isEditMode.value = false
+  editingRelationId.value = ''
+  addAttrId.value = ''
+  addAttrSort.value = 0
+  addRelationDialog.title = `新增关联 - ${currentAttrGroup.value.attrGroupName}`
+  addRelationDialog.visible = true
+  // 加载可关联的属性
+  const res = await listAvailableAttrs(currentAttrGroup.value.catelogId)
+  availableAttrs.value = res.data
+}
+
+/** 打开编辑关联对话框 */
+const handleOpenEditRelation = async (row: AttrAttrgroupRelationVO) => {
+  if (!currentAttrGroup.value) return
+  isEditMode.value = true
+  editingRelationId.value = row.id
+  addAttrId.value = row.attrId
+  addAttrSort.value = row.attrSort
+  addRelationDialog.title = `编辑关联 - ${row.attrName}`
+  addRelationDialog.visible = true
+  // 编辑时也需要可选项（仅显示当前项，置灰不可改）
+  const res = await listAvailableAttrs(currentAttrGroup.value.catelogId)
+  availableAttrs.value = res.data
+}
+
+/** 提交新增/编辑关联 */
+const handleSubmitRelation = async () => {
+  if (!addAttrId.value || !currentAttrGroup.value) return
+  if (isEditMode.value) {
+    await updateRelation({
+      id: editingRelationId.value,
+      attrSort: addAttrSort.value
+    })
+    proxy?.$modal.msgSuccess('修改排序成功')
+  } else {
+    await addRelation({
+      attrId: addAttrId.value,
+      attrGroupId: currentAttrGroup.value.attrGroupId,
+      attrSort: addAttrSort.value
+    })
+    proxy?.$modal.msgSuccess('新增关联成功')
+  }
+  addRelationDialog.visible = false
+  await getRelationList()
+}
+
+/** 删除关联 */
+const handleDeleteRelation = async (row: AttrAttrgroupRelationVO) => {
+  await proxy?.$modal.confirm('是否确认取消属性"' + row.attrName + '"与分组"' + row.attrGroupName + '"的关联？')
+  await delRelation(row.id)
+  proxy?.$modal.msgSuccess('取消关联成功')
+  await getRelationList()
+}
+
+onMounted(async () => {
+  const res = await listTreeCategory()
+  treeData.value = res.data
   getList()
 })
 </script>

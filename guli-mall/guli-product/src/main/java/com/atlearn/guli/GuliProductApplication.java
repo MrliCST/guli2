@@ -4,6 +4,7 @@ import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 商品服务
@@ -11,6 +12,7 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  * @author guli
  */
 @EnableDubbo
+@EnableTransactionManagement
 @SpringBootApplication
 public class GuliProductApplication {
     public static void main(String[] args) {

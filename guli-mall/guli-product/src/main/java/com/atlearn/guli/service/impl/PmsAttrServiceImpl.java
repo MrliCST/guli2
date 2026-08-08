@@ -17,7 +17,6 @@ import com.atlearn.guli.mapper.PmsAttrMapper;
 import com.atlearn.guli.service.IPmsAttrService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Collection;
 
 /**
@@ -70,8 +69,8 @@ public class PmsAttrServiceImpl implements IPmsAttrService {
         return baseMapper.selectVoList(lqw);
     }
 
+    @SuppressWarnings("null")
     private LambdaQueryWrapper<PmsAttr> buildQueryWrapper(PmsAttrBo bo) {
-        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PmsAttr> lqw = Wrappers.lambdaQuery();
         lqw.orderByAsc(PmsAttr::getAttrId);
         lqw.like(StringUtils.isNotBlank(bo.getAttrName()), PmsAttr::getAttrName, bo.getAttrName());
@@ -90,11 +89,7 @@ public class PmsAttrServiceImpl implements IPmsAttrService {
     public Boolean insertByBo(PmsAttrBo bo) {
         PmsAttr add = MapstructUtils.convert(bo, PmsAttr.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setAttrId(add.getAttrId());
-        }
-        return flag;
+        return baseMapper.insert(add) > 0;
     }
 
     /**

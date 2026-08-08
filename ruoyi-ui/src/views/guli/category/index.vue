@@ -4,7 +4,7 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd()" v-hasPermi="['guli:category:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd()" v-hasPermi="['guli:category:add']">新增顶级</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="danger" plain icon="Delete" @click="handleBatchDelete" v-hasPermi="['guli:category:remove']">批量删除</el-button>
@@ -17,7 +17,7 @@
 
       <div class="split-layout">
         <div class="tree-wrapper">
-          <GuliProductTree :is-only-leaf-allow-click="false" :call-api="onTreeApiReady" @clickedNodeData="onTreeNodeClick" />
+          <GuliProductTree :tree-data="treeData" :on-ready="onTreeReady" @clickedNodeData="onTreeNodeClick" @drag-drop="onTreeDragDrop" />
         </div>
 
         <div class="detail-pane">
@@ -110,46 +110,21 @@
 </template>
 
 <script setup name="Category" lang="ts">
-import type { CategoryVO, CategoryForm, TreeApi } from '@/components/GuliProductTree/index'
+import type { CategoryVO, CategoryForm } from '@/api/guli/category/types'
+import { listTreeCategory, getCategory, addCategory, updateCategory, updateBatchCategory, delCategory } from '@/api/guli/category'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 
-let handleUpdate: (row?: CategoryVO) => Promise<void>
-let submitForm: () => void
-let handleDelete: (row?: CategoryVO) => void
-let handleBatchDelete: () => void
+const treeData = ref<CategoryVO[]>([])
 
-const onTreeApiReady = (api: TreeApi) => {
-  handleUpdate = async (row?: CategoryVO) => {
-    form.value = { ...initFormData }
-    const catId = row?.catId
-    const data = await api.getById(catId as number)
-    Object.assign(form.value, data)
-    categoryFormRef.value?.resetFields()
-    dialog.visible = true
-    dialog.title = '修改商品三级分类'
-  }
+const loadTreeData = async () => {
+  const res = await listTreeCategory()
+  treeData.value = res.data
+}
 
-  submitForm = () => {
-    categoryFormRef.value?.validate(async (valid: boolean) => {
-      if (!valid) return
-      buttonLoading.value = true
-      if (form.value.catId) {
-        await api.update(form.value).finally(() => (buttonLoading.value = false))
-      } else {
-        await api.add(form.value).finally(() => (buttonLoading.value = false))
-      }
-      dialog.visible = false
-    })
-  }
-
-  handleDelete = (row?: CategoryVO) => {
-    api.remove(row?.catId as number)
-  }
-
-  handleBatchDelete = () => {
-    api.removeBatch()
-  }
+let getChosenNode: () => CategoryVO[]
+const onTreeReady = (api: { getChosenNode: () => CategoryVO[] }) => {
+  getChosenNode = api.getChosenNode
 }
 
 const showStatusOptions = [
@@ -207,13 +182,79 @@ const handleExport = () => {
 /** 新增按钮操作 */
 const handleAdd = (row?: CategoryVO) => {
   form.value = { ...initFormData }
-  if (row) {
-    form.value.parentCid = row.catId as number
-  }
+  form.value.parentCid = row ? (row.catId as number) : 0
   categoryFormRef.value?.resetFields()
   dialog.visible = true
   dialog.title = '添加商品三级分类'
 }
+
+/** 修改按钮操作 */
+const handleUpdate = async (row?: CategoryVO) => {
+  form.value = { ...initFormData }
+  const catId = row?.catId
+  const res = await getCategory(catId as number)
+  Object.assign(form.value, res.data)
+  categoryFormRef.value?.resetFields()
+  dialog.visible = true
+  dialog.title = '修改商品三级分类'
+}
+
+/** 提交按钮 */
+const submitForm = () => {
+  categoryFormRef.value?.validate(async (valid: boolean) => {
+    if (!valid) return
+    buttonLoading.value = true
+    if (form.value.catId) {
+      await updateCategory(form.value).finally(() => (buttonLoading.value = false))
+    } else {
+      await addCategory(form.value).finally(() => (buttonLoading.value = false))
+    }
+    proxy?.$modal.msgSuccess(form.value.catId ? '修改成功' : '新增成功')
+    dialog.visible = false
+    loadTreeData()
+  })
+}
+
+/** 删除按钮操作 */
+const handleDelete = async (row?: CategoryVO) => {
+  const catId = row?.catId as number
+  try {
+    await proxy?.$modal.confirm('是否确认删除所选分类？')
+  } catch {
+    return
+  }
+  await delCategory(catId)
+  proxy?.$modal.msgSuccess('删除成功')
+  loadTreeData()
+}
+
+/** 批量删除 */
+const handleBatchDelete = async () => {
+  const checked = getChosenNode?.() ?? []
+  if (checked.length === 0) {
+    proxy?.$modal.msgWarning('请先勾选要删除的分类')
+    return
+  }
+  try {
+    await proxy?.$modal.confirm('是否确认删除所选分类？')
+  } catch {
+    return
+  }
+  await delCategory(checked.map((n) => n.catId as number))
+  proxy?.$modal.msgSuccess('删除成功')
+  loadTreeData()
+}
+
+/** 拖拽排序完成 */
+const onTreeDragDrop = async (batchData: CategoryForm[]) => {
+  await updateBatchCategory(batchData)
+  proxy?.$modal.msgSuccess('排序调整成功')
+  await loadTreeData()
+}
+
+onMounted(() => {
+  loadTreeData()
+})
 </script>
 
 <style scoped lang="scss">

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atlearn.guli.mapper.PmsAttrAttrgroupRelationMapper">
+
+    <!-- 根据分类id，查询该分类下所有属性分组已占用的属性id集合 -->
+    <select id="selectUsedAttrIdsByCategoryId" resultType="long">
+        SELECT aar.attr_id
+        FROM pms_attr_attrgroup_relation aar
+        INNER JOIN pms_attr_group ag ON aar.attr_group_id = ag.attr_group_id
+        WHERE ag.catelog_id = #{categoryId}
+    </select>
+
+    <!-- 联表查询关联列表，附带属性名和分组名 -->
+    <select id="selectVoListByGroupId"
+            resultType="com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo">
+        SELECT
+            aar.id,
+            aar.attr_id,
+            aar.attr_group_id,
+            aar.attr_sort,
+            pa.attr_name,
+            pag.attr_group_name
+        FROM pms_attr_attrgroup_relation aar
+        LEFT JOIN pms_attr pa ON pa.attr_id = aar.attr_id
+        LEFT JOIN pms_attr_group pag ON pag.attr_group_id = aar.attr_group_id
+        WHERE aar.attr_group_id = #{attrGroupId}
+        ORDER BY aar.attr_sort ASC
+    </select>
+
+</mapper>

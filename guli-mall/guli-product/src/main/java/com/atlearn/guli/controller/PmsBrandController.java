@@ -19,9 +19,12 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.service.IPmsBrandService;
+import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -38,11 +41,24 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsBrandController extends BaseController {
 
     private final IPmsBrandService pmsBrandService;
+    private final IPmsCategoryService pmsCategoryService;
 
     /*
-      50-100 基础brand的CURD
-      119-159 brand和category关联的CURD
-    */
+     *  ---- 品牌基础 CRUD ----
+     *  66  /list             GET    分页列表
+     *  76  /export           POST   导出
+     *  88  /{brandId}        GET    详情
+     *  100 /                 POST   新增
+     *  111 /                 PUT    修改
+     *  123 /{brandIds}       DELETE 删除
+     *  133 /treeCategory     GET    分类树
+     *
+     *  ---- 品牌-分类关联 CRUD ----
+     *  144 /cbrList          GET    关联分页列表
+     *  155 /cbr              POST   新增关联
+     *  166 /cbr              PUT    修改关联
+     *  178 /cbr/{cbrIds}     DELETE 删除关联
+     */
 
     /**
      * 查询品牌列表
@@ -111,6 +127,15 @@ public class PmsBrandController extends BaseController {
         return toAjax(pmsBrandService.deleteWithValidByIds(List.of(brandIds), true));
     }
 
+    /**
+     * 获取分类树数据
+     */
+    @SaCheckPermission("guli:brand:query")
+    @GetMapping("/treeCategory")
+    public R<List<PmsCategoryVo>> treeCategory() {
+        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
+    }
+
     // =========   品牌分类关联业务  =========
 
     /**
@@ -120,18 +145,6 @@ public class PmsBrandController extends BaseController {
     @GetMapping("/cbrList")
     public TableDataInfo<PmsCategoryBrandRelationVo> listCbr(PmsCategoryBrandRelationBo bo, PageQuery pageQuery) {
         return pmsBrandService.queryCbrPageList(bo, pageQuery);
-    }
-
-    /**
-     * 获取品牌分类关联详细信息
-     *
-     * @param cbrId 主键
-     */
-    @SaCheckPermission("guli:categoryBrandRelation:query")
-    @GetMapping("/cbr/{cbrId}")
-    public R<PmsCategoryBrandRelationVo> getCbr(@NotNull(message = "主键不能为空")
-                                                  @PathVariable("cbrId") Long cbrId) {
-        return R.ok(pmsBrandService.queryCbrById(cbrId));
     }
 
     /**

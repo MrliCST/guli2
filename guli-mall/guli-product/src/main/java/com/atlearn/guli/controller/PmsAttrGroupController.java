@@ -18,8 +18,15 @@ import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import com.atlearn.guli.domain.vo.PmsAttrGroupVo;
+import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsAttrGroupBo;
+import com.atlearn.guli.domain.bo.PmsAttrBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
+import com.atlearn.guli.domain.bo.PmsAttrAttrgroupRelationBo;
 import com.atlearn.guli.service.IPmsAttrGroupService;
+import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -36,6 +43,25 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsAttrGroupController extends BaseController {
 
     private final IPmsAttrGroupService pmsAttrGroupService;
+    private final IPmsCategoryService pmsCategoryService;
+
+    /*
+     *  ---- 属性分组基础 CRUD ----
+     *  70  /list                GET    分页列表
+     *  84  /export              POST   导出
+     *  96  /{attrGroupId}       GET    详情
+     *  108 /                    POST   新增
+     *  119 /                    PUT    修改
+     *  131 /{attrGroupIds}      DELETE 删除
+     *  141 /treeCategory        GET    分类树
+     *
+     *  ---- 属性分组-属性值储关联 CRUD ----
+     *  152 /availableAttrs      GET    可关联属性列表
+     *  161 /relations           GET    关联列表
+     *  171 /relation            POST   新增关联
+     *  181 /relation            PUT    修改关联
+     *  191 /relation/{ids}      DELETE 删除关联
+     */
 
     /**
      * 查询属性分组列表
@@ -106,5 +132,65 @@ public class PmsAttrGroupController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable("attrGroupIds") Long[] attrGroupIds) {
         return toAjax(pmsAttrGroupService.deleteWithValidByIds(List.of(attrGroupIds), true));
+    }
+
+    /**
+     * 获取分类树数据
+     */
+    @SaCheckPermission("guli:attrGroup:query")
+    @GetMapping("/treeCategory")
+    public R<List<PmsCategoryVo>> treeCategory() {
+        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
+    }
+
+    // =========   属性分组-属性值储关联业务  =========
+
+    /**
+     * 查询可关联的属性列表（过滤已关联的）
+     */
+    @SaCheckPermission("guli:attrGroup:query")
+    @GetMapping("/availableAttrs")
+    public R<List<PmsAttrVo>> listAvailableAttrs(PmsAttrBo bo) {
+        return R.ok(pmsAttrGroupService.listAvailableAttrs(bo.getCatelogId()));
+    }
+
+    /**
+     * 查询关联列表（附带属性名和分组名）
+     */
+    @SaCheckPermission("guli:attrGroup:query")
+    @GetMapping("/relations")
+    public R<List<PmsAttrAttrgroupRelationVo>> listRelations(PmsAttrAttrgroupRelationBo bo) {
+        return R.ok(pmsAttrGroupService.listRelations(bo.getAttrGroupId()));
+    }
+
+    /**
+     * 新增关联
+     */
+    @SaCheckPermission("guli:attrGroup:add")
+    @Log(title = "属性分组关联", businessType = BusinessType.INSERT)
+    @PostMapping("/relation")
+    public R<Void> addRelation(@Validated(AddGroup.class) @RequestBody PmsAttrAttrgroupRelationBo bo) {
+        return toAjax(pmsAttrGroupService.insertRelation(bo));
+    }
+
+    /**
+     * 修改关联（仅排序）
+     */
+    @SaCheckPermission("guli:attrGroup:edit")
+    @Log(title = "属性分组关联", businessType = BusinessType.UPDATE)
+    @PutMapping("/relation")
+    public R<Void> editRelation(@Validated(EditGroup.class) @RequestBody PmsAttrAttrgroupRelationBo bo) {
+        return toAjax(pmsAttrGroupService.updateRelation(bo));
+    }
+
+    /**
+     * 删除关联
+     */
+    @SaCheckPermission("guli:attrGroup:remove")
+    @Log(title = "属性分组关联", businessType = BusinessType.DELETE)
+    @DeleteMapping("/relation/{ids}")
+    public R<Void> removeRelation(@NotEmpty(message = "主键不能为空")
+                                   @PathVariable("ids") Long[] ids) {
+        return toAjax(pmsAttrGroupService.deleteRelationWithValidByIds(List.of(ids), true));
     }
 }

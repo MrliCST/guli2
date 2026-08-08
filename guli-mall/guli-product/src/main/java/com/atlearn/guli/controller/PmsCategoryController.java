@@ -35,11 +35,22 @@ public class PmsCategoryController extends BaseController {
 
     private final IPmsCategoryService pmsCategoryService;
 
+    /*
+     *  ---- 商品三级分类 CRUD ----
+     *  53  /listTree       GET    分类树列表
+     *  63  /export         POST   导出
+     *  75  /{catId}        GET    详情
+     *  87  /               POST   新增
+     *  98  /               PUT    修改
+     *  109 /batch          PUT    批量修改
+     *  121 /{catIds}       DELETE 删除
+     */
+
     /**
      * 查询商品三级分类树列表
      */
     @SaCheckPermission("guli:category:list")
-    @GetMapping("/list/tree")
+    @GetMapping("/listTree")
     public R<List<PmsCategoryVo>> list(PmsCategoryBo bo) {
         return R.ok(pmsCategoryService.queryTreeList(bo));
     }

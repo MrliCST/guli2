@@ -11,14 +11,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.atlearn.guli.domain.bo.PmsAttrGroupBo;
+import com.atlearn.guli.domain.bo.PmsAttrAttrgroupRelationBo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupVo;
+import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
 import com.atlearn.guli.domain.PmsAttrGroup;
+import com.atlearn.guli.domain.PmsAttr;
+import com.atlearn.guli.domain.PmsAttrAttrgroupRelation;
 import com.atlearn.guli.mapper.PmsAttrGroupMapper;
+import com.atlearn.guli.mapper.PmsAttrMapper;
+import com.atlearn.guli.mapper.PmsAttrAttrgroupRelationMapper;
 import com.atlearn.guli.service.IPmsAttrGroupService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 属性分组Service业务层处理
@@ -32,25 +40,16 @@ import java.util.Collection;
 public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
 
     private final PmsAttrGroupMapper baseMapper;
+    private final PmsAttrMapper attrMapper;
+    private final PmsAttrAttrgroupRelationMapper relationMapper;
 
-    /**
-     * 查询属性分组
-     *
-     * @param attrGroupId 主键
-     * @return 属性分组
-     */
+    // ==================== 属性分组 CRUD ====================
+
     @Override
     public PmsAttrGroupVo queryById(Long attrGroupId){
         return baseMapper.selectVoById(attrGroupId);
     }
 
-    /**
-     * 分页查询属性分组列表
-     *
-     * @param bo        查询条件
-     * @param pageQuery 分页参数
-     * @return 属性分组分页列表
-     */
     @Override
     public TableDataInfo<PmsAttrGroupVo> queryPageList(PmsAttrGroupBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<PmsAttrGroup> lqw = buildQueryWrapper(bo);
@@ -58,12 +57,6 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
         return TableDataInfo.build(result);
     }
 
-    /**
-     * 查询符合条件的属性分组列表
-     *
-     * @param bo 查询条件
-     * @return 属性分组列表
-     */
     @Override
     public List<PmsAttrGroupVo> queryList(PmsAttrGroupBo bo) {
         LambdaQueryWrapper<PmsAttrGroup> lqw = buildQueryWrapper(bo);
@@ -80,29 +73,13 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
         return lqw;
     }
 
-    /**
-     * 新增属性分组
-     *
-     * @param bo 属性分组
-     * @return 是否新增成功
-     */
     @Override
     public Boolean insertByBo(PmsAttrGroupBo bo) {
         PmsAttrGroup add = MapstructUtils.convert(bo, PmsAttrGroup.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setAttrGroupId(add.getAttrGroupId());
-        }
-        return flag;
+        return baseMapper.insert(add) > 0;
     }
 
-    /**
-     * 修改属性分组
-     *
-     * @param bo 属性分组
-     * @return 是否修改成功
-     */
     @Override
     public Boolean updateByBo(PmsAttrGroupBo bo) {
         PmsAttrGroup update = MapstructUtils.convert(bo, PmsAttrGroup.class);
@@ -110,25 +87,62 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
         return baseMapper.updateById(update) > 0;
     }
 
-    /**
-     * 保存前的数据校验
-     */
     private void validEntityBeforeSave(PmsAttrGroup entity){
         //TODO 做一些数据校验,如唯一约束
     }
 
-    /**
-     * 校验并批量删除属性分组信息
-     *
-     * @param ids     待删除的主键集合
-     * @param isValid 是否进行有效性校验
-     * @return 是否删除成功
-     */
     @Override
     public Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid) {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    // ==================== 属性分组-属性值储关联 ====================
+
+    @Override
+    @SuppressWarnings("null")
+    public List<PmsAttrVo> listAvailableAttrs(Long categoryId) {
+        // 查询该分类下所有属性分组已占用的属性id集合
+        Set<Long> usedIds = relationMapper.selectUsedAttrIdsByCategoryId(categoryId);
+        // 查询该分类下所有属性
+        List<PmsAttr> allAttrs = attrMapper.selectList(
+            Wrappers.lambdaQuery(PmsAttr.class)
+                .eq(PmsAttr::getCatelogId, categoryId)
+        );
+        // 过滤掉已关联的，转为VO返回
+        return allAttrs.stream()
+            .filter(a -> !usedIds.contains(a.getAttrId()))
+            .map(a -> MapstructUtils.convert(a, PmsAttrVo.class))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId) {
+        return relationMapper.selectVoListByGroupId(attrGroupId);
+    }
+
+    @Override
+    public Boolean insertRelation(PmsAttrAttrgroupRelationBo bo) {
+        PmsAttrAttrgroupRelation add = MapstructUtils.convert(bo, PmsAttrAttrgroupRelation.class);
+        return relationMapper.insert(add) > 0;
+    }
+
+    @Override
+    public Boolean updateRelation(PmsAttrAttrgroupRelationBo bo) {
+        // 仅更新排序字段
+        PmsAttrAttrgroupRelation update = new PmsAttrAttrgroupRelation();
+        update.setId(bo.getId());
+        update.setAttrSort(bo.getAttrSort());
+        return relationMapper.updateById(update) > 0;
+    }
+
+    @Override
+    public Boolean deleteRelationWithValidByIds(Collection<Long> ids, Boolean isValid) {
+        if(isValid){
+            //TODO 做一些业务上的校验,判断是否需要校验
+        }
+        return relationMapper.deleteByIds(ids) > 0;
     }
 }

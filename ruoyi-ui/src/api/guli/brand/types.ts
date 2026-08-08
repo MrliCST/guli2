@@ -88,67 +88,64 @@ export interface CategoryBrandRelationVO {
   /**
    *
    */
-  id: string | number;
+  id: string | number
 
   /**
    * 品牌id
    */
-  brandId: string | number;
+  brandId: string | number
 
   /**
    * 分类id
    */
-  catelogId: string | number;
+  catelogId: string | number
 
   /**
    *
    */
-  brandName: string;
+  brandName: string
 
   /**
    *
    */
-  catelogName: string;
-
+  catelogName: string
 }
 
 export interface CategoryBrandRelationForm extends BaseEntity {
   /**
    *
    */
-  id?: string | number;
+  id?: string | number
 
   /**
    * 品牌id
    */
-  brandId?: string | number;
+  brandId?: string | number
 
   /**
    * 分类id
    */
-  catelogId?: string | number;
+  catelogId?: string | number
 
   /**
    *
    */
-  brandName?: string;
+  brandName?: string
 
   /**
    *
    */
-  catelogName?: string;
-
+  catelogName?: string
 }
 
 export interface CategoryBrandRelationQuery extends PageQuery {
-
   /**
    * 品牌id
    */
-  brandId?: string | number;
+  brandId?: string | number
 
   /**
    * 日期范围参数
    */
-  params?: any;
+  params?: any
 }

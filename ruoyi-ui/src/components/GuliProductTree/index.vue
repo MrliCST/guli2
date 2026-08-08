@@ -6,9 +6,9 @@
       node-key="catId"
       :props="{ label: 'name', children: 'children' }"
       :expand-on-click-node="false"
-      :show-checkbox="isShowCheckbox"
+      :show-checkbox="!isOnlyRead"
       highlight-current
-      :draggable="isDraggable"
+      :draggable="!isOnlyRead"
       :allow-drag="allowDrag"
       :allow-drop="allowDrop"
       @node-click="onNodeClick"
@@ -27,50 +27,46 @@
 </template>
 
 <script setup lang="ts">
-import { listTreeCategory, getCategory, addCategory, updateCategory, delCategory, updateBatchCategory } from './index'
 import type { Node } from 'element-plus/es/components/tree/src/model/node'
-import type { CategoryVO, CategoryForm, TreeApi } from './index'
+import type { CategoryVO, CategoryForm } from '@/api/guli/category/types'
 
 const props = withDefaults(
   defineProps<{
-    isShowCheckbox?: boolean
-    isDraggable?: boolean
-    isOnlyLeafAllowClick?: boolean
-    callApi?: (api: TreeApi) => void
+    treeData: CategoryVO[]
+    isOnlyRead?: boolean
+    onReady?: (api: { getChosenNode: () => CategoryVO[] }) => void
   }>(),
-  { isShowCheckbox: true, isDraggable: true, isOnlyLeafAllowClick: true }
+  { isOnlyRead: false }
 )
 
-const emit = defineEmits<{ clickedNodeData: [data: CategoryVO, nodePath: Node[]] }>()
+const emit = defineEmits<{
+  clickedNodeData: [data: CategoryVO, nodePath: Node[]]
+  dragDrop: [data: CategoryForm[]]
+}>()
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const treeRef = ref()
-const treeData = ref<CategoryVO[]>([])
 
-// ==================== 内部数据 ====================
+// ==================== 获取选中节点 ====================
 
-const loadTree = async () => {
-  const res = await listTreeCategory()
-  treeData.value = res.data
+const getChosenNode = (): CategoryVO[] => {
+  return treeRef.value?.getCheckedNodes() ?? []
 }
 
+// ==================== 节点点击 ====================
+
 const onNodeClick = (data: CategoryVO, node: Node, _nodeInstance: any, _evt: MouseEvent) => {
-  if (props.isOnlyLeafAllowClick && !node.isLeaf) return
   const nodePath: Node[] = []
   let current: Node | null = node
-
-  // level>0 排除虚根（虚根 level=0）
   while (current && current.level > 0) {
     nodePath.push(current)
     current = current.parent
   }
-  // nodePath: [当前节点, 父节点, 祖父节点, ...]
   emit('clickedNodeData', data, nodePath)
 }
 
 // ==================== 拖拽相关 ====================
 
-const allowDrag = () => true
+const allowDrag = () => !props.isOnlyRead
 
 const allowDrop = (_draggingNode: any, dropRefNode: any, type: string) => {
   if (type === 'inner') return false
@@ -79,7 +75,7 @@ const allowDrop = (_draggingNode: any, dropRefNode: any, type: string) => {
 
 const handleDrop = (_draggingNode: any, dropNode: any, _dropType: string) => {
   const parent = dropNode.parent
-  const siblings: CategoryVO[] = parent.data?.children ?? treeData.value
+  const siblings: CategoryVO[] = parent.data?.children ?? props.treeData
   const batchData = siblings
     .map((node, index) => ({ node, index }))
     .filter(({ node, index }) => node.sort !== index)
@@ -88,62 +84,13 @@ const handleDrop = (_draggingNode: any, dropNode: any, _dropType: string) => {
       return form
     })
   if (batchData.length === 0) return
-  updateBatchCategory(batchData)
-    .then(() => proxy?.$modal.msgSuccess('排序调整成功'))
-    .catch(() => proxy?.$modal.msgError('排序调整失败'))
+  emit('dragDrop', batchData)
 }
 
-// ====================  对外暴露的CRUD ====================
-
-/** 获取当前树数据 */
-const getTreeData = () => treeData.value
-
-/** 根据 ID 查询单个分类 */
-const getById = async (catId: number) => {
-  const res = await getCategory(catId)
-  return res.data
-}
-
-/** 新增分类 */
-const add = async (form: CategoryForm) => {
-  await addCategory(form)
-  proxy?.$modal.msgSuccess('新增成功')
-  await loadTree()
-}
-
-/** 修改分类 */
-const update = async (form: CategoryForm) => {
-  await updateCategory(form)
-  proxy?.$modal.msgSuccess('修改成功')
-  await loadTree()
-}
-
-/** 删除分类（单个或批量） */
-const remove = async (ids: number | number[]) => {
-  const idArr = Array.isArray(ids) ? ids : [ids]
-  try {
-    await proxy?.$modal.confirm('是否确认删除所选分类？')
-  } catch {
-    return
-  }
-  await delCategory(idArr as number[])
-  proxy?.$modal.msgSuccess('删除成功')
-  await loadTree()
-}
-
-/** 批量删除当前勾选的节点 */
-const removeBatch = async () => {
-  const checked = treeRef.value?.getCheckedNodes() as CategoryVO[]
-  if (!checked || checked.length === 0) {
-    proxy?.$modal.msgWarning('请先勾选要删除的分类')
-    return
-  }
-  await remove(checked.map((n) => n.catId as number))
-}
+// ==================== 生命周期 ====================
 
 onMounted(() => {
-  loadTree()
-  props.callApi?.({ loadTree, getTreeData, getById, add, update, remove, removeBatch }) // call the slot function with api object
+  props.onReady?.({ getChosenNode })
 })
 </script>
 

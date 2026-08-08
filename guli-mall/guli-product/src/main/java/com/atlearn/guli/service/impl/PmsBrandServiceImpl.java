@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
@@ -18,10 +19,11 @@ import com.atlearn.guli.domain.PmsBrand;
 import com.atlearn.guli.domain.PmsCategoryBrandRelation;
 import com.atlearn.guli.mapper.PmsBrandMapper;
 import com.atlearn.guli.mapper.PmsCategoryBrandRelationMapper;
+import com.atlearn.guli.mapper.PmsCategoryMapper;
+import com.atlearn.guli.domain.PmsCategory;
 import com.atlearn.guli.service.IPmsBrandService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Collection;
 
 /**
@@ -37,6 +39,7 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
 
     private final PmsBrandMapper baseMapper;
     private final PmsCategoryBrandRelationMapper cbrMapper;
+    private final PmsCategoryMapper categoryMapper;
 
     /**
      * 查询品牌
@@ -93,11 +96,7 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
     public Boolean insertByBo(PmsBrandBo bo) {
         PmsBrand add = MapstructUtils.convert(bo, PmsBrand.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setBrandId(add.getBrandId());
-        }
-        return flag;
+        return baseMapper.insert(add) > 0;
     }
 
     /**
@@ -107,10 +106,25 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
      * @return 是否修改成功
      */
     @Override
+    @Transactional
+    @SuppressWarnings("null")
     public Boolean updateByBo(PmsBrandBo bo) {
         PmsBrand update = MapstructUtils.convert(bo, PmsBrand.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        boolean flag = baseMapper.updateById(update) > 0;
+        if (!flag || bo.getName() == null) {
+            return flag;
+        }
+        // 级联更新中间表的冗余品牌名
+        List<PmsCategoryBrandRelation> relList = cbrMapper.selectList(
+            Wrappers.lambdaQuery(PmsCategoryBrandRelation.class)
+                .eq(PmsCategoryBrandRelation::getBrandId, bo.getBrandId())
+        );
+        for (PmsCategoryBrandRelation rel : relList) {
+            rel.setBrandName(bo.getName());
+            cbrMapper.updateById(rel);
+        }
+        return true;
     }
 
     /**
@@ -135,17 +149,6 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
         return baseMapper.deleteByIds(ids) > 0;
     }
 
-
-    /**
-     * 查询品牌分类关联
-     *
-     * @param id 主键
-     * @return 品牌分类关联
-     */
-    @Override
-    public PmsCategoryBrandRelationVo queryCbrById(Long id){
-        return cbrMapper.selectVoById(id);
-    }
 
     /**
      * 分页查询品牌分类关联列表
@@ -173,11 +176,12 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
         return cbrMapper.selectVoList(lqw);
     }
 
+    @SuppressWarnings("null")
     private LambdaQueryWrapper<PmsCategoryBrandRelation> buildQueryWrapper(PmsCategoryBrandRelationBo bo) {
-        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<PmsCategoryBrandRelation> lqw = Wrappers.lambdaQuery();
         lqw.orderByAsc(PmsCategoryBrandRelation::getId);
-        lqw.eq(bo.getBrandId() != null, PmsCategoryBrandRelation::getBrandId, bo.getBrandId());
+        lqw.eq(bo.getBrandId() != null, PmsCategoryBrandRelation::getBrandId, bo.getBrandId());  // where brand_id = ?
+        lqw.eq(bo.getCatelogId() != null, PmsCategoryBrandRelation::getCatelogId, bo.getCatelogId());  // where catelog_id = ?
         return lqw;
     }
 
@@ -190,12 +194,17 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
     @Override
     public Boolean insertCbrByBo(PmsCategoryBrandRelationBo bo) {
         PmsCategoryBrandRelation add = MapstructUtils.convert(bo, PmsCategoryBrandRelation.class);
-        validEntityBeforeSave(add);
-        boolean flag = cbrMapper.insert(add) > 0;
-        if (flag) {
-            bo.setId(add.getId());
+        // 补全冗余字段：品牌名、分类名
+        if (bo.getBrandId() != null) {
+            PmsBrand brand = baseMapper.selectById(bo.getBrandId());
+            if (brand != null) add.setBrandName(brand.getName());
         }
-        return flag;
+        if (bo.getCatelogId() != null) {
+            PmsCategory category = categoryMapper.selectById(bo.getCatelogId());
+            if (category != null) add.setCatelogName(category.getName());
+        }
+        validEntityBeforeSave(add);
+        return cbrMapper.insert(add) > 0;
     }
 
     /**

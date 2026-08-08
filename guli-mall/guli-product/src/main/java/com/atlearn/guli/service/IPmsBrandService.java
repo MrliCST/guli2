@@ -73,14 +73,6 @@ public interface IPmsBrandService {
     // =========  品牌分类关联  =========
 
     /**
-     * 查询品牌分类关联
-     *
-     * @param id 主键
-     * @return 品牌分类关联
-     */
-    PmsCategoryBrandRelationVo queryCbrById(Long id);
-
-    /**
      * 分页查询品牌分类关联列表
      *
      * @param bo        查询条件

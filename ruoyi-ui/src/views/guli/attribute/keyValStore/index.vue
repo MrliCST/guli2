@@ -2,7 +2,7 @@
   <div class="split-layout p-2">
     <el-card shadow="never" class="tree-card">
       <div class="tree-wrapper">
-        <GuliProductTree :is-show-checkbox="false" :is-draggable="false" :call-api="onTreeApiReady" @clickedNodeData="onTreeClick" />
+        <GuliProductTree :tree-data="treeData" :is-only-read="true" @clickedNodeData="onTreeClick" />
       </div>
     </el-card>
     <div class="table-div">
@@ -43,9 +43,6 @@
             </el-col>
             <el-col :span="1.5">
               <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['guli:keyValStore:export']">导出</el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button type="primary" plain icon="Connection" @click="handleRelation">关联</el-button>
             </el-col>
             <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
           </el-row>
@@ -144,9 +141,16 @@
 </template>
 
 <script setup name="KeyValStore" lang="ts">
-import { listKeyValStore, getKeyValStore, delKeyValStore, addKeyValStore, updateKeyValStore } from '@/api/guli/keyValStore'
-import { KeyValStoreVO, KeyValStoreQuery, KeyValStoreForm } from '@/api/guli/keyValStore/types'
-import type { CategoryVO, TreeApi } from '@/components/GuliProductTree/index'
+import {
+  listKeyValStore,
+  getKeyValStore,
+  delKeyValStore,
+  addKeyValStore,
+  updateKeyValStore,
+  listTreeCategory
+} from '@/api/guli/attribute/keyValStore'
+import { KeyValStoreVO, KeyValStoreQuery, KeyValStoreForm } from '@/api/guli/attribute/keyValStore/types'
+import type { CategoryVO } from '@/api/guli/category/types'
 import type { Node } from 'element-plus/es/components/tree/src/model/node'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
@@ -176,12 +180,8 @@ const showDescOptions = [
 
 const selectedCategoryName = ref('点击左侧以选择')
 const treeSelectData = ref<CategoryVO[]>([])
+const treeData = ref<CategoryVO[]>([])
 const keyValStoreList = ref<KeyValStoreVO[]>([])
-
-let getTreeData: () => CategoryVO[]
-const onTreeApiReady = (api: TreeApi) => {
-  getTreeData = api.getTreeData
-}
 
 const buttonLoading = ref(false)
 const loading = ref(true)
@@ -290,9 +290,10 @@ const handleSelectionChange = (selection: KeyValStoreVO[]) => {
 }
 
 /** 新增按钮操作 */
-const handleAdd = () => {
+const handleAdd = async () => {
   reset()
-  treeSelectData.value = getTreeData?.() ?? []
+  const res = await listTreeCategory()
+  treeSelectData.value = res.data
   dialog.visible = true
   dialog.title = '添加商品属性'
 }
@@ -300,7 +301,8 @@ const handleAdd = () => {
 /** 修改按钮操作 */
 const handleUpdate = async (row?: KeyValStoreVO) => {
   reset()
-  treeSelectData.value = getTreeData?.() ?? []
+  const treeRes = await listTreeCategory()
+  treeSelectData.value = treeRes.data
   const _attrId = row?.attrId || ids.value[0]
   const res = await getKeyValStore(_attrId)
   Object.assign(form.value, res.data)
@@ -350,7 +352,9 @@ const handleRelation = () => {
   relationDialog.visible = true
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const res = await listTreeCategory()
+  treeData.value = res.data
   getList()
 })
 </script>

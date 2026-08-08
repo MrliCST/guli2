@@ -7,10 +7,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.PmsCategory;
+import com.atlearn.guli.domain.PmsCategoryBrandRelation;
 import com.atlearn.guli.mapper.PmsCategoryMapper;
+import com.atlearn.guli.mapper.PmsCategoryBrandRelationMapper;
 import com.atlearn.guli.service.IPmsCategoryService;
 
 import java.util.Comparator;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class PmsCategoryServiceImpl implements IPmsCategoryService {
 
     private final PmsCategoryMapper baseMapper;
+    private final PmsCategoryBrandRelationMapper cbrMapper;
 
     /**
      * 查询商品三级分类
@@ -110,11 +114,7 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
     public Boolean insertByBo(PmsCategoryBo bo) {
         PmsCategory add = MapstructUtils.convert(bo, PmsCategory.class);
         validEntityBeforeSave(add);
-        boolean flag = baseMapper.insert(add) > 0;
-        if (flag) {
-            bo.setCatId(add.getCatId());
-        }
-        return flag;
+        return baseMapper.insert(add) > 0;
     }
 
     /**
@@ -124,14 +124,29 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
      * @return 是否修改成功
      */
     @Override
+    @Transactional
+    @SuppressWarnings("null")
     public Boolean updateByBo(PmsCategoryBo bo) {
         PmsCategory update = MapstructUtils.convert(bo, PmsCategory.class);
         validEntityBeforeSave(update);
-        return baseMapper.updateById(update) > 0;
+        boolean flag = baseMapper.updateById(update) > 0;
+        if (!flag || bo.getName() == null) {
+            return flag;
+        }
+        // 级联更新中间表的冗余分类名
+        List<PmsCategoryBrandRelation> relList = cbrMapper.selectList(
+            Wrappers.lambdaQuery(PmsCategoryBrandRelation.class)
+                .eq(PmsCategoryBrandRelation::getCatelogId, bo.getCatId())
+        );
+        for (PmsCategoryBrandRelation rel : relList) {
+            rel.setCatelogName(bo.getName());
+            cbrMapper.updateById(rel);
+        }
+        return true;
     }
 
     /**
-     * 批量修改商品三级分类
+     * 批量修改商品三级分类 (sort批量更新)
      *
      * @param boList 商品三级分类集合
      * @return 是否修改成功

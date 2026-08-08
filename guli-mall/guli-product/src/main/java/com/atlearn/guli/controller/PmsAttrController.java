@@ -18,8 +18,11 @@ import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.service.IPmsAttrService;
+import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -36,6 +39,18 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsAttrController extends BaseController {
 
     private final IPmsAttrService pmsAttrService;
+    private final IPmsCategoryService pmsCategoryService;
+
+    /*
+     *  ---- 商品属性 CRUD ----
+     *  59  /list            GET    分页列表
+     *  69  /export          POST   导出
+     *  81  /{attrId}        GET    详情
+     *  93  /                POST   新增
+     *  104 /                PUT    修改
+     *  116 /{attrIds}       DELETE 删除
+     *  126 /treeCategory    GET    分类树
+     */
 
     /**
      * 查询商品属性列表
@@ -102,5 +117,14 @@ public class PmsAttrController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable("attrIds") Long[] attrIds) {
         return toAjax(pmsAttrService.deleteWithValidByIds(List.of(attrIds), true));
+    }
+
+    /**
+     * 获取分类树数据
+     */
+    @SaCheckPermission("guli:keyValStore:query")
+    @GetMapping("/treeCategory")
+    public R<List<PmsCategoryVo>> treeCategory() {
+        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
     }
 }

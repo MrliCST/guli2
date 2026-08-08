@@ -1,8 +1,10 @@
 package com.atlearn.guli.service;
 
-import com.atlearn.guli.domain.PmsAttrGroup;
 import com.atlearn.guli.domain.vo.PmsAttrGroupVo;
+import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
 import com.atlearn.guli.domain.bo.PmsAttrGroupBo;
+import com.atlearn.guli.domain.bo.PmsAttrAttrgroupRelationBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 
@@ -66,4 +68,31 @@ public interface IPmsAttrGroupService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    // =========  属性分组-属性值储关联  =========
+
+    /**
+     * 查询可关联的属性列表（同一分类下且未关联的）
+     */
+    List<PmsAttrVo> listAvailableAttrs(Long categoryId);
+
+    /**
+     * 查询关联列表（附带属性名和分组名）
+     */
+    List<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId);
+
+    /**
+     * 新增关联
+     */
+    Boolean insertRelation(PmsAttrAttrgroupRelationBo bo);
+
+    /**
+     * 修改关联（仅排序）
+     */
+    Boolean updateRelation(PmsAttrAttrgroupRelationBo bo);
+
+    /**
+     * 校验并批量删除关联
+     */
+    Boolean deleteRelationWithValidByIds(Collection<Long> ids, Boolean isValid);
 }
