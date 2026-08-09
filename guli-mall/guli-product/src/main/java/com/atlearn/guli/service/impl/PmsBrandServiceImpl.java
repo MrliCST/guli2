@@ -116,14 +116,10 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
             return flag;
         }
         // 级联更新中间表的冗余品牌名
-        List<PmsCategoryBrandRelation> relList = cbrMapper.selectList(
-            Wrappers.lambdaQuery(PmsCategoryBrandRelation.class)
-                .eq(PmsCategoryBrandRelation::getBrandId, bo.getBrandId())
-        );
-        for (PmsCategoryBrandRelation rel : relList) {
-            rel.setBrandName(bo.getName());
-            cbrMapper.updateById(rel);
-        }
+        cbrMapper.update(null,
+            Wrappers.lambdaUpdate(PmsCategoryBrandRelation.class)
+                .set(PmsCategoryBrandRelation::getBrandName, bo.getName())
+                .eq(PmsCategoryBrandRelation::getBrandId, bo.getBrandId()));
         return true;
     }
 

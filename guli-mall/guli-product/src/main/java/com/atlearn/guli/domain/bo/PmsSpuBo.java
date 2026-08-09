@@ -2,12 +2,11 @@ package com.atlearn.guli.domain.bo;
 
 import com.atlearn.guli.domain.PmsSpuInfo;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
-import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import jakarta.validation.constraints.*;
 
+import org.dromara.resource.api.domain.RemoteFile;
 import java.util.List;
 
 /**
@@ -21,15 +20,9 @@ import java.util.List;
 @AutoMapper(target = PmsSpuInfo.class, reverseConvertGenerate = false)
 public class PmsSpuBo extends BaseEntity {
 
-    /**
-     * 商品id
-     */
-    @NotNull(message = "商品id不能为空", groups = { EditGroup.class })
-    private Long id;
-
     // ======================== 第一步: 基本信息 ========================
 
-    private SpuBasicInfo basicInfo;
+    private SpuInfo spuInfo;
 
     // ======================== 第二步: 基本属性 ========================
 
@@ -46,7 +39,7 @@ public class PmsSpuBo extends BaseEntity {
     // ======================== 内部类 ========================
 
     @Data
-    public static class SpuBasicInfo {
+    public static class SpuInfo {
         private String spuName;
         private String spuDescription;
         private Long catalogId;
@@ -54,27 +47,30 @@ public class PmsSpuBo extends BaseEntity {
         private Long weight;
         private Long publishStatus;
         private String MainImgDesc;
-        private String[] ImgAlbum;
+        private List<RemoteFile> ImgAlbum;
     }
 
     @Data
     public static class BaseAttr {
         private Long attrId;
-        private String attrName;
         private String attrValue;
     }
 
     @Data
     public static class SaleAttr {
         private Long attrId;
-        private String attrName;
         private String attrValue;
     }
 
     @Data
     public static class Sku {
         private String skuName;
+        private String skuDesc;
+        private String skuDefaultImg;
+        private String skuTitle;
+        private String skuSubtitle;
         private String price;
         private Integer stock;
+        private String[] skuImages;
     }
 }

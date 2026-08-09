@@ -13,19 +13,20 @@ import java.util.stream.Collectors;
  * @author mayao
  * @date 2026-08-03
  */
-public class ListValCheckValidator implements ConstraintValidator<ListValCheck, Integer> {
+public class ListValCheckValidator implements ConstraintValidator<ListValCheck, Long> {
 
-    private Set<Integer> allowedVals;
+    private Set<Long> allowedVals;
 
     @Override
     public void initialize(ListValCheck annotation) {
         allowedVals = Arrays.stream(annotation.vals())
+            .mapToLong(v -> v)
             .boxed()
             .collect(Collectors.toSet());
     }
 
     @Override
-    public boolean isValid(Integer value, ConstraintValidatorContext context) {
+    public boolean isValid(Long value, ConstraintValidatorContext context) {
         // 允许 null，交 @NotNull 单独校验
         if (value == null) {
             return true;

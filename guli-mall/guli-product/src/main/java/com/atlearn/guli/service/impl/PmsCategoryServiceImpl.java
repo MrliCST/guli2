@@ -134,14 +134,10 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
             return flag;
         }
         // 级联更新中间表的冗余分类名
-        List<PmsCategoryBrandRelation> relList = cbrMapper.selectList(
-            Wrappers.lambdaQuery(PmsCategoryBrandRelation.class)
-                .eq(PmsCategoryBrandRelation::getCatelogId, bo.getCatId())
-        );
-        for (PmsCategoryBrandRelation rel : relList) {
-            rel.setCatelogName(bo.getName());
-            cbrMapper.updateById(rel);
-        }
+        cbrMapper.update(null,
+            Wrappers.lambdaUpdate(PmsCategoryBrandRelation.class)
+                .set(PmsCategoryBrandRelation::getCatelogName, bo.getName())
+                .eq(PmsCategoryBrandRelation::getCatelogId, bo.getCatId()));
         return true;
     }
 

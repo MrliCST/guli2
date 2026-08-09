@@ -16,6 +16,16 @@
               <el-form-item label="属性名" prop="attrName">
                 <el-input v-model="queryParams.attrName" placeholder="请输入属性名" clearable @keyup.enter="handleQuery" />
               </el-form-item>
+              <el-form-item label="属性类型" prop="attrType">
+                <el-select v-model="queryParams.attrType" placeholder="请选择属性类型" clearable>
+                  <el-option v-for="o in attrTypeOptions" :key="o.value" :label="o.label" :value="o.value" />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="快速展示" prop="showDesc">
+                <el-select v-model="queryParams.showDesc" placeholder="请选择快速展示" clearable>
+                  <el-option v-for="o in showDescOptions" :key="o.value" :label="o.label" :value="o.value" />
+                </el-select>
+              </el-form-item>
               <el-form-item>
                 <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
                 <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -51,11 +61,6 @@
         <el-table v-loading="loading" border :data="keyValStoreList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="属性名" align="center" prop="attrName" />
-          <el-table-column label="是否需要检索" align="center" prop="searchType">
-            <template #default="scope">
-              <DictTag :options="searchTypeOptions" :value="scope.row.searchType" />
-            </template>
-          </el-table-column>
           <el-table-column label="值类型" align="center" prop="valueType">
             <template #default="scope">
               <DictTag :options="valueTypeOptions" :value="scope.row.valueType" />
@@ -73,7 +78,6 @@
               <DictTag :options="enableOptions" :value="scope.row.enable" />
             </template>
           </el-table-column>
-          <el-table-column label="所属分类" align="center" prop="catelogId" />
           <el-table-column label="快速展示" align="center" prop="showDesc">
             <template #default="scope">
               <DictTag :options="showDescOptions" :value="scope.row.showDesc" />
@@ -156,10 +160,6 @@ import type { Node } from 'element-plus/es/components/tree/src/model/node'
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 
 // 字典映射
-const searchTypeOptions = [
-  { value: '0', label: '不需要', elTagType: 'info' as const },
-  { value: '1', label: '需要' }
-]
 const valueTypeOptions = [
   { value: '0', label: '单个值' },
   { value: '1', label: '多值', elTagType: 'warning' as const }
@@ -345,11 +345,6 @@ const handleExport = () => {
     },
     `keyValStore_${new Date().getTime()}.xlsx`
   )
-}
-
-/** 关联按钮操作 */
-const handleRelation = () => {
-  relationDialog.visible = true
 }
 
 onMounted(async () => {

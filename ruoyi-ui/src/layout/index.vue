@@ -141,4 +141,12 @@ const setLayout = () => {
 .mobile .fixed-header {
   width: 100%;
 }
+
+.fixed-header + .app-main {
+  padding-top: 50px;
+}
+
+.hasTagsView .fixed-header + .app-main {
+  padding-top: 84px;
+}
 </style>

@@ -13,6 +13,7 @@ import org.dromara.common.log.enums.BusinessType;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
+import com.atlearn.guli.domain.vo.PmsAttrVo;
 import com.atlearn.guli.domain.bo.PmsSpuBo;
 import com.atlearn.guli.service.IPmsSpuService;
 
@@ -38,7 +39,7 @@ public class PmsSpuController extends BaseController {
      *  48 /                 POST   新增
      *  59 /treeCategory     GET    分类树
      *  70 /brands           GET    品牌列表(按分类)
-     *  79 /attrGroups       GET    属性分组及属性(按分类)
+     *  79 /attrGroups       GET    属性分组及属性值储(按分类)
      */
 
     /**
@@ -75,7 +76,16 @@ public class PmsSpuController extends BaseController {
      */
     @SaCheckPermission("guli:release:query")
     @GetMapping("/attrGroups")
-    public R<List<PmsAttrGroupWithAttrsVo>> listAttrGroups(@RequestParam("catelogId") Long catelogId) {
-        return R.ok(pmsSpuService.listAttrGroupsWithAttrs(catelogId));
+    public R<List<PmsAttrGroupWithAttrsVo>> listBaseAttrs(@RequestParam("catelogId") Long catelogId) {
+        return R.ok(pmsSpuService.listBaseAttrs(catelogId));
+    }
+
+    /**
+     * 根据分类id查询销售属性列表
+     */
+    @SaCheckPermission("guli:release:query")
+    @GetMapping("/saleAttrs")
+    public R<List<PmsAttrVo>> listSaleAttrs(@RequestParam("catelogId") Long catelogId) {
+        return R.ok(pmsSpuService.listSaleAttrs(catelogId));
     }
 }

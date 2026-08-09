@@ -2,6 +2,8 @@ package com.atlearn.guli.mapper;
 
 import com.atlearn.guli.domain.PmsAttrAttrgroupRelation;
 import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
+import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
@@ -22,8 +24,13 @@ public interface PmsAttrAttrgroupRelationMapper extends BaseMapperPlus<PmsAttrAt
     Set<Long> selectUsedAttrIdsByCategoryId(@Param("categoryId") Long categoryId);
 
     /**
-     * 联表查询关联列表（附带属性名和分组名）
+     * 根据分组id联表查询关联种类列表（返回包括冗余属性名和分组名）
      */
-    List<PmsAttrAttrgroupRelationVo> selectVoListByGroupId(@Param("attrGroupId") Long attrGroupId);
+    List<PmsAttrAttrgroupRelationVo> selectVoListByGroupId(Page<PmsAttrAttrgroupRelationVo> page, @Param("attrGroupId") Long attrGroupId);
+
+    /**
+     * 根据分类id查询属性分组及其属性列表（三表联查）
+     */
+    List<PmsAttrGroupWithAttrsVo> selectAttrGroupsWithBaseAttrs(@Param("catelogId") Long catelogId);
 
 }

@@ -37,7 +37,6 @@ public class PmsBrandBo extends BaseEntity {
      * 品牌logo地址
      */
     @NotBlank(message = "Logo地址不能为空", groups = { AddGroup.class, EditGroup.class })
-    @URL(message = "Logo地址必须为合法的URL格式", groups = { AddGroup.class, EditGroup.class })
     private String logo;
 
     /**

@@ -71,6 +71,12 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-service-impl</artifactId>
         </dependency>
+
+        <!-- 资源API（RemoteFile 跨模块 OssVO） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-resource</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

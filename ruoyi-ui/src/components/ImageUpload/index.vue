@@ -91,9 +91,20 @@ const imageUploadRef = ref<ElUploadInstance>()
 // 监听 fileType 变化，更新 fileAccept
 const fileAccept = computed(() => props.fileType.map((type) => `.${type}`).join(','))
 
+/**
+ * 监听v-model的值发生变化
+ * 一般是外部传入 OSSVO 或者 字符串拼接，来进行回显
+ * ---- 小知识 ---
+ * v-model被称为双向绑定的语法糖，它维持了一个共享值 X
+ * 如果是外部的 X 发生改变，那么这里的 watch 就会通过 这里的 X 同步
+ * 如果是这里的操作导致 X 发生改变，那么则通过约定的 emit('update:modelValue', X) 来通知外部 X 同步
+ */
 watch(
   () => props.modelValue,
-  async (val: string) => {
+  async (val: string | OssVO[]) => {
+    /**
+     * 外界ossId串或者OssVO[]改变通知
+     */
     if (val) {
       // 首先将值转为数组
       let list: OssVO[] = []
@@ -108,7 +119,8 @@ watch(
         // 字符串回显处理 如果此处存的是url可直接回显 如果存的是id需要调用接口查出来
         let itemData
         if (typeof item === 'string') {
-          itemData = { name: item, url: item }
+          proxy?.$modal.msgError('不接受String[]类型的数据!')
+          itemData = {}
         } else {
           // 此处name使用ossId 防止删除出现重名
           itemData = { name: item.ossId, url: item.url, ossId: item.ossId }

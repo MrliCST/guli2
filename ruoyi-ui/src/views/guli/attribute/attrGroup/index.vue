@@ -111,7 +111,7 @@
       </el-dialog>
 
       <!-- 属性分组关联对话框 -->
-      <el-dialog :title="relationDialog.title" v-model="relationDialog.visible" width="800px" append-to-body @opened="getRelationList">
+      <el-dialog :title="relationDialog.title" v-model="relationDialog.visible" width="800px" append-to-body @opened="handleOpenRelationDialog">
         <el-button type="primary" plain icon="Plus" class="mb8" @click="handleOpenAddRelation">新增关联</el-button>
 
         <el-table v-loading="relationLoading" border :data="relationList">
@@ -129,6 +129,14 @@
             </template>
           </el-table-column>
         </el-table>
+
+        <pagination
+          v-show="relationTotal > 0"
+          :total="relationTotal"
+          v-model:page="relationPageNum"
+          v-model:limit="relationPageSize"
+          @pagination="getRelationList"
+        />
       </el-dialog>
 
       <!-- 新增/编辑关联对话框 -->
@@ -335,6 +343,9 @@ const relationDialog = reactive<DialogOption>({
 })
 const relationList = ref<AttrAttrgroupRelationVO[]>([])
 const relationLoading = ref(false)
+const relationTotal = ref(0)
+const relationPageNum = ref(1)
+const relationPageSize = ref(10)
 
 const addRelationDialog = reactive<DialogOption>({
   visible: false,
@@ -360,11 +371,21 @@ const getRelationList = async () => {
   if (!currentAttrGroup.value) return
   relationLoading.value = true
   try {
-    const res = await listRelations({ attrGroupId: currentAttrGroup.value.attrGroupId })
-    relationList.value = res.data
+    const res = await listRelations({
+      pageNum: relationPageNum.value,
+      pageSize: relationPageSize.value,
+      attrGroupId: currentAttrGroup.value.attrGroupId
+    })
+    relationList.value = (res as any).rows
+    relationTotal.value = (res as any).total
   } finally {
     relationLoading.value = false
   }
+}
+
+const handleOpenRelationDialog = () => {
+  relationPageNum.value = 1
+  getRelationList()
 }
 
 /** 打开新增关联对话框 */

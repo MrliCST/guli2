@@ -79,7 +79,7 @@ public interface IPmsAttrGroupService {
     /**
      * 查询关联列表（附带属性名和分组名）
      */
-    List<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId);
+    TableDataInfo<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId, PageQuery pageQuery);
 
     /**
      * 新增关联

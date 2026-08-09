@@ -4,6 +4,7 @@ import com.atlearn.guli.domain.bo.PmsSpuBo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
+import com.atlearn.guli.domain.vo.PmsAttrVo;
 
 import java.util.List;
 
@@ -33,5 +34,10 @@ public interface IPmsSpuService {
     /**
      * 根据分类id查询属性分组及其属性列表
      */
-    List<PmsAttrGroupWithAttrsVo> listAttrGroupsWithAttrs(Long catelogId);
+    List<PmsAttrGroupWithAttrsVo> listBaseAttrs(Long catelogId);
+
+    /**
+     * 根据分类id查询销售属性列表（不需要分组）
+     */
+    List<PmsAttrVo> listSaleAttrs(Long catelogId);
 }

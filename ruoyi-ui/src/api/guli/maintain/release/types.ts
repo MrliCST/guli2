@@ -1,11 +1,10 @@
 // ======================== SPU 大对象 ========================
 
-export interface ReleaseForm extends BaseEntity {
-  /** 商品id */
-  id?: string | number
+import type { OssVO } from '@/api/system/oss/types'
 
+export interface ReleaseForm extends BaseEntity {
   // 第一步: 基本信息
-  basicInfo?: SpuBasicInfo
+  basicInfo?: SpuInfo
 
   // 第二步: 基本属性
   baseAttrs?: BaseAttr[]
@@ -19,7 +18,7 @@ export interface ReleaseForm extends BaseEntity {
 
 // ======================== 子对象 ========================
 
-export interface SpuBasicInfo {
+export interface SpuInfo {
   spuName?: string
   spuDescription?: string
   catalogId?: string | number
@@ -27,28 +26,31 @@ export interface SpuBasicInfo {
   weight?: number
   publishStatus?: number
   MainImgDesc?: string
-  ImgAlbum?: string[]
+  ImgAlbum?: OssVO[]
 }
 
 export interface BaseAttr {
   attrId?: string | number
-  attrName?: string
   attrValue?: string
 }
 
 export interface SaleAttr {
   attrId?: string | number
-  attrName?: string
   attrValue?: string
 }
 
 export interface Sku {
   skuName?: string
+  skuDesc?: string
+  skuDefaultImg?: string
+  skuTitle?: string
+  skuSubtitle?: string
   price?: string
   stock?: number
+  skuImages?: string[]
 }
 
-// ======================== 查询结果 VO ========================
+// ======================== 分组带属性查询结果 VO ========================
 
 export interface AttrGroupWithAttrsVO {
   attrGroupId: string | number

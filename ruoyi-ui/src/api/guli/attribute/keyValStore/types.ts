@@ -122,6 +122,11 @@ export interface KeyValStoreQuery extends PageQuery {
   valueType?: number;
 
   /**
+   * 属性类型[0-销售属性，1-基本属性，2-既是销售属性又是基本属性]
+   */
+  attrType?: number;
+
+  /**
    * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
    */
   showDesc?: number;

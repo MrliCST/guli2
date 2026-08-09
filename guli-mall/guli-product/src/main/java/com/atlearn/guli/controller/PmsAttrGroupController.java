@@ -159,8 +159,8 @@ public class PmsAttrGroupController extends BaseController {
      */
     @SaCheckPermission("guli:attrGroup:query")
     @GetMapping("/relations")
-    public R<List<PmsAttrAttrgroupRelationVo>> listRelations(PmsAttrAttrgroupRelationBo bo) {
-        return R.ok(pmsAttrGroupService.listRelations(bo.getAttrGroupId()));
+    public TableDataInfo<PmsAttrAttrgroupRelationVo> listRelations(PmsAttrAttrgroupRelationBo bo, PageQuery pageQuery) {
+        return pmsAttrGroupService.listRelations(bo.getAttrGroupId(), pageQuery);
     }
 
     /**

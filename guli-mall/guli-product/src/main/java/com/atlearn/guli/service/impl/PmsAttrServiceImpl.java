@@ -74,7 +74,8 @@ public class PmsAttrServiceImpl implements IPmsAttrService {
         LambdaQueryWrapper<PmsAttr> lqw = Wrappers.lambdaQuery();
         lqw.orderByAsc(PmsAttr::getAttrId);
         lqw.like(StringUtils.isNotBlank(bo.getAttrName()), PmsAttr::getAttrName, bo.getAttrName());
-        lqw.eq(bo.getValueType() != null, PmsAttr::getValueType, bo.getValueType());
+        lqw.eq(bo.getCatelogId() != null, PmsAttr::getCatelogId, bo.getCatelogId());
+        lqw.eq(bo.getAttrType() != null, PmsAttr::getAttrType, bo.getAttrType());
         lqw.eq(bo.getShowDesc() != null, PmsAttr::getShowDesc, bo.getShowDesc());
         return lqw;
     }

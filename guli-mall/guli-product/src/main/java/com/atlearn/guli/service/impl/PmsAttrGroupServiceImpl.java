@@ -66,10 +66,10 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
     @SuppressWarnings("null")
     private LambdaQueryWrapper<PmsAttrGroup> buildQueryWrapper(PmsAttrGroupBo bo) {
         LambdaQueryWrapper<PmsAttrGroup> lqw = Wrappers.lambdaQuery();
-        lqw.eq(bo.getAttrGroupId() != null, PmsAttrGroup::getAttrGroupId, bo.getAttrGroupId());
-        lqw.eq(bo.getCatelogId() != null, PmsAttrGroup::getCatelogId, bo.getCatelogId());
-        lqw.like(StringUtils.isNotBlank(bo.getAttrGroupName()), PmsAttrGroup::getAttrGroupName, bo.getAttrGroupName());
-        lqw.orderByAsc(PmsAttrGroup::getAttrGroupId);
+        lqw.eq(bo.getAttrGroupId() != null, PmsAttrGroup::getAttrGroupId, bo.getAttrGroupId());  // where attr_group_id = ?
+        lqw.eq(bo.getCatelogId() != null, PmsAttrGroup::getCatelogId, bo.getCatelogId());  // where catelog_id = ?
+        lqw.like(StringUtils.isNotBlank(bo.getAttrGroupName()), PmsAttrGroup::getAttrGroupName, bo.getAttrGroupName());  // where attr_group_name like ?
+        lqw.orderByAsc(PmsAttrGroup::getAttrGroupId);  // order by attr_group_id asc
         return lqw;
     }
 
@@ -119,8 +119,10 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
     }
 
     @Override
-    public List<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId) {
-        return relationMapper.selectVoListByGroupId(attrGroupId);
+    public TableDataInfo<PmsAttrAttrgroupRelationVo> listRelations(Long attrGroupId, PageQuery pageQuery) {
+        Page<PmsAttrAttrgroupRelationVo> page = pageQuery.build();
+        List<PmsAttrAttrgroupRelationVo> list = relationMapper.selectVoListByGroupId(page, attrGroupId);
+        return TableDataInfo.build(page.setRecords(list));
     }
 
     @Override

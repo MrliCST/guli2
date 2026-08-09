@@ -11,56 +11,52 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 
 /**
- * spu信息对象 pms_spu_info
+ * spu图片对象 pms_spu_images
  *
  * @author mayao
- * @date 2026-08-08
+ * @date 2026-08-09
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@TableName("pms_spu_info")
-public class PmsSpuInfo extends BaseEntity {
+@TableName("pms_spu_images")
+public class PmsSpuImages extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 商品id
+     * id
      */
     @TableId(value = "id")
     private Long id;
 
     /**
-     * 商品名称
+     * spu_id
      */
-    private String spuName;
+    private Long spuId;
 
     /**
-     * 商品描述
+     * 图片名
      */
-    private String spuDescription;
+    private String imgName;
 
     /**
-     * 所属分类id
+     * 图片地址
      */
-    private Long catalogId;
+    private String imgUrl;
 
     /**
-     * 品牌id
+     * 顺序
      */
-    private Long brandId;
+    private Long imgSort;
 
     /**
-     * 重量
+     * 是否默认图
      */
-    private Long weight;
+    private Long defaultImg;
 
-    /**
-     * 上架状态[0-下架，1-上架]
-     */
-    private Long publishStatus;
 
 }

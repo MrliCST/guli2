@@ -87,7 +87,7 @@
           <el-input v-model="form.name" placeholder="请输入品牌名" />
         </el-form-item>
         <el-form-item label="品牌Logo" prop="logo">
-          <ImageUpload v-model="form.logo" :limit="1" :is-show-tip="false" />
+          <ImageUpload v-model="logoOssId" :limit="1" :is-show-tip="false" />
         </el-form-item>
         <el-form-item label="介绍" prop="descript">
           <el-input v-model="form.descript" type="textarea" placeholder="请输入内容" />
@@ -168,6 +168,7 @@ import { listBrand, getBrand, delBrand, addBrand, updateBrand, listCbr, addCbr, 
 import { BrandVO, BrandQuery, BrandForm, CategoryBrandRelationVO } from '@/api/guli/brand/types'
 import type { CategoryVO } from '@/api/guli/category/types'
 import { listTreeCategory } from '@/api/guli/brand'
+import { listByIds } from '@/api/system/oss'
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 
@@ -237,6 +238,17 @@ const data = reactive<PageData<BrandForm, BrandQuery>>({
 
 const { queryParams, form, rules } = toRefs(data)
 
+/** ImageUpload 吐 ossId 串，watch 调 API 取 url 写入 form.logo */
+const logoOssId = ref('')
+watch(logoOssId, async (val) => {
+  if (val) {
+    const res = await listByIds(val)
+    form.value.logo = res.data?.[0]?.url || ''
+  } else {
+    form.value.logo = ''
+  }
+})
+
 /** 查询品牌列表 */
 const getList = async () => {
   loading.value = true
@@ -255,6 +267,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData }
+  logoOssId.value = ''
   brandFormRef.value?.resetFields()
 }
 
