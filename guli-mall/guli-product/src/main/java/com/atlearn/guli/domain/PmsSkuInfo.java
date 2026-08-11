@@ -2,8 +2,11 @@ package com.atlearn.guli.domain;
 
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.io.Serial;
 import java.math.BigDecimal;
@@ -16,6 +19,9 @@ import java.math.BigDecimal;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("pms_sku_info")
 public class PmsSkuInfo extends BaseEntity {
 

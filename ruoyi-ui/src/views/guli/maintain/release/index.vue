@@ -115,7 +115,11 @@
             </template>
           </el-table-column>
           <el-table-column label="销售属性组合">
-            <el-table-column v-for="key in attrColKeys" :key="key" :prop="key" :label="key" min-width="100" />
+            <el-table-column v-for="col in attrColKeys" :key="col.key" :label="col.label" min-width="100">
+              <template #default="{ row }">
+                <span>{{ row[col.key] }}</span>
+              </template>
+            </el-table-column>
           </el-table-column>
           <el-table-column label="SKU信息">
             <el-table-column label="商品名称" min-width="140">
@@ -193,9 +197,9 @@ const basicRules = ref({
  * 5. sku表格每行数据集合
  */
 const spuBaseInfo = ref<SpuInfo>({ ...initBasicInfo })
-const baseAttrMap = ref<Record<string | number, string>>({})
-const saleAttrMap = ref<Record<string | number, string[]>>({})
-const attrColKeys = ref<string[]>([]) // 动态表头列名
+const baseAttrMap = ref<Record<string | number, string>>({}) // 选择的基本属性值
+const saleAttrMap = ref<Record<string | number, string[]>>({}) // 选择的销售属性值
+const attrColKeys = ref<{ key: string; label: string }[]>([]) // 动态表头：key=attrId(prop), label=attrName(表头)
 const skuTableData = ref<Record<string, any>[]>([]) // SKU表格数据，每行含属性组合+Sku字段
 
 /**
@@ -284,21 +288,14 @@ const nextStep = async () => {
       }
       break
     case 2:
-      // 将要进入第四步，构建 { 颜色: [白,黑,红], 内存: [8G,16G] }
-      const nameById = new Map(saleAttrs.value.map((a) => [String(a.attrId), a.attrName]))
-      const saleAttrMapWithName: Record<string, string[]> = {}
-      for (const [attrId, vals] of Object.entries(saleAttrMap.value)) {
-        if (!vals.length) continue
-        saleAttrMapWithName[nameById.get(attrId)] = vals
-      }
-
-      // 求取笛卡尔积
-      const saleAttrCombinations = Object.entries(saleAttrMapWithName).reduce(
-        (acc, [name, vals]) => {
+      // 笛卡尔积：Object.entries 展开为 [attrId, vals[]] 数组
+      const entries = Object.entries(saleAttrMap.value).filter(([, vals]) => vals.length > 0)
+      const saleAttrCombinations = entries.reduce(
+        (acc, [attrId, vals]) => {
           const result: Record<string, string>[] = []
           for (const rec of acc) {
             for (const v of vals) {
-              result.push({ ...rec, [name]: v })
+              result.push({ ...rec, [attrId]: v })
             }
           }
           return result
@@ -306,13 +303,14 @@ const nextStep = async () => {
         [{} as Record<string, string>]
       )
 
-      // 提取动态列名
-      attrColKeys.value = Object.keys(saleAttrMapWithName)
+      // 构建表格列头信息，key=attrId, label=attrName
+      const idToName = new Map(saleAttrs.value.map((a) => [String(a.attrId), a.attrName]))
+      attrColKeys.value = entries.map(([attrId]) => ({ key: String(attrId), label: idToName.get(String(attrId)) || String(attrId) }))
 
-      // 构建表格数据：每行 = 属性组合 + Sku 可编辑字段
-      skuTableData.value = saleAttrCombinations.map((attrs, idx) => ({
-        ...attrs,
-        _key: `sku-row-${idx}`,
+      // 构建表格的行数据
+      skuTableData.value = saleAttrCombinations.map((saleAttr) => ({
+        // saleAttrId : saleAttrVal
+        ...saleAttr,
         skuName: '',
         skuDesc: '',
         skuDefaultImg: '',
@@ -328,18 +326,24 @@ const nextStep = async () => {
 }
 
 const submitForm = async () => {
+  // 先提取 attrGroups数组 中的 attr，拍平，放到同一个数组，然后建立 attrId -> name 的映射
+  const allAttrs = attrGroups.value.flatMap((g) => g.attrs)
+  const idToName = new Map(allAttrs.map((a) => [String(a.attrId), a.attrName]))
+
   const releaseForm: ReleaseForm = {
-    // 基础spu信息
-    basicInfo: { ...spuBaseInfo.value },
-    // 基本属性选择
-    baseAttrs: Object.entries(baseAttrMap.value)
-      .filter(([, val]) => val !== undefined && val !== '')
-      .map(([attrId, attrValue]) => ({ attrId: Number(attrId), attrValue })),
-    // 销售属性选择
-    saleAttrs: Object.entries(saleAttrMap.value)
-      .filter(([, vals]) => vals.length > 0)
-      .flatMap(([attrId, vals]) => vals.map((v) => ({ attrId: Number(attrId), attrValue: v }))),
-    // SKU信息
+    // spu: 基本信息 + 内嵌基本属性
+    spu: {
+      ...spuBaseInfo.value,
+      baseAttrs: Object.entries(baseAttrMap.value)
+        .filter(([, val]) => val !== undefined && val !== '')
+        .map(([attrId, attrVal]) => ({
+          attrId: Number(attrId),
+          attrName: idToName.get(String(attrId)),
+          attrValue: attrVal
+        }))
+    },
+
+    // skus: 每个SKU内嵌自己的销售属性组合，key/label 直接从 attrColKeys 取
     skus: skuTableData.value.map((row) => ({
       skuName: row.skuName,
       skuDesc: row.skuDesc,
@@ -348,7 +352,12 @@ const submitForm = async () => {
       skuSubtitle: row.skuSubtitle,
       price: row.price,
       stock: Number(row.stock) || 0,
-      skuImages: row.skuImages
+      skuImages: row.skuImages,
+      skuAttrs: attrColKeys.value.map((col) => ({
+        attrId: Number(col.key),
+        attrName: col.label,
+        attrValue: row[col.key]
+      }))
     }))
   }
 

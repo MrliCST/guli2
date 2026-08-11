@@ -3,16 +3,10 @@
 import type { OssVO } from '@/api/system/oss/types'
 
 export interface ReleaseForm extends BaseEntity {
-  // 第一步: 基本信息
-  basicInfo?: SpuInfo
+  // 第一步: 基本信息（含基本属性）
+  spu?: SpuInfo
 
-  // 第二步: 基本属性
-  baseAttrs?: BaseAttr[]
-
-  // 第三步: 销售属性
-  saleAttrs?: SaleAttr[]
-
-  // 第四步: SKU信息
+  // 第四步: SKU信息（销售属性已嵌入每个SKU中）
   skus?: Sku[]
 }
 
@@ -27,16 +21,8 @@ export interface SpuInfo {
   publishStatus?: number
   MainImgDesc?: string
   ImgAlbum?: OssVO[]
-}
-
-export interface BaseAttr {
-  attrId?: string | number
-  attrValue?: string
-}
-
-export interface SaleAttr {
-  attrId?: string | number
-  attrValue?: string
+  /** 选中的基本属性 */
+  baseAttrs?: BaseAttr[]
 }
 
 export interface Sku {
@@ -48,6 +34,20 @@ export interface Sku {
   price?: string
   stock?: number
   skuImages?: string[]
+  /** 该SKU的销售属性组合 */
+  skuAttrs?: SaleAttr[]
+}
+
+export interface BaseAttr {
+  attrId?: string | number
+  attrName?: string
+  attrValue?: string
+}
+
+export interface SaleAttr {
+  attrId?: string | number
+  attrName?: string
+  attrValue?: string
 }
 
 // ======================== 分组带属性查询结果 VO ========================

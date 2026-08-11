@@ -2,8 +2,12 @@ package com.atlearn.guli.domain;
 
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
+
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.io.Serial;
 
@@ -16,6 +20,9 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("pms_product_attr_value")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PmsProductAttrValue extends BaseEntity {
 
     @Serial

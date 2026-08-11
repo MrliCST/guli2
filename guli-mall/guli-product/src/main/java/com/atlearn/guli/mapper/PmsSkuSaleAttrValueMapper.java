@@ -1,7 +1,7 @@
 package com.atlearn.guli.mapper;
 
 import com.atlearn.guli.domain.PmsSkuSaleAttrValue;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
 /**
  * sku销售属性&值Mapper接口
@@ -9,6 +9,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author mayao
  * @date 2026-08-09
  */
-public interface PmsSkuSaleAttrValueMapper extends BaseMapper<PmsSkuSaleAttrValue> {
+public interface PmsSkuSaleAttrValueMapper extends BaseMapperPlus<PmsSkuSaleAttrValue, PmsSkuSaleAttrValue> {
 
 }
