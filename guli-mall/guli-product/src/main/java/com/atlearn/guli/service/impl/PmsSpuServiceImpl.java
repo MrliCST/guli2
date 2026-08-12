@@ -37,6 +37,7 @@ import com.atlearn.guli.service.IPmsAttrService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * SPU信息Service业务层处理
@@ -49,16 +50,19 @@ import java.util.List;
 @Service
 public class PmsSpuServiceImpl implements IPmsSpuService {
 
+    // 提供查询数据服务
     private final IPmsCategoryService categoryService;
     private final IPmsBrandService brandService;
     private final IPmsAttrService attrService;
 
+    // 获取 属性组内嵌属性值储 的数据
+    private final PmsAttrAttrgroupRelationMapper attrAttrgroupRelationMapper;
+
+    // 插入 spu 相关的信息
     private final PmsSpuInfoMapper baseMapper;
     private final PmsSpuImagesMapper spuImagesMapper;
     private final PmsSpuInfoDescMapper SpuInfoDescMapper;
     private final PmsProductAttrValueMapper productAttrValueMapper;
-
-    private final PmsAttrAttrgroupRelationMapper attrAttrgroupRelationMapper;
     private final PmsSkuInfoMapper skuInfoMapper;
     private final PmsSkuSaleAttrValueMapper skuSaleAttrValueMapper;
     private final PmsSkuImagesMapper skuImagesMapper;
@@ -66,12 +70,11 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     @Override
     @Transactional
     public Boolean insertByBo(PmsSpuBo bo) {
+        // 提取bo中的内容
         PmsSpuBo.SpuInfo spuInfo = bo.getSpu();
-        if (spuInfo == null) {
-            throw new IllegalArgumentException("spu信息不能为空");
-        }
-        List<PmsSpuBo.BaseAttr> baseAttrs = spuInfo.getBaseAttrs();
         List<PmsSpuBo.Sku> skus = bo.getSkus();
+
+        // 1. 保存spu信息
         PmsSpuInfo baseSpuInfo = PmsSpuInfo.builder()  
                 .spuName(spuInfo.getSpuName())
                 .catalogId(spuInfo.getCatalogId())
@@ -102,79 +105,68 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
 
         // 3. 保存spu描述
         String description = spuInfo.getSpuDescription();
-        if(description == null || description.isEmpty()){
-            throw new IllegalArgumentException("spu描述不能为空");
-        }
         PmsSpuInfoDesc desc = PmsSpuInfoDesc.builder()
                 .spuId(spuId)
                 .decript(description)
                 .build();
         SpuInfoDescMapper.insert(desc);
 
-        // 4. 保存选中的基本属性（前端已携带 attrName，无需查询）
-        if (baseAttrs != null && !baseAttrs.isEmpty()) {
-            List<PmsProductAttrValue> productAttrValues = new ArrayList<>();
-            for (PmsSpuBo.BaseAttr baseAttr : baseAttrs) {
-                productAttrValues.add(PmsProductAttrValue.builder()
-                        .spuId(spuId)
-                        .attrId(baseAttr.getAttrId())
-                        .attrName(baseAttr.getAttrName())
-                        .attrValue(baseAttr.getAttrValue())
+        // 4. 保存选中的基本属性
+        List<PmsSpuBo.BaseAttr> baseAttrs = spuInfo.getBaseAttrs();
+        List<PmsProductAttrValue> productAttrValues = baseAttrs.stream()
+            .map(attr -> PmsProductAttrValue.builder()
+                .spuId(spuId)
+                .attrId(attr.getAttrId())
+                .attrName(attr.getAttrName())
+                .attrValue(attr.getAttrValue())
+                .build())
+            .collect(Collectors.toList());
+        productAttrValueMapper.insertBatch(productAttrValues);
+
+        // 5. 保存多种SKU信息
+        for (PmsSpuBo.Sku sku : skus) {
+            // 5a. SKU基本信息
+            PmsSkuInfo skuInfo = PmsSkuInfo.builder()
+                    .spuId(spuId)
+                    .catalogId(spuInfo.getCatalogId())
+                    .brandId(spuInfo.getBrandId())
+                    .skuName(sku.getSkuName())
+                    .skuDesc(sku.getSkuDesc())
+                    .skuDefaultImg(sku.getSkuDefaultImg())
+                    .skuTitle(sku.getSkuTitle())
+                    .skuSubtitle(sku.getSkuSubtitle())
+                    .price(new BigDecimal(sku.getPrice()))
+                    .build();
+            skuInfoMapper.insert(skuInfo);
+            Long skuId = skuInfo.getSkuId();
+
+            // 5b. SKU销售属性
+            List<PmsSpuBo.SaleAttr> skuAttrs = sku.getSkuAttrs();
+            List<PmsSkuSaleAttrValue> saleAttrValues = new ArrayList<>();
+            for (int i = 0; i < skuAttrs.size(); i++) {
+                PmsSpuBo.SaleAttr attr = skuAttrs.get(i);
+                saleAttrValues.add(PmsSkuSaleAttrValue.builder()
+                        .skuId(skuId)
+                        .attrId(attr.getAttrId())
+                        .attrName(attr.getAttrName())
+                        .attrValue(attr.getAttrValue())
+                        .attrSort((long) i)
                         .build());
             }
-            productAttrValueMapper.insertBatch(productAttrValues);
-        }
+            skuSaleAttrValueMapper.insertBatch(saleAttrValues);
 
-        // 5. 保存SKU信息 + 销售属性 + SKU图片
-        if (skus != null && !skus.isEmpty()) {
-            for (PmsSpuBo.Sku sku : skus) {
-                // 5a. SKU基本信息
-                PmsSkuInfo skuInfo = PmsSkuInfo.builder()
-                        .spuId(spuId)
-                        .catalogId(spuInfo.getCatalogId())
-                        .brandId(spuInfo.getBrandId())
-                        .skuName(sku.getSkuName())
-                        .skuDesc(sku.getSkuDesc())
-                        .skuDefaultImg(sku.getSkuDefaultImg())
-                        .skuTitle(sku.getSkuTitle())
-                        .skuSubtitle(sku.getSkuSubtitle())
-                        .price(new BigDecimal(sku.getPrice()))
-                        .build();
-                skuInfoMapper.insert(skuInfo);
-                Long skuId = skuInfo.getSkuId();
-
-                // 5b. SKU销售属性
-                List<PmsSpuBo.SaleAttr> skuAttrs = sku.getSkuAttrs();
-                if (skuAttrs != null && !skuAttrs.isEmpty()) {
-                    List<PmsSkuSaleAttrValue> saleAttrValues = new ArrayList<>();
-                    for (int i = 0; i < skuAttrs.size(); i++) {
-                        PmsSpuBo.SaleAttr attr = skuAttrs.get(i);
-                        saleAttrValues.add(PmsSkuSaleAttrValue.builder()
-                                .skuId(skuId)
-                                .attrId(attr.getAttrId())
-                                .attrName(attr.getAttrName())
-                                .attrValue(attr.getAttrValue())
-                                .attrSort((long) i)
-                                .build());
-                    }
-                    skuSaleAttrValueMapper.insertBatch(saleAttrValues);
-                }
-
-                // 5c. SKU图片
-                List<String> skuImages = sku.getSkuImages();
-                if (skuImages != null && !skuImages.isEmpty()) {
-                    List<PmsSkuImages> skuImageList = new ArrayList<>();
-                    for (int i = 0; i < skuImages.size(); i++) {
-                        skuImageList.add(PmsSkuImages.builder()
-                                .skuId(skuId)
-                                .imgUrl(skuImages.get(i))
-                                .imgSort((long) i)
-                                .defaultImg(i == 0 ? 1L : 0L)
-                                .build());
-                    }
-                    skuImagesMapper.insertBatch(skuImageList);
-                }
+            // 5c. SKU图片
+            List<String> skuImages = sku.getSkuImages();
+            List<PmsSkuImages> skuImageList = new ArrayList<>();
+            for (int i = 0; i < skuImages.size(); i++) {
+                skuImageList.add(PmsSkuImages.builder()
+                        .skuId(skuId)
+                        .imgUrl(skuImages.get(i))
+                        .imgSort((long) i)
+                        .defaultImg(i == 0 ? 1L : 0L)
+                        .build());
             }
+            skuImagesMapper.insertBatch(skuImageList);
         }
 
         return true;

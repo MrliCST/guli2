@@ -52,7 +52,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliWareApplication",
             "projectName": "guli-ware",
-            "vmArgs": "-Dfile.encoding=UTF-8",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddubbo.resolve.file=guli-mall/guli-ware/src/main/resources/dubbo-resolve.properties",
             "console": "integratedTerminal"
         }
     ]

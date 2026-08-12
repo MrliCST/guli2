@@ -468,7 +468,14 @@ spring:
             - id: guli-product
               uri: lb://guli-product
               predicates:
-                - Path=/guli/**
+                - Path=/product/**
+              filters:
+                - StripPrefix=1
+            # guli-mall 仓储服务
+            - id: guli-ware
+              uri: lb://guli-ware
+              predicates:
+                - Path=/ware/**
               filters:
                 - StripPrefix=1', 'a53d4df83393dbac512231b30288e97f', '2022-01-09 15:19:43', '2022-01-09 15:22:42', NULL, '0:0:0:0:0:0:0:1', '', 'dev', '网关模块', NULL, NULL, 'yaml', NULL, ''),
 (4, 'ruoyi-auth.yml', 'DEFAULT_GROUP', '# 安全配置

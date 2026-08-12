@@ -35,6 +35,13 @@
             <artifactId>ruoyi-common-dubbo</artifactId>
         </dependency>
 
+        <!-- guli-api 远程调用接口 -->
+        <dependency>
+            <groupId>com.atlearn.guli</groupId>
+            <artifactId>guli-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
         <!-- 接口文档 -->
         <dependency>
             <groupId>org.dromara</groupId>

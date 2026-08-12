@@ -1,8 +1,11 @@
 package com.atlearn.guli.domain.bo;
 
 import com.atlearn.guli.domain.PmsSpuInfo;
+
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,8 +23,10 @@ import java.util.List;
 @AutoMapper(target = PmsSpuInfo.class, reverseConvertGenerate = false)
 public class PmsSpuBo extends BaseEntity {
 
+    @NotNull(message = "spu信息不能为null")
     private SpuInfo spu;
 
+    @NotEmpty(message = "sku列表信息不能为空或者null")
     private List<Sku> skus;
 
     @Data

@@ -102,6 +102,13 @@ spring:
             - id: guli-product
               uri: lb://guli-product
               predicates:
-                - Path=/guli/**
+                - Path=/product/**
+              filters:
+                - StripPrefix=1
+            # guli-mall 仓储服务
+            - id: guli-ware
+              uri: lb://guli-ware
+              predicates:
+                - Path=/ware/**
               filters:
                 - StripPrefix=1

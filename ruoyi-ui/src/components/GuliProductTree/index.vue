@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import type { Node } from 'element-plus/es/components/tree/src/model/node'
-import type { CategoryVO, CategoryForm } from '@/api/guli/category/types'
+import type { CategoryVO, CategoryForm } from '@/api/guli/product/category/types'
 
 const props = withDefaults(
   defineProps<{
