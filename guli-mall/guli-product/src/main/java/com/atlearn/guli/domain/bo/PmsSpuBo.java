@@ -37,6 +37,8 @@ public class PmsSpuBo extends BaseEntity {
         private Long brandId;
         private Long weight;
         private Long publishStatus;
+         private Long growBounds;  // 成长积分
+        private Long buyBounds;    // 购物积分
         private String MainImgDesc;
         private List<RemoteFile> ImgAlbum;
         private List<BaseAttr> baseAttrs;
@@ -51,6 +53,10 @@ public class PmsSpuBo extends BaseEntity {
         private String skuSubtitle;
         private String price;
         private Integer stock;
+        private Long fullPrice;   // 满多少钱
+        private Long reducePrice; // 减多少钱
+        private Long fullCount; // 满多少件
+        private Long discount;  // 打几折
         private List<String> skuImages;
         private List<SaleAttr> skuAttrs;
     }

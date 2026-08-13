@@ -57,7 +57,6 @@
         <warm-flow.version>1.8.5</warm-flow.version>
         <!-- mq配置 -->
         <rocketmq.version>2.3.5</rocketmq.version>
-
         <!-- 插件版本 -->
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -151,6 +150,15 @@
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-api-bom</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- guli 的依赖配置-->
+            <dependency>
+                <groupId>com.atlearn.guli</groupId>
+                <artifactId>guli-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>

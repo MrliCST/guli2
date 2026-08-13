@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.atlearn.guli</groupId>
+    <artifactId>guli-bom</artifactId>
+    <packaging>pom</packaging>
+    <version>${revision}</version>
+
+    <description>
+        guli-bom guli 模块依赖项
+    </description>
+
+    <properties>
+        <revision>2.6.2</revision>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- guli 远程调用接口 -->
+            <dependency>
+                <groupId>com.atlearn.guli</groupId>
+                <artifactId>guli-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- guli 公共模块 -->
+            <dependency>
+                <groupId>com.atlearn.guli</groupId>
+                <artifactId>guli-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+</project>

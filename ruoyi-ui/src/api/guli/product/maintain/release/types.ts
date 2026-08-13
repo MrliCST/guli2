@@ -19,6 +19,10 @@ export interface SpuInfo {
   brandId?: string | number
   weight?: number
   publishStatus?: number
+  /** 成长积分 */
+  growBounds?: number
+  /** 购物积分 */
+  buyBounds?: number
   MainImgDesc?: string
   ImgAlbum?: OssVO[]
   /** 选中的基本属性 */
@@ -33,6 +37,14 @@ export interface Sku {
   skuSubtitle?: string
   price?: string
   stock?: number
+  /** 满多少钱 */
+  fullPrice?: number
+  /** 减多少钱 */
+  reducePrice?: number
+  /** 满多少件 */
+  fullCount?: number
+  /** 打几折 */
+  discount?: number
   skuImages?: string[]
   /** 该SKU的销售属性组合 */
   skuAttrs?: SaleAttr[]

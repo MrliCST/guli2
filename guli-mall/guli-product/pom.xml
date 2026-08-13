@@ -39,7 +39,12 @@
         <dependency>
             <groupId>com.atlearn.guli</groupId>
             <artifactId>guli-api</artifactId>
-            <version>${revision}</version>
+        </dependency>
+
+        <!-- guli-common 公共模块 -->
+        <dependency>
+            <groupId>com.atlearn.guli</groupId>
+            <artifactId>guli-common</artifactId>
         </dependency>
 
         <!-- 接口文档 -->

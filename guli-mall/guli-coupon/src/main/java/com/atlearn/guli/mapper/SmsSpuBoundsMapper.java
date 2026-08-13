@@ -1,7 +1,6 @@
 package com.atlearn.guli.mapper;
 
 import com.atlearn.guli.domain.SmsSpuBounds;
-import com.atlearn.guli.domain.vo.SmsSpuBoundsVo;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 
 /**
@@ -10,6 +9,6 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
  * @author mayao
  * @date 2026-08-12
  */
-public interface SmsSpuBoundsMapper extends BaseMapperPlus<SmsSpuBounds, SmsSpuBoundsVo> {
+public interface SmsSpuBoundsMapper extends BaseMapperPlus<SmsSpuBounds, SmsSpuBounds> {
 
 }

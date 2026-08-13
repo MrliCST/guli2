@@ -1,23 +1,25 @@
 package com.atlearn.guli.domain;
 
-import org.dromara.common.mybatis.core.domain.BaseEntity;
-import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 商品满减信息对象 sms_sku_full_reduction
+ * 商品满减信息远程业务对象 sms_sku_full_reduction
  *
  * @author mayao
  * @date 2026-08-12
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-@TableName("sms_sku_full_reduction")
-public class SmsSkuFullReduction extends BaseEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RemoteSkuFullReductionBo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -25,7 +27,6 @@ public class SmsSkuFullReduction extends BaseEntity {
     /**
      * id
      */
-    @TableId(value = "id")
     private Long id;
 
     /**
@@ -47,6 +48,5 @@ public class SmsSkuFullReduction extends BaseEntity {
      * 是否参与其他优惠
      */
     private Long addOther;
-
 
 }

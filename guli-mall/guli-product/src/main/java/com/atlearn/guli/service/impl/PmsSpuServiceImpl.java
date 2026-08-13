@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.atlearn.guli.domain.bo.PmsSpuBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBo;
+import com.atlearn.guli.RemoteCouponService;
 import com.atlearn.guli.domain.PmsProductAttrValue;
 import com.atlearn.guli.domain.PmsSkuImages;
 import com.atlearn.guli.domain.PmsSkuInfo;
@@ -16,6 +17,9 @@ import com.atlearn.guli.domain.PmsSkuSaleAttrValue;
 import com.atlearn.guli.domain.PmsSpuImages;
 import com.atlearn.guli.domain.PmsSpuInfo;
 import com.atlearn.guli.domain.PmsSpuInfoDesc;
+import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
+import com.atlearn.guli.domain.RemoteSkuLadderBo;
+import com.atlearn.guli.domain.RemoteSpuBoundsBo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
@@ -54,6 +58,9 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     private final IPmsCategoryService categoryService;
     private final IPmsBrandService brandService;
     private final IPmsAttrService attrService;
+
+    // coupon模块远程服务
+    private final RemoteCouponService remoteCouponService;
 
     // 获取 属性组内嵌属性值储 的数据
     private final PmsAttrAttrgroupRelationMapper attrAttrgroupRelationMapper;
@@ -111,7 +118,15 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
                 .build();
         SpuInfoDescMapper.insert(desc);
 
-        // 4. 保存选中的基本属性
+        // 4. 保存购物积分和成长值
+        RemoteSpuBoundsBo bound = RemoteSpuBoundsBo.builder()
+                .spuId(spuId)
+                .growBounds(spuInfo.getGrowBounds())    
+                .buyBounds(spuInfo.getBuyBounds())
+                .build();
+        remoteCouponService.insertSpuBoundsByBo(bound);
+
+        // 5. 保存选中的基本属性
         List<PmsSpuBo.BaseAttr> baseAttrs = spuInfo.getBaseAttrs();
         List<PmsProductAttrValue> productAttrValues = baseAttrs.stream()
             .map(attr -> PmsProductAttrValue.builder()
@@ -123,9 +138,9 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
             .collect(Collectors.toList());
         productAttrValueMapper.insertBatch(productAttrValues);
 
-        // 5. 保存多种SKU信息
+        // 6. 保存多种SKU信息
         for (PmsSpuBo.Sku sku : skus) {
-            // 5a. SKU基本信息
+            // 6a. SKU基本信息
             PmsSkuInfo skuInfo = PmsSkuInfo.builder()
                     .spuId(spuId)
                     .catalogId(spuInfo.getCatalogId())
@@ -140,7 +155,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
             skuInfoMapper.insert(skuInfo);
             Long skuId = skuInfo.getSkuId();
 
-            // 5b. SKU销售属性
+            // 6b. SKU销售属性
             List<PmsSpuBo.SaleAttr> skuAttrs = sku.getSkuAttrs();
             List<PmsSkuSaleAttrValue> saleAttrValues = new ArrayList<>();
             for (int i = 0; i < skuAttrs.size(); i++) {
@@ -155,7 +170,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
             }
             skuSaleAttrValueMapper.insertBatch(saleAttrValues);
 
-            // 5c. SKU图片
+            // 6c. SKU图片
             List<String> skuImages = sku.getSkuImages();
             List<PmsSkuImages> skuImageList = new ArrayList<>();
             for (int i = 0; i < skuImages.size(); i++) {
@@ -167,6 +182,23 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
                         .build());
             }
             skuImagesMapper.insertBatch(skuImageList);
+
+            // 6d. 保存 "满几件打几折" 的优惠策略
+            RemoteSkuLadderBo ladder = RemoteSkuLadderBo.builder()
+                    .skuId(skuId)
+                    .fullCount(sku.getFullCount())
+                    .discount(sku.getDiscount())
+                    .build();
+            remoteCouponService.insertSkuLadderByBo(ladder);
+
+            // 6e. 保存 "满几件减几元" 的优惠策略
+            RemoteSkuFullReductionBo reduction = RemoteSkuFullReductionBo.builder()
+                    .skuId(skuId)
+                    .fullPrice(new BigDecimal(sku.getFullPrice()))
+                    .reducePrice(new BigDecimal(sku.getReducePrice()))
+                    .build();
+            remoteCouponService.insertSkuFullReductionByBo(reduction);
+                    
         }
 
         return true;
