@@ -1,5 +1,6 @@
 package com.atlearn.guli.service.impl;
 
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.resource.api.domain.RemoteFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     private final IPmsAttrService attrService;
 
     // coupon模块远程服务
+    @DubboReference
     private final RemoteCouponService remoteCouponService;
 
     // 获取 属性组内嵌属性值储 的数据
