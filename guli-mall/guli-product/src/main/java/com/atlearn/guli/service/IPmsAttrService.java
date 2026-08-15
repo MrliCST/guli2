@@ -2,6 +2,7 @@ package com.atlearn.guli.service;
 
 import com.atlearn.guli.domain.PmsAttr;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -66,4 +67,9 @@ public interface IPmsAttrService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 获取分类树
+     */
+    List<PmsCategoryVo> listTreeCategory();
 }

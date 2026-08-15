@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.PmsBrand;
 import com.atlearn.guli.domain.PmsCategoryBrandRelation;
 import com.atlearn.guli.mapper.PmsBrandMapper;
@@ -22,6 +24,7 @@ import com.atlearn.guli.mapper.PmsCategoryBrandRelationMapper;
 import com.atlearn.guli.mapper.PmsCategoryMapper;
 import com.atlearn.guli.domain.PmsCategory;
 import com.atlearn.guli.service.IPmsBrandService;
+import com.atlearn.guli.service.IPmsCategoryService;
 
 import java.util.List;
 import java.util.Collection;
@@ -40,6 +43,7 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
     private final PmsBrandMapper baseMapper;
     private final PmsCategoryBrandRelationMapper cbrMapper;
     private final PmsCategoryMapper categoryMapper;
+    private final IPmsCategoryService pmsCategoryService;
 
     /**
      * 查询品牌
@@ -236,5 +240,10 @@ public class PmsBrandServiceImpl implements IPmsBrandService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return cbrMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public List<PmsCategoryVo> listTreeCategory() {
+        return pmsCategoryService.queryTreeList(new PmsCategoryBo());
     }
 }

@@ -20,14 +20,12 @@ import org.dromara.common.excel.utils.ExcelUtil;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
-import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.service.IPmsAttrService;
-import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
  * 商品属性
- * 前端访问路由地址为:/guli/keyValStore
+ * 前端访问路由地址为:/product/keyValStore
  *
  * @author mayao
  * @date 2026-08-03
@@ -39,17 +37,16 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsAttrController extends BaseController {
 
     private final IPmsAttrService pmsAttrService;
-    private final IPmsCategoryService pmsCategoryService;
 
     /*
      *  ---- 商品属性 CRUD ----
-     *  59  /list            GET    分页列表
-     *  69  /export          POST   导出
-     *  81  /{attrId}        GET    详情
-     *  93  /                POST   新增
-     *  104 /                PUT    修改
-     *  116 /{attrIds}       DELETE 删除
-     *  126 /treeCategory    GET    分类树
+     *  56  /list            GET    分页列表
+     *  66  /export          POST   导出
+     *  78  /{attrId}        GET    详情
+     *  90  /                POST   新增
+     *  101 /                PUT    修改
+     *  113 /{attrIds}       DELETE 删除
+     *  123 /treeCategory    GET    分类树
      */
 
     /**
@@ -125,6 +122,6 @@ public class PmsAttrController extends BaseController {
     @SaCheckPermission("guli:keyValStore:query")
     @GetMapping("/treeCategory")
     public R<List<PmsCategoryVo>> treeCategory() {
-        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
+        return R.ok(pmsAttrService.listTreeCategory());
     }
 }

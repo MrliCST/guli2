@@ -17,7 +17,13 @@
 
       <div class="split-layout">
         <div class="tree-wrapper">
-          <GuliProductTree :tree-data="treeData" :on-ready="onTreeReady" @clickedNodeData="onTreeNodeClick" @drag-drop="onTreeDragDrop" />
+          <GuliProductTree
+            :is-only-read="false"
+            :tree-data="treeData"
+            :on-ready="onTreeReady"
+            @clickedNodeData="onTreeNodeClick"
+            @drag-drop="onTreeDragDrop"
+          />
         </div>
 
         <div class="detail-pane">

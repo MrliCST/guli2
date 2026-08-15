@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.atlearn.guli.domain.bo.PmsAttrGroupBo;
 import com.atlearn.guli.domain.bo.PmsAttrAttrgroupRelationBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupVo;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
 import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.PmsAttrGroup;
 import com.atlearn.guli.domain.PmsAttr;
 import com.atlearn.guli.domain.PmsAttrAttrgroupRelation;
@@ -22,6 +24,7 @@ import com.atlearn.guli.mapper.PmsAttrGroupMapper;
 import com.atlearn.guli.mapper.PmsAttrMapper;
 import com.atlearn.guli.mapper.PmsAttrAttrgroupRelationMapper;
 import com.atlearn.guli.service.IPmsAttrGroupService;
+import com.atlearn.guli.service.IPmsCategoryService;
 
 import java.util.List;
 import java.util.Collection;
@@ -42,6 +45,7 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
     private final PmsAttrGroupMapper baseMapper;
     private final PmsAttrMapper attrMapper;
     private final PmsAttrAttrgroupRelationMapper relationMapper;
+    private final IPmsCategoryService pmsCategoryService;
 
     // ==================== 属性分组 CRUD ====================
 
@@ -146,5 +150,10 @@ public class PmsAttrGroupServiceImpl implements IPmsAttrGroupService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return relationMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public List<PmsCategoryVo> listTreeCategory() {
+        return pmsCategoryService.queryTreeList(new PmsCategoryBo());
     }
 }

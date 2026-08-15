@@ -1,6 +1,10 @@
 package com.atlearn.guli.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import org.dromara.easyes.annotation.IndexField;
 import org.dromara.easyes.annotation.IndexId;
 import org.dromara.easyes.annotation.IndexName;
@@ -17,6 +21,9 @@ import java.util.List;
  * @date 2026-08-14
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @IndexName("sku_index")
 public class SkuEsModel {
 
