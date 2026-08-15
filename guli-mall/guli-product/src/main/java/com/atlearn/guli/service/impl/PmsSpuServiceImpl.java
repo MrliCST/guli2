@@ -1,6 +1,7 @@
 package com.atlearn.guli.service.impl;
 
 import org.dromara.resource.api.domain.RemoteFile;
+import org.apache.dubbo.config.annotation.DubboReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.atlearn.guli.domain.bo.PmsSpuBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.RemoteCouponService;
+import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.domain.PmsProductAttrValue;
 import com.atlearn.guli.domain.PmsSkuImages;
 import com.atlearn.guli.domain.PmsSkuInfo;
@@ -21,6 +23,7 @@ import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
 import com.atlearn.guli.domain.RemoteSkuLadderBo;
 import com.atlearn.guli.domain.RemoteSpuBoundsBo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
+import com.atlearn.guli.dto.SkuEsModel;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
@@ -33,7 +36,9 @@ import com.atlearn.guli.mapper.PmsSkuInfoMapper;
 import com.atlearn.guli.mapper.PmsSkuSaleAttrValueMapper;
 import com.atlearn.guli.mapper.PmsSpuImagesMapper;
 import com.atlearn.guli.mapper.PmsSpuInfoDescMapper;
+import com.atlearn.guli.esmapper.SkuEsMapper;
 import com.atlearn.guli.service.IPmsSpuService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.atlearn.guli.service.IPmsCategoryService;
 import com.atlearn.guli.service.IPmsBrandService;
 import com.atlearn.guli.service.IPmsAttrService;
@@ -41,6 +46,7 @@ import com.atlearn.guli.service.IPmsAttrService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +66,12 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     private final IPmsAttrService attrService;
 
     // coupon模块远程服务
+    @DubboReference
     private final RemoteCouponService remoteCouponService;
+    
+    // ware模块远程服务
+    @DubboReference
+    private final RemoteWareService remoteWareService;
 
     // 获取 属性组内嵌属性值储 的数据
     private final PmsAttrAttrgroupRelationMapper attrAttrgroupRelationMapper;
@@ -73,6 +84,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     private final PmsSkuInfoMapper skuInfoMapper;
     private final PmsSkuSaleAttrValueMapper skuSaleAttrValueMapper;
     private final PmsSkuImagesMapper skuImagesMapper;
+    private final SkuEsMapper skuEsMapper;
 
     @Override
     @Transactional
@@ -227,5 +239,45 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
         bo.setCatelogId(catelogId);
         bo.setAttrType(0L); // 0=销售属性
         return attrService.queryList(bo);
+    }
+
+    @Override
+    public Boolean upToEsearch(Long spuId) {
+        List<PmsSkuInfo> skuInfos = skuInfoMapper.selectList(
+            Wrappers.<PmsSkuInfo>lambdaQuery().eq(x -> x.getSpuId(), spuId)
+        );
+
+        // 获取远程 map[skuId] => skuAvailableStock 的数据
+        List<Long> skuIds = skuInfos.stream().map(skuInfo -> {
+            return skuInfo.getSkuId();    
+        }).collect(Collectors.toList());
+        Map<Long,Long> skuAvailableStock = remoteWareService.getSkuAvailableStock(skuIds);
+
+        // 构造ES索引数据的 DTO
+        List<SkuEsModel> skuEsModels = skuInfos.stream().map(skuInfo -> {
+            Long skuId = skuInfo.getSkuId();
+
+            return SkuEsModel.builder()
+                .skuId(skuId)
+                .spuId(skuInfo.getSpuId())
+                .skuTitle(skuInfo.getSkuTitle())
+                .skuPrice(skuInfo.getPrice())
+                .skuImg(skuInfo.getSkuDefaultImg())
+                .saleCount(skuInfo.getSaleCount())
+                .brandId(skuInfo.getBrandId())
+                .catalogId(skuInfo.getCatalogId())
+                .hasStock(skuAvailableStock.get(skuId) > 0)  // 是否有库存
+                .hotScore(0L)  // 热度评分
+                .brandName(null) // 品牌名称
+                .brandImg(null)   // 品牌图片
+                .catalogName(null) // 分类名称
+                .attrs(null)  // 商品规格属性
+                .build();
+        }).collect(Collectors.toList());
+
+        // 上架到ES索引库
+        skuEsMapper.insertBatch(skuEsModels);
+        
+        return true;
     }
 }

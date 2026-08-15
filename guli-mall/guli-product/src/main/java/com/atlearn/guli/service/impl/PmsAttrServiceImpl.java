@@ -11,10 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.PmsAttr;
 import com.atlearn.guli.mapper.PmsAttrMapper;
 import com.atlearn.guli.service.IPmsAttrService;
+import com.atlearn.guli.service.IPmsCategoryService;
 
 import java.util.List;
 import java.util.Collection;
@@ -31,6 +34,7 @@ import java.util.Collection;
 public class PmsAttrServiceImpl implements IPmsAttrService {
 
     private final PmsAttrMapper baseMapper;
+    private final IPmsCategoryService pmsCategoryService;
 
     /**
      * 查询商品属性
@@ -126,5 +130,10 @@ public class PmsAttrServiceImpl implements IPmsAttrService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public List<PmsCategoryVo> listTreeCategory() {
+        return pmsCategoryService.queryTreeList(new PmsCategoryBo());
     }
 }

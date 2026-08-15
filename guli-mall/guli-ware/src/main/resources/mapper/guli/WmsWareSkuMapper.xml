@@ -4,4 +4,20 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.atlearn.guli.mapper.WmsWareSkuMapper">
 
+    <resultMap id="skuStockVoMap" type="com.atlearn.guli.domain.dto.SkuIdToStockDTO">
+        <result property="skuId" column="sku_id"/>
+        <result property="stock" column="stock"/>
+    </resultMap>
+
+    <select id="getSkuIdToStockMap" resultMap="skuStockVoMap">
+        select sku_id,
+               coalesce(sum(stock - stock_locked), 0) as stock
+        from wms_ware_sku
+        where sku_id in
+        <foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
+            #{skuId}
+        </foreach>
+        group by sku_id
+    </select>
+
 </mapper>

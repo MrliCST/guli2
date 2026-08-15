@@ -38,6 +38,12 @@
           <el-form-item label="重量" prop="weight">
             <el-input v-model="spuBaseInfo.weight" placeholder="请输入重量" />
           </el-form-item>
+          <el-form-item label="成长积分" prop="growBounds">
+            <el-input-number v-model="spuBaseInfo.growBounds" controls-position="right" :min="0" placeholder="请输入成长积分" style="width: 100%" />
+          </el-form-item>
+          <el-form-item label="购物积分" prop="buyBounds">
+            <el-input-number v-model="spuBaseInfo.buyBounds" controls-position="right" :min="0" placeholder="请输入购物积分" style="width: 100%" />
+          </el-form-item>
           <el-form-item label="上架状态" prop="publishStatus">
             <el-radio-group v-model="spuBaseInfo.publishStatus">
               <el-radio :value="1">上架</el-radio>
@@ -98,6 +104,34 @@
           <el-table-column type="expand">
             <template #default="{ row }">
               <div class="sku-expand" @click.stop>
+                <div class="sku-discount">
+                  <el-row :gutter="8" align="middle" class="sku-discount-row">
+                    <el-col :span="2" class="sku-discount-label">满减</el-col>
+                    <el-col :span="2">满</el-col>
+                    <el-col :span="6">
+                      <el-input-number v-model="row.fullPrice" controls-position="right" :min="0" placeholder="金额" style="width: 100%" />
+                    </el-col>
+                    <el-col :span="4">元，减</el-col>
+                    <el-col :span="6">
+                      <el-input-number v-model="row.reducePrice" controls-position="right" :min="0" placeholder="金额" style="width: 100%" />
+                    </el-col>
+                    <el-col :span="4">元</el-col>
+                  </el-row>
+
+                  <el-row :gutter="8" align="middle" class="sku-discount-row">
+                    <el-col :span="2" class="sku-discount-label">满折</el-col>
+                    <el-col :span="2">满</el-col>
+                    <el-col :span="6">
+                      <el-input-number v-model="row.fullCount" controls-position="right" :min="0" placeholder="件数" style="width: 100%" />
+                    </el-col>
+                    <el-col :span="4">件，打</el-col>
+                    <el-col :span="6">
+                      <el-input-number v-model="row.discount" controls-position="right" :min="0" placeholder="折扣" style="width: 100%" />
+                    </el-col>
+                    <el-col :span="4">折</el-col>
+                  </el-row>
+                </div>
+
                 <div v-if="!spuBaseInfo.ImgAlbum?.length" class="text-gray-400">请先在 "基本信息" 上传商品图集</div>
                 <div v-else class="sku-image-picker">
                   <div
@@ -178,6 +212,8 @@ const initBasicInfo: SpuInfo = {
   catalogId: undefined,
   brandId: undefined,
   weight: undefined,
+  growBounds: undefined,
+  buyBounds: undefined,
   publishStatus: 1,
   MainImgDesc: undefined,
   ImgAlbum: []
@@ -352,6 +388,10 @@ const submitForm = async () => {
       skuSubtitle: row.skuSubtitle,
       price: row.price,
       stock: Number(row.stock) || 0,
+      fullPrice: row.fullPrice,
+      reducePrice: row.reducePrice,
+      fullCount: row.fullCount,
+      discount: row.discount,
       skuImages: row.skuImages,
       skuAttrs: attrColKeys.value.map((col) => ({
         attrId: Number(col.key),
@@ -408,6 +448,7 @@ const toggleSkuImage = (row: Record<string, any>, img: string) => {
   margin-bottom: 24px;
 }
 
+/* 第一步的CSS */
 .step-content {
   max-width: 700px;
   margin: 0 auto;
@@ -426,6 +467,7 @@ const toggleSkuImage = (row: Record<string, any>, img: string) => {
   border-top: 1px solid var(--el-border-color-lighter);
 }
 
+/* 基本属性 */
 .attr-tabs {
   min-height: 300px;
 }
@@ -435,16 +477,30 @@ const toggleSkuImage = (row: Record<string, any>, img: string) => {
   min-height: 400px;
 }
 
+/* sku相关 */
 .sku-expand {
   padding: 16px 24px;
 }
 
+.sku-discount {
+  margin-bottom: 12px;
+}
+
+.sku-discount-row {
+  margin-bottom: 8px;
+}
+
+.sku-discount-label {
+  color: var(--el-text-color-secondary);
+}
+
 .sku-image-picker {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* flex 容器溢出换行 */
   gap: 8px;
 }
 
+/* 图片可选样式 */
 .sku-pickable-image {
   position: relative;
   cursor: pointer;
@@ -462,6 +518,7 @@ const toggleSkuImage = (row: Record<string, any>, img: string) => {
   }
 }
 
+/* 图片选中添加 */
 .pick-check {
   position: absolute;
   top: 2px;

@@ -21,10 +21,8 @@ import com.atlearn.guli.domain.vo.PmsBrandVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsBrandBo;
-import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.service.IPmsBrandService;
-import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -41,23 +39,22 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsBrandController extends BaseController {
 
     private final IPmsBrandService pmsBrandService;
-    private final IPmsCategoryService pmsCategoryService;
 
     /*
      *  ---- 品牌基础 CRUD ----
-     *  66  /list             GET    分页列表
-     *  76  /export           POST   导出
-     *  88  /{brandId}        GET    详情
-     *  100 /                 POST   新增
-     *  111 /                 PUT    修改
-     *  123 /{brandIds}       DELETE 删除
-     *  133 /treeCategory     GET    分类树
+     *  64  /list             GET    分页列表
+     *  74  /export           POST   导出
+     *  86  /{brandId}        GET    详情
+     *  98  /                 POST   新增
+     *  109 /                 PUT    修改
+     *  121 /{brandIds}       DELETE 删除
+     *  131 /treeCategory     GET    分类树
      *
      *  ---- 品牌-分类关联 CRUD ----
-     *  144 /cbrList          GET    关联分页列表
-     *  155 /cbr              POST   新增关联
-     *  166 /cbr              PUT    修改关联
-     *  178 /cbr/{cbrIds}     DELETE 删除关联
+     *  142 /cbrList          GET    关联分页列表
+     *  153 /cbr              POST   新增关联
+     *  164 /cbr              PUT    修改关联
+     *  176 /cbr/{cbrIds}     DELETE 删除关联
      */
 
     /**
@@ -133,7 +130,7 @@ public class PmsBrandController extends BaseController {
     @SaCheckPermission("guli:brand:query")
     @GetMapping("/treeCategory")
     public R<List<PmsCategoryVo>> treeCategory() {
-        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
+        return R.ok(pmsBrandService.listTreeCategory());
     }
 
     // =========   品牌分类关联业务  =========

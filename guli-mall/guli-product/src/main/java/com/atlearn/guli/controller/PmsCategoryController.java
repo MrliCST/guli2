@@ -22,7 +22,7 @@ import com.atlearn.guli.service.IPmsCategoryService;
 
 /**
  * 商品三级分类
- * 前端访问路由地址为:/guli/category
+ * 前端访问路由地址为:/product/category
  *
  * @author mayao
  * @date 2026-07-25

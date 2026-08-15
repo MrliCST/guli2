@@ -23,15 +23,13 @@ import com.atlearn.guli.domain.vo.PmsAttrAttrgroupRelationVo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
 import com.atlearn.guli.domain.bo.PmsAttrGroupBo;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
-import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.bo.PmsAttrAttrgroupRelationBo;
 import com.atlearn.guli.service.IPmsAttrGroupService;
-import com.atlearn.guli.service.IPmsCategoryService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
  * 属性分组
- * 前端访问路由地址为:/guli/attrGroup
+ * 前端访问路由地址为:/product/attrGroup
  *
  * @author mayao
  * @date 2026-08-02
@@ -43,24 +41,23 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class PmsAttrGroupController extends BaseController {
 
     private final IPmsAttrGroupService pmsAttrGroupService;
-    private final IPmsCategoryService pmsCategoryService;
 
     /*
      *  ---- 属性分组基础 CRUD ----
-     *  70  /list                GET    分页列表
-     *  84  /export              POST   导出
-     *  96  /{attrGroupId}       GET    详情
-     *  108 /                    POST   新增
-     *  119 /                    PUT    修改
-     *  131 /{attrGroupIds}      DELETE 删除
-     *  141 /treeCategory        GET    分类树
+     *  67  /list                GET    分页列表
+     *  81  /export              POST   导出
+     *  93  /{attrGroupId}       GET    详情
+     *  105 /                    POST   新增
+     *  116 /                    PUT    修改
+     *  128 /{attrGroupIds}      DELETE 删除
+     *  138 /treeCategory        GET    分类树
      *
      *  ---- 属性分组-属性值储关联 CRUD ----
-     *  152 /availableAttrs      GET    可关联属性列表
-     *  161 /relations           GET    关联列表
-     *  171 /relation            POST   新增关联
-     *  181 /relation            PUT    修改关联
-     *  191 /relation/{ids}      DELETE 删除关联
+     *  149 /availableAttrs      GET    可关联属性列表
+     *  158 /relations           GET    关联列表
+     *  168 /relation            POST   新增关联
+     *  178 /relation            PUT    修改关联
+     *  188 /relation/{ids}      DELETE 删除关联
      */
 
     /**
@@ -140,7 +137,7 @@ public class PmsAttrGroupController extends BaseController {
     @SaCheckPermission("guli:attrGroup:query")
     @GetMapping("/treeCategory")
     public R<List<PmsCategoryVo>> treeCategory() {
-        return R.ok(pmsCategoryService.queryTreeList(new PmsCategoryBo()));
+        return R.ok(pmsAttrGroupService.listTreeCategory());
     }
 
     // =========   属性分组-属性值储关联业务  =========

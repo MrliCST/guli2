@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * SPU信息
- * 前端访问路由地址为:/guli/maintain/release
+ * 前端访问路由地址为:/product/maintain/release
  *
  * @author mayao
  * @date 2026-08-08
@@ -29,17 +29,20 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/maintain/release")
+@RequestMapping("/maintain")
 public class PmsSpuController extends BaseController {
 
     private final IPmsSpuService pmsSpuService;
 
     /*
      *  ---- SPU信息 CRUD ----
-     *  48 /                 POST   新增
-     *  59 /treeCategory     GET    分类树
-     *  70 /brands           GET    品牌列表(按分类)
-     *  79 /attrGroups       GET    属性分组及属性值储(按分类)
+     *  53  /release          POST   新增
+     *  62  /treeCategory     GET    分类树
+     *  71  /brands           GET    品牌列表(按分类)
+     *  80  /attrGroups       GET    属性分组及属性值储(按分类)
+     *  89  /saleAttrs        GET    销售属性列表
+     * 
+     *  99  /up               POST   上架到 ESearch
      */
 
     /**
@@ -48,7 +51,7 @@ public class PmsSpuController extends BaseController {
     @SaCheckPermission("guli:release:add")
     @Log(title = "spu信息", businessType = BusinessType.INSERT)
     @RepeatSubmit()
-    @PostMapping()
+    @PostMapping("/release")
     public R<Void> add(@Validated(AddGroup.class) @RequestBody PmsSpuBo bo) {
         return toAjax(pmsSpuService.insertByBo(bo));
     }
@@ -87,5 +90,15 @@ public class PmsSpuController extends BaseController {
     @GetMapping("/saleAttrs")
     public R<List<PmsAttrVo>> listSaleAttrs(@RequestParam("catelogId") Long catelogId) {
         return R.ok(pmsSpuService.listSaleAttrs(catelogId));
+    }
+
+
+    /**
+     * 上架到ESearch
+     */
+    @SaCheckPermission("guli:release:edit")
+    @PostMapping("/up")
+    public R<Void> up(@RequestBody Long spuId) {
+        return toAjax(pmsSpuService.upToEsearch(spuId));
     }
 }

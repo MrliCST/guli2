@@ -40,4 +40,11 @@ public interface IPmsSpuService {
      * 根据分类id查询销售属性列表（不需要分组）
      */
     List<PmsAttrVo> listSaleAttrs(Long catelogId);
+
+    /**
+     * 将spu信息上架到es中
+     * @param spuId
+     * @return
+     */
+    Boolean upToEsearch(Long spuId);
 }
