@@ -260,7 +260,6 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
         }).collect(Collectors.toList());
         Map<Long,Long> skuAvailableStock = remoteWareService.getSkuAvailableStock(skuIds);
 
-        // ========== 属性补齐:品牌 / 分类 / 规格参数 ==========
         // 同一spu下的所有sku共享 brandId、catalogId,用第一个sku的即可
         PmsBrandVo brand = brandService.queryById(skuInfos.get(0).getBrandId());
         PmsCategoryVo category = categoryService.queryById(skuInfos.get(0).getCatalogId());
@@ -301,7 +300,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
                 .brandId(skuInfo.getBrandId())
                 .catalogId(skuInfo.getCatalogId())
                 .hasStock(skuAvailableStock.getOrDefault(skuId, 0L) > 0)  // 是否有库存
-                .hotScore(0L)  // 热度评分(暂无独立热度数据,写死为0)
+                .hotScore(0L)          // 热度评分(暂无独立热度数据,写死为0)
                 .brandName(brand.getName())      // 品牌名称
                 .brandImg(brand.getLogo())       // 品牌图片
                 .catalogName(category.getName()) // 分类名称
