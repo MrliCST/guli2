@@ -1,4 +1,4 @@
-$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+﻿$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
@@ -74,7 +74,6 @@ Write-Host ""
 # [1/2] Maven 编译打包
 # ==========================================
 # -pl "!guli-mall": 排除 guli 业务模块
-# --fail-at-end: 即使 guli 模块失败也不阻断 ruoyi 模块
 Write-Host "[1/2] 编译打包中... (排除 guli-mall)" -ForegroundColor Yellow -NoNewline
 $start = Get-Date
 mvn clean package "-pl" "!guli-mall" "-DskipTests" "-Dfile.encoding=UTF-8" >> $LogFile 2>&1
@@ -100,7 +99,6 @@ $hasError = $false
 foreach ($module in $SERVICE_MODULES) {
     $moduleName = Split-Path $module -Leaf
     $jarPath = Join-Path $ProjectRoot "$module\target\$moduleName.jar"
-    $classesDir = Join-Path $ProjectRoot "$module\target\classes"
 
     # --- 1. 检查 JAR 存在且非空 ---
     if (-not (Test-Path -LiteralPath $jarPath)) {
@@ -129,3 +127,12 @@ if ($hasError) {
 }
 Write-Host "全部通过" -ForegroundColor Green
 "全部通过" >> $LogFile
+
+Write-Host ""
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host " 编译打包完成！" -ForegroundColor Green
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host " 现在可以将模块 install 到本地 Maven 仓库：" -ForegroundColor Yellow
+Write-Host '   mvn install -pl "!guli-mall" -DskipTests' -ForegroundColor White
+Write-Host " 具体步骤可参考 README 的指导。" -ForegroundColor Yellow
+Write-Host ""

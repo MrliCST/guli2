@@ -403,11 +403,13 @@
 
     <build>
         <plugins>
+            <!-- 打fat包 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.4.2</version>
             </plugin>
+            <!-- 编译期 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -472,7 +474,7 @@
                 <executions>
                     <execution>
                         <id>flatten</id>
-                        <phase>install</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>flatten</goal>
                         </goals>

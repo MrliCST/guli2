@@ -62,12 +62,19 @@ docker network create gulimail
 
 使用 Maven 对 Ruoyi 微服务模块（排除 guli-mall 业务模块）执行 `clean package`，产出各模块的 `target/<module>.jar`。编译范围仅限 `ruoyi-auth`、`ruoyi-gateway`、`ruoyi-modules`、`ruoyi-visual` 及其依赖（`ruoyi-api`、`ruoyi-common`），不包含 guli 业务模块。
 
+之后需要把它们打包进入maven仓库中，在构建业务模块时，将会被使用。
+需要执行：
+
+mvn install -pl "!guli-mall" "-DskipTests" "-Dfile.encoding=UTF-8"
+
 ### Guli 业务模块编译
 
 ```powershell
 mvn clean compile -pl guli-mall/<module> -am -DskipTests
 
 mvn clean compile -pl guli-mall/guli-product -am -DskipTests
+
+mvn -f guli-mall/pom.xml clean install -DskipTests
 ```
 
 ### 第二步：构建 Docker 镜像

@@ -1,4 +1,3 @@
-# Tomcat
 server:
   port: 9214
 
@@ -32,9 +31,4 @@ spring:
       - optional:nacos:application-common.yml
       - optional:nacos:datasource.yml
       - optional:nacos:${spring.application.name}.yml
-
---- # easy-es 配置（Elasticsearch 搜索引擎）
-easy-es:
-  enable: true               # 启用 ES（RuoYi 自动配置的开关）
-  address: 127.0.0.1:9200    # ES 地址（docker 环境改为 guli-elasticsearch:9200）
 
