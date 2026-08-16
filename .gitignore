@@ -8,7 +8,14 @@ target/
 *.war
 *.nar
 *.ear
+# flatten 插件产物(构建生成,不提交)
 .flattened-pom.xml
+#
+# 注意:flatten-maven-plugin 配置了 updatePomFile=true(对齐上游),
+# 每次 `mvn install` 会把带 ${revision} 的源码 pom.xml 就地改写为
+# 真实版本(如 2.6.2)。这些改写属于构建产物,按约定【不提交】,
+# 提交前请还原:  git checkout -- '*/pom.xml' pom.xml
+#
 
 # ===========================
 # Node / Vue.js

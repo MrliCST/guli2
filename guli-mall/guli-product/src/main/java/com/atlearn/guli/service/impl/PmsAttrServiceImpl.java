@@ -79,6 +79,7 @@ public class PmsAttrServiceImpl implements IPmsAttrService {
         lqw.orderByAsc(PmsAttr::getAttrId);
         lqw.like(StringUtils.isNotBlank(bo.getAttrName()), PmsAttr::getAttrName, bo.getAttrName());
         lqw.eq(bo.getCatelogId() != null, PmsAttr::getCatelogId, bo.getCatelogId());
+        lqw.eq(bo.getSearchType() != null, PmsAttr::getSearchType, bo.getSearchType());
         lqw.eq(bo.getAttrType() != null, PmsAttr::getAttrType, bo.getAttrType());
         lqw.eq(bo.getShowDesc() != null, PmsAttr::getShowDesc, bo.getShowDesc());
         return lqw;

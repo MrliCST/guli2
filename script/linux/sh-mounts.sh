@@ -5,12 +5,12 @@
 # 复制 config/mnt-config/ 配置、复制 base SQL 到 mysql/db/
 #
 # 说明:data-home/mnt 可能归 root 所有(容器自动创建),
-# 本脚本在无写权限时自动改用 docker(以 root 身份)执行。
+# 本脚本统一以 docker(root 身份)执行,确保写权限。
 # ============================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 MNT_DIR="${PROJECT_ROOT}/data-home/mnt"
 CONFIG_DIR="${PROJECT_ROOT}/config/mnt-config"
 SQL_DIR="${PROJECT_ROOT}/config/base-sql-config"
@@ -44,20 +44,8 @@ echo "========================================"
 echo " 初始化 data-home/mnt/ 目录结构"
 echo "========================================"
 
-# 判断是否可直接写(当前用户是 root,或 data-home 可写)
-if [ -w "${MNT_DIR}" ] || [ "$(id -u)" -eq 0 ]; then
-  RUN="local"
-else
-  RUN="docker"
-  echo "[NOTE] data-home/mnt 无写权限,改用 docker(root) 执行"
-fi
-
-EXEC() { # 在 root 环境下执行
-  if [ "$RUN" = "docker" ]; then
-    docker run --rm -v "${PROJECT_ROOT}":/src:ro -v "${MNT_DIR}":/mnt alpine:latest sh -c "$1"
-  else
-    eval "$1"
-  fi
+EXEC() { # 以 docker(root 身份)执行
+  docker run --rm -v "${PROJECT_ROOT}":/src:ro -v "${MNT_DIR}":/mnt alpine:latest sh -c "$1"
 }
 
 # 创建所有子目录
@@ -69,11 +57,15 @@ EXEC "set -e; ${dir_list}"
 echo "[OK] 目录结构就绪"
 
 # 复制 config/mnt-config 全部配置 → data-home/mnt/
+# 注意:用 tar 而非 cp -a。cp -a 会把 config 下运行期数据目录(*/data、*/store)的
+# 属主覆盖成宿主用户(如 redis/data、kafka/data),导致容器内进程(uid 999 等)
+# 无法写入 —— redis 的 RDB 快照曾因此失败(MISCONF)。tar --exclude 跳过它们,
+# 让数据目录保持容器写入时的属主。
 echo "========================================"
-echo " 复制 config/mnt-config → data-home/mnt/"
+echo " 复制 config/mnt-config → data-home/mnt/(跳过 */data、*/store)"
 echo "========================================"
-EXEC "set -e; cp -a /src/config/mnt-config/. /mnt/"
-echo "[OK] 配置复制完成"
+EXEC "set -e; cd /src/config/mnt-config && tar --exclude='*/data' --exclude='*/store' -cf - . | (cd /mnt && tar -xpf -)"
+echo "[OK] 配置复制完成(运行期数据目录已跳过)"
 
 # 复制 MySQL 初始化 SQL → data-home/mnt/mysql/db/
 echo "========================================"
