@@ -1,15 +1,17 @@
 package com.atlearn.guli.service.impl;
 
-import org.dromara.resource.api.domain.RemoteFile;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.dubbo.config.annotation.DubboReference;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.dromara.resource.api.domain.RemoteFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.atlearn.guli.domain.bo.PmsSpuBo;
-import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
-import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.RemoteCouponService;
 import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.domain.PmsProductAttrValue;
@@ -22,13 +24,17 @@ import com.atlearn.guli.domain.PmsSpuInfoDesc;
 import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
 import com.atlearn.guli.domain.RemoteSkuLadderBo;
 import com.atlearn.guli.domain.RemoteSpuBoundsBo;
-import com.atlearn.guli.domain.vo.PmsCategoryVo;
-import com.atlearn.guli.dto.SkuEsModel;
-import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
+import com.atlearn.guli.domain.bo.PmsAttrBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBo;
+import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
+import com.atlearn.guli.domain.bo.PmsSpuBo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
-import com.atlearn.guli.domain.bo.PmsAttrBo;
-import com.atlearn.guli.mapper.PmsSpuInfoMapper;
+import com.atlearn.guli.domain.vo.PmsBrandVo;
+import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
+import com.atlearn.guli.domain.vo.PmsCategoryVo;
+import com.atlearn.guli.dto.SkuEsModel;
+import com.atlearn.guli.esmapper.SkuEsMapper;
 import com.atlearn.guli.mapper.PmsAttrAttrgroupRelationMapper;
 import com.atlearn.guli.mapper.PmsProductAttrValueMapper;
 import com.atlearn.guli.mapper.PmsSkuImagesMapper;
@@ -36,18 +42,15 @@ import com.atlearn.guli.mapper.PmsSkuInfoMapper;
 import com.atlearn.guli.mapper.PmsSkuSaleAttrValueMapper;
 import com.atlearn.guli.mapper.PmsSpuImagesMapper;
 import com.atlearn.guli.mapper.PmsSpuInfoDescMapper;
-import com.atlearn.guli.esmapper.SkuEsMapper;
+import com.atlearn.guli.mapper.PmsSpuInfoMapper;
+import com.atlearn.guli.service.IPmsAttrService;
+import com.atlearn.guli.service.IPmsBrandService;
+import com.atlearn.guli.service.IPmsCategoryService;
 import com.atlearn.guli.service.IPmsSpuService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.atlearn.guli.service.IPmsCategoryService;
-import com.atlearn.guli.service.IPmsBrandService;
-import com.atlearn.guli.service.IPmsAttrService;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SPU信息Service业务层处理
@@ -243,15 +246,46 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
 
     @Override
     public Boolean upToEsearch(Long spuId) {
+        // 查询当前spuId对应的所有sku信息
         List<PmsSkuInfo> skuInfos = skuInfoMapper.selectList(
             Wrappers.<PmsSkuInfo>lambdaQuery().eq(x -> x.getSpuId(), spuId)
         );
+        if (skuInfos.isEmpty()) {
+            return false;
+        }
 
         // 获取远程 map[skuId] => skuAvailableStock 的数据
         List<Long> skuIds = skuInfos.stream().map(skuInfo -> {
-            return skuInfo.getSkuId();    
+            return skuInfo.getSkuId();
         }).collect(Collectors.toList());
         Map<Long,Long> skuAvailableStock = remoteWareService.getSkuAvailableStock(skuIds);
+
+        // ========== 属性补齐:品牌 / 分类 / 规格参数 ==========
+        // 同一spu下的所有sku共享 brandId、catalogId,用第一个sku的即可
+        PmsBrandVo brand = brandService.queryById(skuInfos.get(0).getBrandId());
+        PmsCategoryVo category = categoryService.queryById(skuInfos.get(0).getCatalogId());
+
+        // 该spu下保存的基本属性值(attrName/attrValue 已冗余存储)
+        List<PmsProductAttrValue> baseAttrs = productAttrValueMapper.selectList(
+            Wrappers.<PmsProductAttrValue>lambdaQuery().eq(x -> x.getSpuId(), spuId)
+        );
+        // 只上架"可检索"的规格属性(searchType=1)到ES,用于搜索/筛选
+        PmsAttrBo attrBo = new PmsAttrBo();
+        attrBo.setCatelogId(skuInfos.get(0).getCatalogId());
+        attrBo.setSearchType(1L);
+        Set<Long> searchAttrIds = attrService.queryList(attrBo).stream().map(attrVo -> {
+            return attrVo.getAttrId();
+        }).collect(Collectors.toSet());
+        List<SkuEsModel.Attrs> attrs = baseAttrs.stream()
+            .filter(v -> searchAttrIds.contains(v.getAttrId()))
+            .map(v -> {
+                SkuEsModel.Attrs attr = new SkuEsModel.Attrs();
+                attr.setAttrId(v.getAttrId());
+                attr.setAttrName(v.getAttrName());
+                attr.setAttrValue(v.getAttrValue());
+                return attr;
+            })
+            .collect(Collectors.toList());
 
         // 构造ES索引数据的 DTO
         List<SkuEsModel> skuEsModels = skuInfos.stream().map(skuInfo -> {
@@ -266,18 +300,18 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
                 .saleCount(skuInfo.getSaleCount())
                 .brandId(skuInfo.getBrandId())
                 .catalogId(skuInfo.getCatalogId())
-                .hasStock(skuAvailableStock.get(skuId) > 0)  // 是否有库存
-                .hotScore(0L)  // 热度评分
-                .brandName(null) // 品牌名称
-                .brandImg(null)   // 品牌图片
-                .catalogName(null) // 分类名称
-                .attrs(null)  // 商品规格属性
+                .hasStock(skuAvailableStock.getOrDefault(skuId, 0L) > 0)  // 是否有库存
+                .hotScore(0L)  // 热度评分(暂无独立热度数据,写死为0)
+                .brandName(brand.getName())      // 品牌名称
+                .brandImg(brand.getLogo())       // 品牌图片
+                .catalogName(category.getName()) // 分类名称
+                .attrs(attrs)                    // 商品规格属性
                 .build();
         }).collect(Collectors.toList());
 
         // 上架到ES索引库
         skuEsMapper.insertBatch(skuEsModels);
-        
+
         return true;
     }
 }
