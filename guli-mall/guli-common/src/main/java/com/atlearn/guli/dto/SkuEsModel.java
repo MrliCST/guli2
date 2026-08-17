@@ -60,7 +60,6 @@ public class SkuEsModel {
      */
     @IndexField(fieldType = FieldType.KEYWORD)
     private String brandName;
-
     private String brandImg;
 
     /**

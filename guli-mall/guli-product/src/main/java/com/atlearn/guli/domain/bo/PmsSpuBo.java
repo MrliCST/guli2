@@ -2,6 +2,8 @@ package com.atlearn.guli.domain.bo;
 
 import com.atlearn.guli.domain.PmsSpuInfo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotEmpty;
@@ -37,10 +39,16 @@ public class PmsSpuBo extends BaseEntity {
         private Long brandId;
         private Long weight;
         private Long publishStatus;
-         private Long growBounds;  // 成长积分
-        private Long buyBounds;    // 购物积分
+        private Long growBounds;  // 成长积分
+        private Long buyBounds;   // 购物积分
+        
+        // lombok默认生成 getmainImgDesc()，而不是 getMainImgDesc()
+        // json化根据 getter 推导字段，不匹配导致 null
+        @JsonProperty("MainImgDesc")
         private String MainImgDesc;
+        @JsonProperty("ImgAlbum")
         private List<RemoteFile> ImgAlbum;
+
         private List<BaseAttr> baseAttrs;
     }
 

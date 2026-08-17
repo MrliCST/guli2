@@ -10,6 +10,7 @@ import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RScript;
+import org.redisson.api.RedissonClient;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -52,7 +53,7 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
 
     private final PmsCategoryMapper baseMapper;
     private final PmsCategoryBrandRelationMapper cbrMapper;
-    private final Redisson redisson;
+    private final RedissonClient redissonClient;
 
     /**
      * 查询商品三级分类
@@ -278,7 +279,7 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
      */
     @Deprecated
     private List<PmsCategoryVo> oldAgainQueryTreeList(PmsCategoryBo bo) {
-        RMapCache<String, List<PmsCategoryVo>> cache = redisson.getMapCache("category");
+        RMapCache<String, List<PmsCategoryVo>> cache = redissonClient.getMapCache("category");
         String cacheKey = "treeData";
 
         // 1. 查缓存，命中直接返回
@@ -288,7 +289,7 @@ public class PmsCategoryServiceImpl implements IPmsCategoryService {
         }
 
         // 2. 加锁防击穿
-        RLock lock = redisson.getLock("category:tree:lock");
+        RLock lock = redissonClient.getLock("category:tree:lock");
         lock.lock();
         try {
             // 3. 二次检查：等锁期间前一个线程可能已经写入了缓存

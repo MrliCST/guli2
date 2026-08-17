@@ -258,6 +258,7 @@ const categoryTree = ref<CategoryVO[]>([])
  * computed = 纯计算，"x 变了 y 立即算出来"（同步派生值）
  * watch = 副作用，"x 变了去做一件事"（可以异步，比如调接口、写 localStorage）
  */
+
 const mainImgOssId = ref('')
 watch(mainImgOssId, async (val) => {
   if (val) {
@@ -270,6 +271,7 @@ watch(mainImgOssId, async (val) => {
 
 const imgAlbumOssId = ref('')
 watch(imgAlbumOssId, async (val) => {
+  debugger
   if (val) {
     const res = await listByIds(val)
     spuBaseInfo.value.ImgAlbum = res.data // OssVO[]
@@ -400,6 +402,8 @@ const submitForm = async () => {
       }))
     }))
   }
+
+  debugger
 
   // 提交加载开启
   buttonLoading.value = true
