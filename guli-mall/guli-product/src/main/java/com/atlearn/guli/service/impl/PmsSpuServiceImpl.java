@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -260,23 +259,14 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
         }).collect(Collectors.toList());
         Map<Long,Long> skuAvailableStock = remoteWareService.getSkuAvailableStock(skuIds);
 
-        // 同一spu下的所有sku共享 brandId、catalogId,用第一个sku的即可
-        PmsBrandVo brand = brandService.queryById(skuInfos.get(0).getBrandId());
-        PmsCategoryVo category = categoryService.queryById(skuInfos.get(0).getCatalogId());
+        // 查spu信息，取品牌和分类
+        PmsSpuInfo spuInfo = baseMapper.selectById(spuId);
+        PmsBrandVo brand = brandService.queryById(spuInfo.getBrandId());
+        PmsCategoryVo category = categoryService.queryById(spuInfo.getCatalogId());
 
-        // 该spu下保存的基本属性值(attrName/attrValue 已冗余存储)
-        List<PmsProductAttrValue> baseAttrs = productAttrValueMapper.selectList(
-            Wrappers.<PmsProductAttrValue>lambdaQuery().eq(x -> x.getSpuId(), spuId)
-        );
-        // 只上架"可检索"的规格属性(searchType=1)到ES,用于搜索/筛选
-        PmsAttrBo attrBo = new PmsAttrBo();
-        attrBo.setCatelogId(skuInfos.get(0).getCatalogId());
-        attrBo.setSearchType(1L);
-        Set<Long> searchAttrIds = attrService.queryList(attrBo).stream().map(attrVo -> {
-            return attrVo.getAttrId();
-        }).collect(Collectors.toSet());
-        List<SkuEsModel.Attrs> attrs = baseAttrs.stream()
-            .filter(v -> searchAttrIds.contains(v.getAttrId()))
+        // 联表查询该spu所属分类下、可检索(search_type=1)的属性值，用于搜索/筛选
+        List<PmsProductAttrValue> searchAttrs = productAttrValueMapper.selectSearchAttrsBySpuId(spuId, spuInfo.getCatalogId());
+        List<SkuEsModel.Attrs> attrs = searchAttrs.stream()
             .map(v -> {
                 SkuEsModel.Attrs attr = new SkuEsModel.Attrs();
                 attr.setAttrId(v.getAttrId());

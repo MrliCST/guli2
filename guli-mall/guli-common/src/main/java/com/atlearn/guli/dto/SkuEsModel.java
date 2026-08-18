@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.dromara.easyes.annotation.IndexField;
 import org.dromara.easyes.annotation.IndexId;
 import org.dromara.easyes.annotation.IndexName;
-import org.dromara.easyes.annotation.rely.Analyzer;
 import org.dromara.easyes.annotation.rely.FieldType;
 
 import java.math.BigDecimal;
@@ -27,50 +26,36 @@ import java.util.List;
 @IndexName("sku_index")
 public class SkuEsModel {
 
-    /**
-     * 文档主键（ES 的 _id）
-     */
     @IndexId
     private Long skuId;
 
     private Long spuId;
 
-    /**
-     * 检索标题：分词检索，中文用 IK 分词器
-     */
-    @IndexField(fieldType = FieldType.TEXT, analyzer = Analyzer.IK_MAX_WORD, searchAnalyzer = Analyzer.IK_SMART)
-    private String skuTitle;
-
     private BigDecimal skuPrice;
 
     private String skuImg;
 
-    private Long saleCount; //销量
+    private Long saleCount; // 销量
 
-    private Boolean hasStock; //是否有库存
+    private Boolean hasStock; // 是否有库存
 
-    private Long hotScore; //热度评分
+    private Long hotScore; // 热度评分
 
     private Long brandId;
 
     private Long catalogId;
 
-    /**
-     * 品牌名：精确匹配/聚合，用 KEYWORD 不分词
-     */
-    @IndexField(fieldType = FieldType.KEYWORD)
-    private String brandName;
     private String brandImg;
 
-    /**
-     * 分类名：精确匹配/聚合
-     */
+    @IndexField(fieldType = FieldType.TEXT)
+    private String skuTitle;
+
+    @IndexField(fieldType = FieldType.KEYWORD)
+    private String brandName;
+
     @IndexField(fieldType = FieldType.KEYWORD)
     private String catalogName;
 
-    /**
-     * 检索属性：嵌套类型（支持对象列表）
-     */
     @IndexField(fieldType = FieldType.NESTED)
     private List<Attrs> attrs;
 
@@ -81,3 +66,77 @@ public class SkuEsModel {
         private String attrValue;
     }
 }
+
+/* 
+    索引创建语句，模型结构
+
+    PUT /sku_index
+    {
+        "settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0
+        },
+        "mappings": {
+            "properties": {
+                "skuId": {
+                    "type": "long"
+                },
+                "spuId": {
+                    "type": "long"
+                },
+                "skuTitle": {
+                    "type": "text",
+                    "analyzer": "ik_max_word",
+                    "search_analyzer": "ik_smart"
+                },
+                "skuPrice": {
+                    "type": "scaled_float",
+                    "scaling_factor": 100
+                },
+                "skuImg": {
+                    "type": "keyword",
+                    "index": false
+                },
+                "saleCount": {
+                    "type": "long"
+                },
+                "hasStock": {
+                    "type": "boolean"
+                },
+                "hotScore": {
+                    "type": "long"
+                },
+                "brandId": {
+                    "type": "long"
+                },
+                "catalogId": {
+                    "type": "long"
+                },
+                "brandName": {
+                    "type": "keyword"
+                },
+                "brandImg": {
+                    "type": "keyword",
+                    "index": false
+                },
+                "catalogName": {
+                    "type": "keyword"
+                },
+                "attrs": {
+                    "type": "nested",
+                    "properties": {
+                        "attrId": {
+                            "type": "long"
+                        },
+                        "attrName": {
+                            "type": "keyword"
+                        },
+                        "attrValue": {
+                            "type": "keyword"
+                        }
+                    }
+                }
+            }
+        }
+    }
+*/
