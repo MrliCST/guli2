@@ -1,0 +1,39 @@
+/* ============ Reset ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: #333;
+  background: #f5f5f5;
+}
+
+img { display: block; max-width: 100%; }
+
+a { color: #c81623; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+ul { list-style: none; }
+
+/* ============ 主题色变量 ============ */
+:root {
+  --theme-red: #c81623;
+  --page-width: 1200px;
+}
+
+/* ============ 通用单元格工具(供各 Floor 复用) ============ */
+.cell {
+  padding: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #555;
+  background: rgba(255, 255, 255, 0.55);
+}
+.cell b { display: block; font-size: 13px; color: #222; margin-bottom: 4px; }
+.cell .tag { font-size: 11px; color: #888; }
+
+/* 通用商品卡:图 + 名 + 价 */
+.goodsCard img { width: 100%; object-fit: cover; border-radius: 4px; }
+.goodsCard .name { color: #333; line-height: 1.4; font-size: 12px; }
+.goodsCard .price { color: var(--theme-red); font-weight: bold; font-size: 14px; }

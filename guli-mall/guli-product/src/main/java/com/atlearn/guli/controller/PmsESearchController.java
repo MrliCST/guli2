@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.core.domain.R;
+
+import com.atlearn.guli.dto.ESearchListVo;
 import com.atlearn.guli.dto.ESearchParam;
 import com.atlearn.guli.dto.SkuEsModel;
 import com.atlearn.guli.service.IPmsESearchService;
@@ -28,7 +30,7 @@ public class PmsESearchController {
      * 商品检索
      */
     @PostMapping
-    public R<List<SkuEsModel>> esearch(@RequestBody ESearchParam param) {
+    public R<ESearchListVo> esearch(@RequestBody ESearchParam param) {
         return R.ok(pmsESearchService.esearch(param));
     }
 }

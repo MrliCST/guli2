@@ -1,9 +1,7 @@
 package com.atlearn.guli.service;
 
+import com.atlearn.guli.dto.ESearchListVo;
 import com.atlearn.guli.dto.ESearchParam;
-import com.atlearn.guli.dto.SkuEsModel;
-
-import java.util.List;
 
 /**
  * ES商品检索Service接口
@@ -19,5 +17,5 @@ public interface IPmsESearchService {
      * @param param 检索参数
      * @return 商品检索结果列表
      */
-    List<SkuEsModel> esearch(ESearchParam param);
+    ESearchListVo esearch(ESearchParam param);
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class ESearchResponse {
+public class ESearchListVo {
     // 分页参数
     private Long total;
     private Integer pageNum;

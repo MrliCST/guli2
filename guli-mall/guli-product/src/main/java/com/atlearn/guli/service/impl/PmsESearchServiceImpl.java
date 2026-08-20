@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -12,15 +14,24 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.elasticsearch.core.search.TotalHits;
 import co.elastic.clients.json.JsonData;
 
+import com.atlearn.guli.config.GuliEsConstant;
+import com.atlearn.guli.dto.ESearchListVo;
 import com.atlearn.guli.dto.ESearchParam;
 import com.atlearn.guli.dto.SkuEsModel;
+import com.atlearn.guli.dto.ESearchListVo.AttrInfo;
+import com.atlearn.guli.dto.ESearchListVo.BrandInfo;
+import com.atlearn.guli.dto.ESearchListVo.CategoryInfo;
 import com.atlearn.guli.service.IPmsESearchService;
 
 import lombok.RequiredArgsConstructor;
@@ -39,8 +50,12 @@ public class PmsESearchServiceImpl implements IPmsESearchService {
 
     private final ElasticsearchClient elasticsearchClient;
 
+    /**
+     * @param param 检索参数
+     * @return 商品检索结果列表
+     */
     @Override
-    public List<SkuEsModel> esearch(ESearchParam param) {
+    public ESearchListVo esearch(ESearchParam param) {
         /*
             bool: 多个查询条件组合
             must: 必须满足的多个条件AND关系 (参与评分计算)
@@ -136,7 +151,13 @@ public class PmsESearchServiceImpl implements IPmsESearchService {
                     "agg" : {
                         "brand_name_agg" : {
                             "terms" : {
-                                "field" : "brandName",   // 在一个brandId桶中，再次根据 brandName 分桶。实际上，一个id对应一个name，只能分出一个桶来
+                                "field" : "brandName",  
+                                "size" : 10
+                            }
+                        },
+                        "brand_img_agg" : {
+                            "terms" : {
+                                "field" : "brandImg",  
                                 "size" : 10
                             }
                         }
@@ -150,7 +171,7 @@ public class PmsESearchServiceImpl implements IPmsESearchService {
                     "agg" : {
                         "category_name_agg" : {
                             "terms" : {
-                                "field" : "catalogName",  // 还是id对name一对一，但是我们可以看到name了，而不是晦涩的 id
+                                "field" : "catalogName",  
                                 "size" : 10
                             }
                         }
@@ -267,24 +288,38 @@ public class PmsESearchServiceImpl implements IPmsESearchService {
                 .preTags(List.of("<b style='color:red'>"))
                 .postTags(List.of("</b>"))))
             .from(0)
-            .size(5);
+            .size(GuliEsConstant.pageNum);
 
         // 2. 聚合：品牌 / 分类 / 属性(nested)
         builder.aggregations("brand_agg", Aggregation.of(a -> a.terms(t -> t.field("brandId").size(10))
-            .aggregations(Map.of("brand_name_agg",
-                Aggregation.of(sa -> sa.terms(t -> t.field("brandName").size(10)))))));
+            .aggregations(Map.of(
+                "brand_name_agg",
+                Aggregation.of(sa -> sa.terms(t -> t.field("brandName").size(10))),
+                "brand_img_agg",
+                Aggregation.of(sa -> sa.terms(t -> t.field("brandImg").size(10))))
+            )
+        ));
 
         builder.aggregations("category_agg", Aggregation.of(a -> a.terms(t -> t.field("catalogId").size(10))
-            .aggregations(Map.of("category_name_agg",
-                Aggregation.of(sa -> sa.terms(t -> t.field("catalogName").size(10)))))));
+            .aggregations(Map.of(
+                "category_name_agg",
+                Aggregation.of(sa -> sa.terms(t -> t.field("catalogName").size(10))))
+            )
+        ));
 
         builder.aggregations("attr_agg", Aggregation.of(a -> a.nested(n -> n.path("attrs"))
-            .aggregations(Map.of("attr_id_agg",
+            .aggregations(Map.of(
+                "attr_id_agg",
                 Aggregation.of(sa -> sa.terms(t -> t.field("attrs.attrId").size(10))
                     .aggregations(Map.of(
-                        "attr_name_agg", Aggregation.of(na -> na.terms(t -> t.field("attrs.attrName").size(10))),
-                        "attr_value_agg", Aggregation.of(va -> va.terms(t -> t.field("attrs.attrValue").size(10)))
-                    )))))));
+                        "attr_name_agg", 
+                        Aggregation.of(na -> na.terms(t -> t.field("attrs.attrName").size(10))),
+                        "attr_value_agg", 
+                        Aggregation.of(va -> va.terms(t -> t.field("attrs.attrValue").size(10)))
+                    ))
+                )
+            ))
+        ));
 
         // 3. 排序
         if (param.getSortList() != null && !param.getSortList().isEmpty()) {
@@ -326,35 +361,110 @@ public class PmsESearchServiceImpl implements IPmsESearchService {
     }
 
     /**
-     * 将命中文档映射为商品列表，并应用 skuTitle 高亮
+     * 将命中的 hits，封装为 ESearchListVo
      */
-    private List<SkuEsModel> parseHits(SearchResponse<SkuEsModel> response) {
-        List<SkuEsModel> products = new ArrayList<>();
-        if (response.hits() == null || response.hits().hits() == null) {
-            return products;
-        }
-        for (Hit<SkuEsModel> hit : response.hits().hits()) {
-            SkuEsModel sku = hit.source();
-            if (sku == null) {
-                continue;
-            }
-            // @IndexId 的 skuId 作为 ES 的 _id 存储，_source 中可能没有该字段，需从 _id 回填
-            if (sku.getSkuId() == null && hit.id() != null) {
-                sku.setSkuId(Long.valueOf(hit.id()));
-            }
-            // 高亮：命中词被 <b> 包裹
-            Map<String, List<String>> highlights = hit.highlight();
-            if (highlights != null) {
-                List<String> titleHighlights = highlights.get("skuTitle");
-                if (titleHighlights != null && !titleHighlights.isEmpty()) {
-                    sku.setSkuTitle(titleHighlights.get(0));
-                }
-            }
-            products.add(sku);
-        }
+    private ESearchListVo parseHits(SearchResponse<SkuEsModel> response) {
+        ESearchListVo esListVo = new ESearchListVo();
+        
+        // hits -> The returned documents and metadata.
+        HitsMetadata<SkuEsModel> docMetaHits = response.hits();
+        TotalHits total = docMetaHits.total();
 
-        // TODO 聚合结果解析：response.aggregations() 中含 brand_agg / category_agg / attr_agg，
-        //  需扩展返回类型（如 SearchResultVo 携带 facets）后在此解析回填。
-        return products;
+        // 获取总命中数, 分页大小
+        Long totalHits = null;
+        if(total != null){
+            totalHits = total.value();
+        }
+        esListVo.setTotal(totalHits);
+        esListVo.setPageSize(GuliEsConstant.pageNum);
+
+        // 获取命中的 product
+        List<Hit<SkuEsModel>> modelHits = docMetaHits.hits();
+        List<SkuEsModel> products = modelHits.stream()
+            .map(hit -> hit.source())
+            .collect(Collectors.toList());
+        esListVo.setProducts(products);
+
+        Map<String,Aggregate> aggregations = response.aggregations();
+
+        // 获取品牌的聚合 
+        List<ESearchListVo.BrandInfo> brandInfos = aggregations.get("brand_agg")
+            .sterms()  // 查询使用 terms 聚合，那么解析也使用 terms
+            .buckets()
+            .array()
+            .stream()
+            .map(bucket -> {
+                long brandId = bucket.key().longValue(); // 取键对应的值
+                String brandName = bucket.aggregations().get("brand_name_agg")
+                    .sterms()
+                    .buckets()
+                    .array().get(0)
+                    .key()
+                    .stringValue();
+                String brandImg = bucket.aggregations().get("brand_img_agg")
+                    .sterms()
+                    .buckets()
+                    .array().get(0)
+                    .key()
+                    .stringValue();
+                ESearchListVo.BrandInfo brandInfo = new ESearchListVo.BrandInfo();
+                brandInfo.setBrandId(brandId);
+                brandInfo.setBrandName(brandName);
+                brandInfo.setBrandImg(brandImg);
+                return brandInfo;
+            }).collect(Collectors.toList());
+        esListVo.setBrands(brandInfos);
+
+        List<CategoryInfo> categoryInfos = aggregations.get("category_agg")
+            .sterms()
+            .buckets()
+            .array()
+            .stream()
+            .map(bucket -> {
+                long catId = bucket.key().longValue();
+                String catName = bucket.aggregations().get("cat_name_agg")
+                    .sterms()
+                    .buckets()
+                    .array().get(0)
+                    .key()
+                    .stringValue();
+                ESearchListVo.CategoryInfo categoryInfo = new ESearchListVo.CategoryInfo();
+                categoryInfo.setCategoryId(catId);
+                categoryInfo.setCategoryName(catName);
+                return categoryInfo;
+            }).collect(Collectors.toList());
+        esListVo.setCategories(categoryInfos);
+
+        List<AttrInfo> attrInfos = aggregations.get("attr_agg").nested().aggregations().get("att_id_agg")
+            .sterms()
+            .buckets()
+            .array()
+            .stream()
+            .map(bucket -> {
+                long attrId = bucket.key().longValue();
+                String attrName = bucket.aggregations().get("attr_name_agg")
+                    .sterms()
+                    .buckets()
+                    .array().get(0)
+                    .key()
+                    .stringValue();
+
+                List<String> attrValues = bucket.aggregations().get("attr_value_agg")
+                    .sterms()
+                    .buckets()
+                    .array()
+                    .stream()
+                    .map(b -> b.key().stringValue())
+                    .collect(Collectors.toList());
+                
+                ESearchListVo.AttrInfo attrInfo = new ESearchListVo.AttrInfo();
+                attrInfo.setAttrId(attrId);
+                attrInfo.setAttrName(attrName);
+                attrInfo.setAttrValue(attrValues);
+                return attrInfo;
+            }).collect(Collectors.toList());
+        esListVo.setAttrs(attrInfos);
+        
+        return esListVo;
     }
 }
