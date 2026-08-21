@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   img: { type: String, required: true },
   price: { type: String, default: '0.00' },

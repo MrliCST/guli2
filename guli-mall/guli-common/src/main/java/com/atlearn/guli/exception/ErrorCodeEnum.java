@@ -14,6 +14,8 @@ public enum ErrorCodeEnum {
     /** 参数校验失败 */
     VALIDATION_FAILED(10001, "参数校验失败"),
 
+    ASYNC_READ_SKUITEM_FAILED(10002, "异步读取sku信息失败"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 

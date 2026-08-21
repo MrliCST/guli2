@@ -10,7 +10,7 @@
   </footer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const links = ['关于我们', '联系我们', '联系客服', '商家入驻', '营销中心', '手机谷粒', '销售联盟', '谷粒社区']
 </script>
 

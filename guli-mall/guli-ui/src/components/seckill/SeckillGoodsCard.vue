@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   img: { type: String, default: '/img/_/list.jpg' },
   intro: { type: String, default: '' },

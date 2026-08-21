@@ -36,6 +36,15 @@ public class GuliExceptionHandler {
     }
 
     /**
+     * 业务异常
+     */
+    @ExceptionHandler(BusinessException.class)
+    public R<Void> handleBusinessException(BusinessException e) {
+        log.warn("业务异常: code={}, msg={}", e.getCode(), e.getMessage());
+        return R.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
      * 兜底：未知错误
      */
     @ExceptionHandler(Exception.class)

@@ -34,9 +34,9 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import SeckillGoodsCard from './SeckillGoodsCard.vue'
+import SeckillGoodsCard from '@/components/seckill/SeckillGoodsCard.vue'
 
 const goods = ref([
   { img: '/img/_/list.jpg', intro: 'Apple iPhone 6s (A1699) 64G 玫瑰金色 移动联通电信4G手机', secPrice: '4299', everPrice: '5299', sold: '823', rate: 82, left: '177' },

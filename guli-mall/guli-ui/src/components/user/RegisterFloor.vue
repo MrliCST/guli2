@@ -58,7 +58,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, ref } from 'vue'
 
 const form = reactive({ phone: '', code: '', password: '', confirm: '', agreed: true })

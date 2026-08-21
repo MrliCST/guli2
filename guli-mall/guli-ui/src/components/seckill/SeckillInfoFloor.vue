@@ -82,7 +82,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const mainImg = ref('/img/_/b1.png')

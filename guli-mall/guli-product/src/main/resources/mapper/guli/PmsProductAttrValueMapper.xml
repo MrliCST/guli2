@@ -4,7 +4,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.atlearn.guli.mapper.PmsProductAttrValueMapper">
 
-    <!-- 联表查询spu所属分类下、可检索(search_type=1)的属性值 -->
+    <!-- spu对应的基本属性 -->
     <select id="selectSearchAttrsBySpuId" resultType="com.atlearn.guli.domain.PmsProductAttrValue">
         SELECT
             pav.attr_id,
@@ -16,6 +16,31 @@
           AND pa.catelog_id = #{catalogId}
           AND pa.search_type = 1
         ORDER BY pav.attr_sort ASC
+    </select>
+
+
+    <resultMap id="baseAttrGroupMap" type="com.atlearn.guli.domain.vo.PmsSkuItemVo$SpuBaseAttrGroup">
+        <id property="groupName" column="attr_group_name"/>
+        <collection property="attrs" ofType="com.atlearn.guli.domain.vo.PmsSkuItemVo$SpuBaseAttr">
+            <result property="attrName" column="attr_name"/>
+            <result property="attrValue" column="attr_value"/>
+        </collection>
+    </resultMap>
+
+    <!-- spu对应的属性及其分组 -->
+    <select id="selectBaseAttrGroupBySpuId" resultMap="baseAttrGroupMap">
+        SELECT
+            pag.attr_group_name,
+            pa.attr_name,
+            pav.attr_value
+        FROM pms_product_attr_value pav
+        INNER JOIN pms_attr pa ON pa.attr_id = pav.attr_id
+        INNER JOIN pms_attr_attrgroup_relation aar ON aar.attr_id = pav.attr_id
+        INNER JOIN pms_attr_group pag ON pag.attr_group_id = aar.attr_group_id
+        WHERE pav.spu_id = #{spuId}
+          AND pa.attr_type = 1
+          AND pag.catelog_id = #{catelogId}
+        ORDER BY pag.attr_group_name, pav.attr_sort ASC
     </select>
 
 </mapper>

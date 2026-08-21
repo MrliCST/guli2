@@ -4,7 +4,7 @@
   </aside>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const tools = ref(['购物车', '关注', '足迹', '顶部'])

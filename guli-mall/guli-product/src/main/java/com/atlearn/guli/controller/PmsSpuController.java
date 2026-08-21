@@ -48,7 +48,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 新增spu信息
      */
-    @SaCheckPermission("guli:release:add")
+    @SaCheckPermission("guli:maintain:add")
     @Log(title = "spu信息", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/release")
@@ -59,7 +59,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 获取分类树
      */
-    @SaCheckPermission("guli:release:query")
+    @SaCheckPermission("guli:maintain:query")
     @GetMapping("/treeCategory")
     public R<List<PmsCategoryVo>> treeCategory() {
         return R.ok(pmsSpuService.listTreeCategory());
@@ -68,7 +68,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 根据分类id查询品牌列表
      */
-    @SaCheckPermission("guli:release:query")
+    @SaCheckPermission("guli:maintain:query")
     @GetMapping("/brands")
     public R<List<PmsCategoryBrandRelationVo>> listBrands(@RequestParam("catelogId") Long catelogId) {
         return R.ok(pmsSpuService.listBrandsByCategoryId(catelogId));
@@ -77,7 +77,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 根据分类id查询属性分组及其属性列表
      */
-    @SaCheckPermission("guli:release:query")
+    @SaCheckPermission("guli:maintain:query")
     @GetMapping("/attrGroups")
     public R<List<PmsAttrGroupWithAttrsVo>> listBaseAttrs(@RequestParam("catelogId") Long catelogId) {
         return R.ok(pmsSpuService.listBaseAttrs(catelogId));
@@ -86,7 +86,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 根据分类id查询销售属性列表
      */
-    @SaCheckPermission("guli:release:query")
+    @SaCheckPermission("guli:maintain:query")
     @GetMapping("/saleAttrs")
     public R<List<PmsAttrVo>> listSaleAttrs(@RequestParam("catelogId") Long catelogId) {
         return R.ok(pmsSpuService.listSaleAttrs(catelogId));
@@ -96,7 +96,7 @@ public class PmsSpuController extends BaseController {
     /**
      * 上架到ESearch
      */
-    @SaCheckPermission("guli:release:edit")
+    @SaCheckPermission("guli:maintain:edit")
     @PostMapping("/up")
     public R<Void> up(@RequestBody Long spuId) {
         return toAjax(pmsSpuService.upToEsearch(spuId));

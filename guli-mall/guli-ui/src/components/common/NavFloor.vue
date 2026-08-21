@@ -1,20 +1,18 @@
 <template>
   <section class="navFloor">
-    <div class="navFloor__inner">
-      <div class="cell navFloor__welcome">
-        谷粒商城欢迎您!请 <a href="#">登录</a> <a href="#">免费注册</a>
-      </div>
-      <div class="cell navFloor__links">
-        <template v-for="item in links" :key="item.label">
-          <a v-if="item.href" :href="item.href">{{ item.label }}</a>
-          <span v-else>{{ item.label }}</span>
-        </template>
-      </div>
+    <div class="gloabl_cell welcome">
+      <span>谷粒商城欢迎您!</span><a href="#">请登录</a><a href="#">免费注册</a>
+    </div>
+    <div class="gloabl_cell links">
+      <template v-for="item in links" :key="item.label">
+        <a v-if="item.href" :href="item.href">{{ item.label }}</a>
+        <span v-else>{{ item.label }}</span>
+      </template>
     </div>
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 // 顶部快捷导航:有 href 的渲染为链接,无 href 的渲染为纯文本
@@ -31,19 +29,36 @@ const links = ref([
 </script>
 
 <style scoped>
-.navFloor { background: AliceBlue; padding: 10px 0; }
-.navFloor__inner {
-  width: var(--page-width);
-  margin: 0 auto;
+.navFloor {
+  background-color: #eaeaea;
+  height: 30px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 40px;
+  grid-template-columns: auto auto;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
-.navFloor__welcome { background: LightBlue; }
-.navFloor__links   { background: PaleTurquoise; }
-.navFloor__links a,
-.navFloor__links span { margin: 0 6px; }
-.navFloor__links span { color: #555; }
+
+/* span和a的样式 */
+.gloabl_cell a,
+.gloabl_cell span {
+  margin-right: 12px;
+  padding-right: 12px;
+  border: none;
+  border-right: 1px solid #ccc;
+}
+
+/* 首尾子元素的样式 */
+.gloabl_cell a:last-child,
+.gloabl_cell span:last-child {
+  margin-right: 12px;
+  padding-right: 0;
+  border-right: none;
+}
+
+.welcome span:first-child {
+  margin-left: 12px;
+  color: red;
+}
+
 </style>

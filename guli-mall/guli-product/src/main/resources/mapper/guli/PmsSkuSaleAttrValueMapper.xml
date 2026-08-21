@@ -4,4 +4,30 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.atlearn.guli.mapper.PmsSkuSaleAttrValueMapper">
 
+    <!--
+        sku销售属性组合 resultMap：
+        以 attr_id 分桶，每个销售属性下聚合多个属性值
+    -->
+    <resultMap id="saleAttrMap" type="com.atlearn.guli.domain.vo.PmsSkuItemVo$SkuItemSaleAttr">
+        <id property="attrId" column="attr_id"/>
+        <result property="attrName" column="attr_name"/>
+        <collection property="attrValues" ofType="java.lang.String">
+            <result column="attr_value"/>
+        </collection>
+    </resultMap>
+
+    <!--
+        按skuId查询销售属性组合（按 attr_id 分组聚合属性值）
+    -->
+    <select id="selectSaleAttrsBySpuId" resultMap="saleAttrMap">
+        SELECT
+            attr_id,
+            attr_name,
+            attr_value
+        FROM pms_sku_sale_attr_value skuInfoSaleAttrRelation
+        INNER JOIN pms_sku_info skuInfo ON skuInfoSaleAttrRelation.sku_id = skuInfo.sku_id
+        WHERE skuInfo.spu_id = #{spuId}
+        ORDER BY attr_id, attr_sort ASC
+    </select>
+
 </mapper>

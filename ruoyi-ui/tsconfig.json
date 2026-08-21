@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     // https://vite.dev/config/build-options.html#build-target
+    "ignoreDeprecations":"6.0",
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "Bundler",

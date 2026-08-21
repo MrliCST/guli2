@@ -40,9 +40,9 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import BaseGoodsCard from '../common/BaseGoodsCard.vue'
+import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const recommendGoods = ref([
   { img: '/img/_/gocart01.jpg', price: '2299.00', title: '摩托罗拉 Moto Mods 摩眼-哈苏摄影模块' },

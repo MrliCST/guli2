@@ -14,14 +14,8 @@ a:hover { text-decoration: underline; }
 
 ul { list-style: none; }
 
-/* ============ 主题色变量 ============ */
-:root {
-  --theme-red: #c81623;
-  --page-width: 1200px;
-}
-
-/* ============ 通用单元格工具(供各 Floor 复用) ============ */
-.cell {
+/* ============ 通用单元格样式 ============ */
+.global_cell {
   padding: 12px;
   border: 1px dashed rgba(0, 0, 0, 0.12);
   border-radius: 6px;
@@ -30,8 +24,6 @@ ul { list-style: none; }
   color: #555;
   background: rgba(255, 255, 255, 0.55);
 }
-.cell b { display: block; font-size: 13px; color: #222; margin-bottom: 4px; }
-.cell .tag { font-size: 11px; color: #888; }
 
 /* 通用商品卡:图 + 名 + 价 */
 .goodsCard img { width: 100%; object-fit: cover; border-radius: 4px; }

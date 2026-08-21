@@ -102,9 +102,9 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
-import BaseGoodsCard from '../common/BaseGoodsCard.vue'
+import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const asideTabs = ['相关分类', '推荐品牌']
 const asideTab = ref(0)

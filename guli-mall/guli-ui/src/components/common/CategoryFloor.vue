@@ -11,7 +11,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const navItems = ref(['服装城', '美妆馆', '超市', '生鲜', '全球购', '闪购', '拍卖'])
@@ -34,7 +34,6 @@ const navItems = ref(['服装城', '美妆馆', '超市', '生鲜', '全球购',
   padding: 10px 14px;
   border: none;
 }
-.categoryFloor__allSorts b { color: #fff; }
 .categoryFloor__navList {
   background: LightGreen;
   display: grid;

@@ -19,7 +19,7 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 const amount = ref('17,654')
 </script>

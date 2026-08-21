@@ -70,9 +70,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import BaseGoodsCard from '../common/BaseGoodsCard.vue'
+import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const orders = ref([
   {

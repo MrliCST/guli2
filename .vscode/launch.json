@@ -3,11 +3,20 @@
     "configurations": [
         {
             "type": "node",
-            "name": "RuoYi UI: 启动",
+            "name": "后台管理vue",
             "request": "launch",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["run", "dev"],
             "cwd": "${workspaceFolder}/ruoyi-ui",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "name": "商城vue",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}/guli-mall/guli-ui",
             "console": "integratedTerminal"
         },
         {
