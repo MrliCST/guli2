@@ -1,11 +1,11 @@
 <template>
   <section class="recommendFloor">
-    <div class="recommendFloor__inner">
-      <div class="recommendFloor__clock">
+    <div class="recommendFloor_inner">
+      <div class="recommendFloor_clock">
         <img src="/img/clock.png" alt="" />
         <h3>今日推荐</h3>
       </div>
-      <div class="recommendFloor__item" v-for="item in items" :key="item.name">
+      <div class="recommendFloor_item" v-for="item in items" :key="item.name">
         <img :src="item.img" alt="" />
         <div class="goodsInfo">
           <div class="name">{{ item.name }}</div>
@@ -27,44 +27,69 @@ const items = ref([
 ])
 </script>
 
-<style scoped>
-.recommendFloor { background: MistyRose; padding: 10px 0; }
-.recommendFloor__inner {
-  width: var(--page-width);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 2fr 2fr 2fr 2fr;
-  gap: 10px;
+<style scoped lang="scss">
+.recommendFloor {
+  /**各层负责与上层的空隙，不制造向下的空隙 */
+  margin-top: 10px;
+
+  .recommendFloor_inner {
+    display: grid;
+    grid-template-columns: 210px 1fr 1fr 1fr 1fr;
+
+    /** 每日推荐logo */
+    .recommendFloor_clock {
+      background: RosyBrown;
+      color: #fff;
+      min-height: 210px;
+      display: grid;
+      align-content: center;  /** 两个子项先居中，然后在 sketch */
+      justify-items: center;
+      gap: 8px;
+      text-align: center;
+
+      img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+    }
+
+    /** 每日推荐商品 */
+    .recommendFloor_item {
+      background: #fff;
+      min-height: 200px;
+      overflow: hidden;
+      padding: 0;
+      border: none;
+      display: grid;
+      grid-template-rows: 1fr auto;
+
+      img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+      }
+
+      .goodsInfo {
+        padding: 8px;
+
+        .name {
+          font-size: 12px;
+          color: #333;
+          line-height: 1.4;
+        }
+
+        .price {
+          font-weight: bold;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
 }
-.recommendFloor__clock {
-  background: RosyBrown;
-  color: #fff;
-  min-height: 200px;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  border-radius: 6px;
-}
-.recommendFloor__clock img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 8px;
-  filter: brightness(0) invert(1);
-}
-.recommendFloor__clock h3 { font-size: 18px; }
-.recommendFloor__item {
-  background: #fff;
-  min-height: 200px;
-  overflow: hidden;
-  padding: 0;
-  border: none;
-  border-radius: 6px;
-  display: grid;
-  grid-template-rows: 1fr auto;
-}
-.recommendFloor__item img { width: 100%; height: 140px; object-fit: cover; }
-.recommendFloor__item .goodsInfo { padding: 8px; }
-.recommendFloor__item .name { font-size: 12px; color: #333; line-height: 1.4; }
-.recommendFloor__item .price { color: var(--theme-red); font-weight: bold; margin-top: 4px; }
 </style>

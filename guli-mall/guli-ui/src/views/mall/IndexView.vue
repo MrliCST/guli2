@@ -1,16 +1,24 @@
 <template>
   <div class="mall-page">
-    <!-- 主流程:11 个业务层,由整体 Grid 纵向排列 -->
     <NavFloor />
     <HeaderFloor />
+    <!-- 种类 -->
     <CategoryFloor />
+    <!-- banner -->
     <BannerFloor />
+    <!-- 每日推荐 -->
     <RecommendFloor />
+    <!-- 排行榜 -->
     <RankFloor />
+    <!-- 猜你喜欢 -->
     <LikeFloor />
+    <!-- 家用电器 -->
     <HomeApplianceFloor />
+    <!-- 手机通信 -->
     <MobileFloor />
+    <!-- 品牌墙 -->
     <BrandFloor />
+    <!-- 底层信息 -->
     <FooterFloor />
 
     <!-- 固定悬浮:不参与主 Grid -->

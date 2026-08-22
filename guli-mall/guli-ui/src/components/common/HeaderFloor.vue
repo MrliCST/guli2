@@ -22,35 +22,49 @@ function goSearch() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/** 头部层 */
 .headerFloor {
   display: grid;
   grid-template-columns: 260px 1fr;
-  gap: 16px;
+  gap: 32px;
   align-items: center;
-  min-height: 100px;
-}
-.headerFloor_logo { height: 80px; }
-.headerFloor_logo img { height: 80px; object-fit: contain; }
-.headerFloor_search {
-  display: grid;
-  grid-template-columns: 1fr 110px;
-  gap: 0;
-  min-height: 44px;
-  align-items: stretch;
-}
-.headerFloor_search .searchInput {
-  background: #fff;
-  border: 2px solid red;
-  border-right: none;
-  padding: 0 12px;
-  font-size: 14px;
-}
-.headerFloor_search .searchBtn {
-  background: red;
-  color: #fff;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
+  margin: 10px 0;
+
+  /** logo图片 */
+  .headerFloor_logo {
+    height: 80px;
+
+    img {
+      height: 80px;
+      object-fit: contain;
+    }
+  }
+
+  /** 搜索包裹者 */
+  .headerFloor_search {
+    display: grid;
+    grid-template-columns: 1fr 110px;
+    min-height: 44px;
+
+    /** 搜索框 */
+    .searchInput {
+      background: #fff;
+      border: 2px solid red;
+      border-right: none;
+      padding: 0 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    /** 搜索按钮 */
+    .searchBtn {
+      background: red;
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  }
 }
 </style>

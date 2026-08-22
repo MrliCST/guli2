@@ -1,9 +1,9 @@
 <template>
   <section class="navFloor">
-    <div class="gloabl_cell welcome">
+    <div class="welcome">
       <span>谷粒商城欢迎您!</span><a href="#">请登录</a><a href="#">免费注册</a>
     </div>
-    <div class="gloabl_cell links">
+    <div class="links">
       <template v-for="item in links" :key="item.label">
         <a v-if="item.href" :href="item.href">{{ item.label }}</a>
         <span v-else>{{ item.label }}</span>
@@ -28,37 +28,42 @@ const links = ref([
 ])
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/** 顶部导航 */
 .navFloor {
   background-color: #eaeaea;
   height: 30px;
   display: grid;
   grid-template-columns: auto auto;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
+  align-items: center; /** column */
+  justify-content: space-between; /** row */
+  font-size: 13px;
 
-/* span和a的样式 */
-.gloabl_cell a,
-.gloabl_cell span {
-  margin-right: 12px;
-  padding-right: 12px;
-  border: none;
-  border-right: 1px solid #ccc;
-}
+  /** span和a的样式 */
+  a,span {
+    margin-right: 12px;
+    padding-right: 12px;
+    border-right: 1px solid #ccc;
 
-/* 首尾子元素的样式 */
-.gloabl_cell a:last-child,
-.gloabl_cell span:last-child {
-  margin-right: 12px;
-  padding-right: 0;
-  border-right: none;
-}
+    /** 首尾子元素的样式 */
+    &:last-child {
+      margin-right: 12px;
+      padding-right: 0;
+      border-right: none;
+    }
+  }
 
-.welcome span:first-child {
-  margin-left: 12px;
-  color: red;
-}
+  /** 取消a标签默认样式 */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
+  /** 欢迎语 */
+  .welcome {
+    span:first-child {
+      margin-left: 12px;
+    }
+  }
+}
 </style>
