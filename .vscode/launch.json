@@ -25,7 +25,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliCouponApplication",
             "projectName": "guli-coupon",
-            "vmArgs": "-Dfile.encoding=UTF-8",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddebug",
             "console": "integratedTerminal"
         },
         {
@@ -34,7 +34,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliMemberApplication",
             "projectName": "guli-member",
-            "vmArgs": "-Dfile.encoding=UTF-8",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddebug",
             "console": "integratedTerminal"
         },
         {
@@ -43,7 +43,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliOrderApplication",
             "projectName": "guli-order",
-            "vmArgs": "-Dfile.encoding=UTF-8",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddebug",
             "console": "integratedTerminal"
         },
         {
@@ -52,7 +52,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliProductApplication",
             "projectName": "guli-product",
-            "vmArgs": "-Dfile.encoding=UTF-8 -Ddubbo.resolve.file=guli-mall/guli-product/src/main/resources/dubbo-resolve.properties",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddebug -Ddubbo.resolve.file=guli-mall/guli-product/src/main/resources/dubbo-resolve.properties",
             "console": "integratedTerminal"
         },
         {
@@ -61,7 +61,7 @@
             "request": "launch",
             "mainClass": "com.atlearn.guli.GuliWareApplication",
             "projectName": "guli-ware",
-            "vmArgs": "-Dfile.encoding=UTF-8 -Ddubbo.resolve.file=guli-mall/guli-ware/src/main/resources/dubbo-resolve.properties",
+            "vmArgs": "-Dfile.encoding=UTF-8 -Ddebug -Ddubbo.resolve.file=guli-mall/guli-ware/src/main/resources/dubbo-resolve.properties",
             "console": "integratedTerminal"
         }
     ]

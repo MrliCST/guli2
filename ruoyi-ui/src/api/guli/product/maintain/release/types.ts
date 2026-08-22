@@ -1,7 +1,5 @@
 // ======================== SPU 大对象 ========================
 
-import type { OssVO } from '@/api/system/oss/types'
-
 export interface ReleaseForm extends BaseEntity {
   // 第一步: 基本信息（含基本属性）
   spu?: SpuInfo
@@ -23,8 +21,8 @@ export interface SpuInfo {
   growBounds?: number
   /** 购物积分 */
   buyBounds?: number
-  MainImgDesc?: string
-  ImgAlbum?: OssVO[]
+  mainImgDesc?: string
+  imgAlbum?: OssVO[]
   /** 选中的基本属性 */
   baseAttrs?: BaseAttr[]
 }

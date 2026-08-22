@@ -8,5 +8,6 @@
             "source": "PowerShell",
             "args": ["-NoExit", "-Command", "chcp 65001"]
         }
-    }
+    },
+    "java.debug.settings.onBuildFailureProceed": true
 }

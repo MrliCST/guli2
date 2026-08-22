@@ -330,3 +330,110 @@ CREATE TABLE `undo_log` (
 -- ----------------------------
 -- Records of undo_log
 -- ----------------------------
+
+-- =============================================
+-- RuoYi-Vue-Plus 审计字段批量追加
+-- BaseEntity 标准字段: create_dept, create_by, create_time, update_by, update_time
+-- =============================================
+
+ALTER TABLE `sms_coupon`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_coupon_history`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_coupon_spu_category_relation`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_coupon_spu_relation`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_home_adv`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_home_subject`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_home_subject_spu`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_member_price`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_seckill_promotion`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_seckill_session`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_seckill_sku_notice`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_seckill_sku_relation`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_sku_full_reduction`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_sku_ladder`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `sms_spu_bounds`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';

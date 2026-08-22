@@ -1,3 +1,4 @@
+
 package com.atlearn.guli.domain.bo;
 
 import com.atlearn.guli.domain.PmsBrand;

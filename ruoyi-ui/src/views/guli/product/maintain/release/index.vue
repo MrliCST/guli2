@@ -50,10 +50,10 @@
               <el-radio :value="0">下架</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="商品主图" prop="MainImgDesc">
+          <el-form-item label="商品主图" prop="mainImgDesc">
             <ImageUpload v-model="mainImgOssId" :limit="1" :is-show-tip="false" />
           </el-form-item>
-          <el-form-item label="商品图集" prop="ImgAlbum">
+          <el-form-item label="商品图集" prop="imgAlbum">
             <ImageUpload v-model="imgAlbumOssId" :limit="20" :is-show-tip="false" />
           </el-form-item>
         </el-form>
@@ -132,10 +132,10 @@
                   </el-row>
                 </div>
 
-                <div v-if="!spuBaseInfo.ImgAlbum?.length" class="text-gray-400">请先在 "基本信息" 上传商品图集</div>
+                <div v-if="!spuBaseInfo.imgAlbum?.length" class="text-gray-400">请先在 "基本信息" 上传商品图集</div>
                 <div v-else class="sku-image-picker">
                   <div
-                    v-for="(img, idx) in spuBaseInfo.ImgAlbum"
+                    v-for="(img, idx) in spuBaseInfo.imgAlbum"
                     :key="idx"
                     class="sku-pickable-image"
                     :class="{ 'is-selected': (row.skuImages || []).includes(img.url) }"
@@ -215,8 +215,8 @@ const initBasicInfo: SpuInfo = {
   growBounds: undefined,
   buyBounds: undefined,
   publishStatus: 1,
-  MainImgDesc: undefined,
-  ImgAlbum: []
+  mainImgDesc: undefined,
+  imgAlbum: []
 }
 
 const basicRules = ref({
@@ -263,9 +263,9 @@ const mainImgOssId = ref('')
 watch(mainImgOssId, async (val) => {
   if (val) {
     const res = await listByIds(val)
-    spuBaseInfo.value.MainImgDesc = res.data?.[0]?.url || ''
+    spuBaseInfo.value.mainImgDesc = res.data?.[0]?.url || ''
   } else {
-    spuBaseInfo.value.MainImgDesc = undefined
+    spuBaseInfo.value.mainImgDesc = undefined
   }
 })
 
@@ -274,9 +274,9 @@ watch(imgAlbumOssId, async (val) => {
   debugger
   if (val) {
     const res = await listByIds(val)
-    spuBaseInfo.value.ImgAlbum = res.data // OssVO[]
+    spuBaseInfo.value.imgAlbum = res.data // OssVO[]
   } else {
-    spuBaseInfo.value.ImgAlbum = []
+    spuBaseInfo.value.imgAlbum = []
   }
 })
 
