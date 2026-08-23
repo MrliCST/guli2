@@ -1,10 +1,10 @@
 <template>
   <section class="headerFloor">
-    <div class="cell headerFloor_logo">
+    <div class="cell headerFloor_logo" @click="goHome">
       <img src="/img/Logo1.png" alt="谷粒商城Logo" />
     </div>
     <div class="headerFloor_search">
-      <input class="searchInput" v-model="keyword" type="text" placeholder="搜索商品" />
+      <input class="searchInput" v-model="keyword" type="text" placeholder="搜索商品" @keyup.enter="goSearch" />
       <button class="searchBtn" @click="goSearch">搜索</button>
     </div>
   </section>
@@ -18,7 +18,15 @@ const keyword = ref('')
 const router = useRouter()
 
 function goSearch() {
-  router.push('/list')
+  const kw = keyword.value.trim()
+  router.push({ 
+    name: 'list', 
+    query: kw ? { keyword: kw } : {} 
+    })
+}
+
+function goHome() {
+  router.push({ name: 'index' })
 }
 </script>
 
@@ -34,6 +42,7 @@ function goSearch() {
   /** logo图片 */
   .headerFloor_logo {
     height: 80px;
+    cursor: pointer;
 
     img {
       height: 80px;
