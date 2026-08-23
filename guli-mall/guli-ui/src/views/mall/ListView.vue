@@ -39,7 +39,5 @@ import SideToolbar from '@/components/common/SideToolbar.vue'
   display: grid;
   grid-template-rows: repeat(8, auto);
 }
-.list-page > *:not(:first-child) {
-  margin-top: 16px; 
-}
+
 </style>

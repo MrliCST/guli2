@@ -1,9 +1,9 @@
 <template>
   <section class="productDetailFloor">
-    <div class="productDetailFloor__inner">
+    <div class="productDetailFloor_inner">
       <!-- 左:相关分类侧栏 -->
       <div class="asideCol">
-        <div class="asideCol__tabs">
+        <div class="asideCol_tabs">
           <div
             class="asideTab"
             :class="{ active: asideTab === idx }"
@@ -12,7 +12,7 @@
             @click="asideTab = idx"
           >{{ tab }}</div>
         </div>
-        <div class="asideCol__content">
+        <div class="asideCol_content">
           <!-- 相关分类列表 -->
           <ul class="catList">
             <li v-for="cat in categories" :key="cat">{{ cat }}</li>
@@ -69,7 +69,7 @@
 
         <!-- 详情 Tab -->
         <div class="detailTabs">
-          <div class="detailTabs__nav">
+          <div class="detailTabs_nav">
             <div
               class="detailTab"
               :class="{ active: detailTab === idx }"
@@ -78,12 +78,20 @@
               @click="detailTab = idx"
             >{{ tab }}</div>
           </div>
-          <div class="detailTabs__content">
+          <div class="detailTabs_content">
             <!-- 商品介绍 -->
             <div v-show="detailTab === 0" class="tabPane">
-              <ul class="specList">
-                <li v-for="spec in specList" :key="spec">{{ spec }}</li>
-              </ul>
+              <table class="specTable">
+                <tbody>
+                  <template v-for="group in specGroups" :key="group.groupName">
+                    <tr v-for="(item, idx) in group.data" :key="group.groupName + '-' + idx">
+                      <td v-if="idx === 0" class="specGroup" :rowspan="group.data.length">{{ group.groupName }}</td>
+                      <td class="specAttr">{{ item.attrName }}</td>
+                      <td class="specValue">{{ item.attrValue }}</td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
               <div class="introImages">
                 <img src="/img/_/intro01.png" alt="" />
                 <img src="/img/_/intro02.png" alt="" />
@@ -172,21 +180,31 @@ const relatedGoods = ref([
 const detailTabs = ['商品介绍', '规格与包装', '售后保障', '商品评价', '手机社区']
 const detailTab = ref(0)
 
-const specList = [
-  '分辨率：1920*1080(FHD)',
-  '后置摄像头：1200万像素',
-  '前置摄像头：500万像素',
-  '核 数：其他',
-  '频 率：以官网信息为准',
-  '品牌： Apple',
-  '商品名称：APPLEiPhone 6s Plus',
-  '商品编号：1861098',
-  '商品毛重：0.51kg',
-  '商品产地：中国大陆',
-  '热点：指纹识别，Apple Pay，金属机身，拍照神器',
-  '系统：苹果（IOS）',
-  '像素：1000-1600万',
-  '机身内存：64GB'
+const specGroups = [
+  {
+    groupName: '主体',
+    data: [
+      { attrName: '品牌', attrValue: 'Apple' },
+      { attrName: '商品名称', attrValue: 'APPLEiPhone 6s Plus' },
+      { attrName: '商品编号', attrValue: '1861098' },
+      { attrName: '商品毛重', attrValue: '0.51kg' },
+      { attrName: '商品产地', attrValue: '中国大陆' }
+    ]
+  },
+  {
+    groupName: '硬件配置',
+    data: [
+      { attrName: '分辨率', attrValue: '1920*1080(FHD)' },
+      { attrName: '后置摄像头', attrValue: '1200万像素' },
+      { attrName: '前置摄像头', attrValue: '500万像素' },
+      { attrName: '核数', attrValue: '其他' },
+      { attrName: '频率', attrValue: '以官网信息为准' },
+      { attrName: '系统', attrValue: '苹果（IOS）' },
+      { attrName: '像素', attrValue: '1000-1600万' },
+      { attrName: '机身内存', attrValue: '64GB' },
+      { attrName: '热点', attrValue: '指纹识别，Apple Pay，金属机身，拍照神器' }
+    ]
+  }
 ]
 
 const commentTypes = ['全部评价(123456)', '晒图(500)', '追评(500)', '好评(500)', '中评(500)', '差评(500)']
@@ -236,243 +254,427 @@ const comments = ref([
 ])
 </script>
 
-<style scoped>
-.productDetailFloor { background: Seashell; padding: 10px 0; }
-.productDetailFloor__inner {
-  width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 210px 1fr;
-  gap: 12px;
-}
-
-/* ===== 左侧栏 ===== */
-.asideCol {
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
-.asideCol__tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-radius: 6px 6px 0 0;
-  overflow: hidden;
-}
-.asideTab {
-  background: #f5f5f5;
+<style scoped lang="scss">
+.productDetailFloor {
+  background: Seashell;
   padding: 10px 0;
-  text-align: center;
-  font-size: 13px;
-  color: #666;
-  cursor: pointer;
-}
-.asideTab.active { background: #c81623; color: #fff; }
-.asideCol__content {
-  background: #fff;
-  border-radius: 0 0 6px 6px;
-  padding: 10px;
-}
-.catList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 10px;
-}
-.catList li {
-  padding: 6px 8px;
-  font-size: 12px;
-  color: #555;
-  border-bottom: 1px dashed #eee;
-  cursor: pointer;
-}
-.catList li:hover { color: #c81623; }
-.relatedGoods {
-  display: grid;
-  gap: 8px;
-}
 
-/* ===== 右详情 ===== */
-.detailCol {
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 12px;
-}
+  .productDetailFloor_inner {
+    width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 12px;
+  }
 
-/* 选择搭配 */
-.fittingSection {
-  background: #fff;
-  border-radius: 6px;
-  padding: 12px;
-}
-.sectionTitle {
-  margin: 0 0 10px;
-  font-size: 14px;
-  color: #333;
-  border-left: 3px solid #c81623;
-  padding-left: 8px;
-}
-.fittingBody {
-  display: grid;
-  grid-template-columns: 120px 1fr 140px;
-  gap: 12px;
-  align-items: center;
-}
-.masterGoods {
-  text-align: center;
-  position: relative;
-}
-.masterGoods img { width: 80px; height: 80px; object-fit: contain; }
-.masterGoods em { display: block; font-style: normal; color: #c81623; font-size: 14px; margin-top: 4px; }
-.masterGoods i {
-  position: absolute;
-  right: -8px;
-  top: 35px;
-  font-style: normal;
-  font-size: 18px;
-  color: #ccc;
-  font-weight: bold;
-}
-.suitsList {
-  display: flex;
-  gap: 10px;
-}
-.suitItem {
-  text-align: center;
-  cursor: pointer;
-  padding: 6px;
-  border: 2px solid transparent;
-  border-radius: 6px;
-}
-.suitItem.checked { border-color: #c81623; background: rgba(200,22,35,0.05); }
-.suitItem img { width: 60px; height: 60px; object-fit: contain; }
-.suitItem > i { display: block; font-style: normal; font-size: 11px; color: #555; margin: 4px 0; }
-.checkboxPretty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #c81623;
-}
-.checkboxPretty input { margin: 0; }
-.fittingResult {
-  text-align: center;
-  border-left: 1px solid #eee;
-  padding-left: 12px;
-}
-.resultNum { font-size: 12px; color: #999; margin-bottom: 6px; }
-.resultLabel { font-size: 13px; color: #333; }
-.resultPrice { font-size: 20px; color: #c81623; font-weight: bold; margin: 4px 0 8px; }
-.cartBtn {
-  background: #c81623;
-  color: #fff;
-  border: none;
-  padding: 6px 16px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-}
+  /* ===== 左侧栏 ===== */
+  .asideCol {
+    display: grid;
+    grid-template-rows: auto 1fr;
 
-/* 详情 Tab */
-.detailTabs {
-  background: #fff;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.detailTabs__nav {
-  display: flex;
-  border-bottom: 1px solid #eee;
-}
-.detailTab {
-  padding: 12px 20px;
-  font-size: 13px;
-  color: #666;
-  cursor: pointer;
-  border-right: 1px solid #eee;
-}
-.detailTab.active {
-  color: #c81623;
-  border-bottom: 2px solid #c81623;
-  font-weight: bold;
-}
-.detailTabs__content { padding: 16px; }
-.tabPane { font-size: 13px; color: #333; }
+    .asideCol_tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-radius: 6px 6px 0 0;
+      overflow: hidden;
 
-/* 商品介绍 */
-.specList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 16px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
-.specList li {
-  padding: 4px 8px;
-  background: #f9f9f9;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #555;
-}
-.introImages img { width: 100%; margin-bottom: 8px; border-radius: 4px; }
+      .asideTab {
+        background: #f5f5f5;
+        padding: 10px 0;
+        text-align: center;
+        font-size: 13px;
+        color: #666;
+        cursor: pointer;
 
-/* 商品评价 */
-.commentSummary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+        &.active {
+          background: #c81623;
+          color: #fff;
+        }
+      }
+    }
+
+    .asideCol_content {
+      background: #fff;
+      border-radius: 0 0 6px 6px;
+      padding: 10px;
+
+      .catList {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 10px;
+
+        li {
+          padding: 6px 8px;
+          font-size: 12px;
+          color: #555;
+          border-bottom: 1px dashed #eee;
+          cursor: pointer;
+
+          &:hover {
+            color: #c81623;
+          }
+        }
+      }
+
+      .relatedGoods {
+        display: grid;
+        gap: 8px;
+      }
+    }
+  }
+
+  /* ===== 右详情 ===== */
+  .detailCol {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 12px;
+
+    /* 选择搭配 */
+    .fittingSection {
+      background: #fff;
+      border-radius: 6px;
+      padding: 12px;
+
+      .sectionTitle {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: #333;
+        border-left: 3px solid #c81623;
+        padding-left: 8px;
+      }
+
+      .fittingBody {
+        display: grid;
+        grid-template-columns: 120px 1fr 140px;
+        gap: 12px;
+        align-items: center;
+
+        .masterGoods {
+          text-align: center;
+          position: relative;
+
+          img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+          }
+
+          em {
+            display: block;
+            font-style: normal;
+            color: #c81623;
+            font-size: 14px;
+            margin-top: 4px;
+          }
+
+          i {
+            position: absolute;
+            right: -8px;
+            top: 35px;
+            font-style: normal;
+            font-size: 18px;
+            color: #ccc;
+            font-weight: bold;
+          }
+        }
+
+        .suitsList {
+          display: flex;
+          gap: 10px;
+
+          .suitItem {
+            text-align: center;
+            cursor: pointer;
+            padding: 6px;
+            border: 2px solid transparent;
+            border-radius: 6px;
+
+            &.checked {
+              border-color: #c81623;
+              background: rgba(200, 22, 35, 0.05);
+            }
+
+            img {
+              width: 60px;
+              height: 60px;
+              object-fit: contain;
+            }
+
+            > i {
+              display: block;
+              font-style: normal;
+              font-size: 11px;
+              color: #555;
+              margin: 4px 0;
+            }
+
+            .checkboxPretty {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 4px;
+              font-size: 12px;
+              color: #c81623;
+
+              input {
+                margin: 0;
+              }
+            }
+          }
+        }
+
+        .fittingResult {
+          text-align: center;
+          border-left: 1px solid #eee;
+          padding-left: 12px;
+
+          .resultNum {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+          }
+
+          .resultLabel {
+            font-size: 13px;
+            color: #333;
+          }
+
+          .resultPrice {
+            font-size: 20px;
+            color: #c81623;
+            font-weight: bold;
+            margin: 4px 0 8px;
+          }
+
+          .cartBtn {
+            background: #c81623;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+
+    /* 详情 Tab */
+    .detailTabs {
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+
+      .detailTabs_nav {
+        display: flex;
+        border-bottom: 1px solid #eee;
+
+        .detailTab {
+          padding: 12px 20px;
+          font-size: 13px;
+          color: #666;
+          cursor: pointer;
+          border-right: 1px solid #eee;
+
+          &.active {
+            color: #c81623;
+            border-bottom: 2px solid #c81623;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .detailTabs_content {
+        padding: 16px;
+
+        .tabPane {
+          font-size: 13px;
+          color: #333;
+
+          /* 商品介绍 */
+          .specTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #555;
+
+            td {
+              border: 1px solid #eee;
+              padding: 6px 8px;
+            }
+
+            .specGroup {
+              width: 120px;
+              text-align: center;
+              background: #f5f5f5;
+              font-weight: bold;
+              color: #333;
+            }
+
+            .specAttr {
+              width: 160px;
+              background: #f9f9f9;
+              color: #666;
+            }
+
+            .specValue {
+              color: #555;
+            }
+          }
+
+          .introImages {
+            img {
+              width: 100%;
+              margin-bottom: 8px;
+              border-radius: 4px;
+            }
+          }
+
+          /* 商品评价 */
+          .commentSummary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+
+            .commentTitle {
+              font-size: 16px;
+              font-weight: bold;
+            }
+
+            .commentPercent {
+              font-size: 14px;
+              color: #666;
+
+              .percent {
+                color: #c81623;
+                font-size: 24px;
+                font-weight: bold;
+              }
+            }
+          }
+
+          .commentTypes {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+
+            .commentType {
+              padding: 4px 12px;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              font-size: 12px;
+              color: #555;
+              cursor: pointer;
+
+              &.active {
+                border-color: #c81623;
+                color: #c81623;
+              }
+            }
+          }
+
+          .commentList {
+            display: grid;
+            gap: 12px;
+
+            .commentItem {
+              display: grid;
+              grid-template-columns: 140px 1fr;
+              gap: 12px;
+              padding: 12px 0;
+              border-bottom: 1px solid #eee;
+
+              .commentUser {
+                text-align: center;
+
+                img {
+                  width: 40px;
+                  height: 40px;
+                  border-radius: 50%;
+                }
+
+                .userName {
+                  font-size: 12px;
+                  color: #333;
+                  margin-top: 4px;
+                }
+
+                .userLevel {
+                  font-size: 11px;
+                  color: #999;
+                }
+              }
+
+              .commentBody {
+                font-size: 13px;
+
+                .stars {
+                  color: #ff9800;
+                  font-size: 14px;
+                  margin-bottom: 4px;
+                }
+
+                > p {
+                  margin: 4px 0;
+                  color: #333;
+                }
+
+                .commentMeta {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-top: 6px;
+
+                  .metaMini {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    display: flex;
+                    gap: 8px;
+
+                    li {
+                      font-size: 11px;
+                      color: #999;
+                    }
+                  }
+
+                  .commentOps {
+                    display: flex;
+                    gap: 12px;
+
+                    span {
+                      font-size: 12px;
+                      color: #999;
+                    }
+                  }
+                }
+
+                .reply {
+                  background: #f9f9f9;
+                  padding: 8px 12px;
+                  border-radius: 4px;
+                  margin-top: 8px;
+
+                  .replyName {
+                    color: #c81623;
+                    font-weight: bold;
+                  }
+
+                  .replyTime {
+                    font-size: 11px;
+                    color: #999;
+                    margin-top: 4px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
-.commentTitle { font-size: 16px; font-weight: bold; }
-.commentPercent { font-size: 14px; color: #666; }
-.commentPercent .percent { color: #c81623; font-size: 24px; font-weight: bold; }
-.commentTypes {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.commentType {
-  padding: 4px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #555;
-  cursor: pointer;
-}
-.commentType.active { border-color: #c81623; color: #c81623; }
-.commentList {
-  display: grid;
-  gap: 12px;
-}
-.commentItem {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-}
-.commentUser { text-align: center; }
-.commentUser img { width: 40px; height: 40px; border-radius: 50%; }
-.userName { font-size: 12px; color: #333; margin-top: 4px; }
-.userLevel { font-size: 11px; color: #999; }
-.commentBody { font-size: 13px; }
-.stars { color: #ff9800; font-size: 14px; margin-bottom: 4px; }
-.commentBody > p { margin: 4px 0; color: #333; }
-.commentMeta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 6px;
-}
-.metaMini { list-style: none; padding: 0; margin: 0; display: flex; gap: 8px; }
-.metaMini li { font-size: 11px; color: #999; }
-.commentOps { display: flex; gap: 12px; }
-.commentOps span { font-size: 12px; color: #999; }
-.reply {
-  background: #f9f9f9;
-  padding: 8px 12px;
-  border-radius: 4px;
-  margin-top: 8px;
-}
-.replyName { color: #c81623; font-weight: bold; }
-.replyTime { font-size: 11px; color: #999; margin-top: 4px; }
 </style>

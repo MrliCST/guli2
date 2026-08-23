@@ -43,7 +43,7 @@ import FooterFloor from '@/components/common/FooterFloor.vue'
   相当于: grid-template-rows: auto, auto, ...., auto; (共11个)
 */
 .mall-page {
-  width: 80%;
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(11, auto);

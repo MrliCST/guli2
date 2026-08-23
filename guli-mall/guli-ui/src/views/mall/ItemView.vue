@@ -31,6 +31,8 @@ import SideToolbar from '@/components/common/SideToolbar.vue'
 
 <style scoped>
 .item-page {
+  width: 80%;
+  margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(7, auto);
 }
