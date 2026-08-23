@@ -197,21 +197,25 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
             }
             skuImagesMapper.insertBatch(skuImageList);
 
-            // 6d. 保存 "满几件打几折" 的优惠策略
-            RemoteSkuLadderBo ladder = RemoteSkuLadderBo.builder()
-                    .skuId(skuId)
-                    .fullCount(sku.getFullCount())
-                    .discount(sku.getDiscount())
-                    .build();
-            remoteCouponService.insertSkuLadderByBo(ladder);
+            // 6d. 保存 "满几件打几折" 的优惠策略(未填写则跳过)
+            if (sku.getFullCount() != null && sku.getDiscount() != null) {
+                RemoteSkuLadderBo ladder = RemoteSkuLadderBo.builder()
+                        .skuId(skuId)
+                        .fullCount(sku.getFullCount())
+                        .discount(sku.getDiscount())
+                        .build();
+                remoteCouponService.insertSkuLadderByBo(ladder);
+            }
 
-            // 6e. 保存 "满几件减几元" 的优惠策略
-            RemoteSkuFullReductionBo reduction = RemoteSkuFullReductionBo.builder()
-                    .skuId(skuId)
-                    .fullPrice(new BigDecimal(sku.getFullPrice()))
-                    .reducePrice(new BigDecimal(sku.getReducePrice()))
-                    .build();
-            remoteCouponService.insertSkuFullReductionByBo(reduction);
+            // 6e. 保存 "满几件减几元" 的优惠策略(未填写则跳过)
+            if (sku.getFullPrice() != null && sku.getReducePrice() != null) {
+                RemoteSkuFullReductionBo reduction = RemoteSkuFullReductionBo.builder()
+                        .skuId(skuId)
+                        .fullPrice(new BigDecimal(sku.getFullPrice()))
+                        .reducePrice(new BigDecimal(sku.getReducePrice()))
+                        .build();
+                remoteCouponService.insertSkuFullReductionByBo(reduction);
+            }
                     
         }
 
@@ -244,7 +248,8 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     }
 
     @Override
-    public Boolean upToEsearch(Long spuId) {
+    public Boolean 
+    upToEsearch(Long spuId) {
         // 查询当前spuId对应的所有sku信息
         List<PmsSkuInfo> skuInfos = skuInfoMapper.selectList(
             Wrappers.<PmsSkuInfo>lambdaQuery().eq(x -> x.getSpuId(), spuId)

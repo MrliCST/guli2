@@ -82,14 +82,14 @@ const filterRows = ref([
 </script>
 
 <style scoped>
-.selectorFloor { background: MistyRose; padding: 10px 0; }
+.selectorFloor { padding: 10px 0; }
 .selectorFloor__inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(6, auto);
   gap: 1px;
-  background: #eee;
+  background: #ddd;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -100,21 +100,22 @@ const filterRows = ref([
   background: #fff;
   align-items: stretch;
 }
+/* 行标题:参照 list.html 的 .type-wrap .key,灰底、右对齐 */
 .selectorRow__key {
-  background: PaleTurquoise;
-  padding: 10px 14px;
-  font-size: 13px;
+  background: #f1f1f1;
+  padding: 10px 10px 0 15px;
+  font-size: 12px;
   color: #333;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
+  line-height: 26px;
+  text-align: right;
 }
 .selectorRow__value {
-  padding: 10px 14px;
+  padding: 10px 0 0 15px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
+/* 品牌格:参照 .logo-list li,105x52 灰边框小格、红色斜体字 */
 .logoList {
   display: flex;
   flex-wrap: wrap;
@@ -122,17 +123,22 @@ const filterRows = ref([
   list-style: none;
 }
 .logoList li {
-  width: 100px;
-  height: 40px;
+  width: 105px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #555;
+  border: 1px solid #e4e4e4;
+  font-size: 14px;
+  font-weight: 700;
+  font-style: italic;
+  color: #e1251b;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .logoList li img { max-width: 80px; max-height: 30px; object-fit: contain; }
+/* 普通筛选项:参照 .type-list li a,悬停红色反白 */
 .optionList {
   display: flex;
   flex-wrap: wrap;
@@ -142,8 +148,14 @@ const filterRows = ref([
 .optionList li a {
   font-size: 12px;
   color: #555;
+  line-height: 26px;
+  padding: 2px;
+  text-decoration: none;
 }
-.optionList li a:hover { color: #c81623; }
+.optionList li a:hover {
+  background: var(--theme-red);
+  color: #fff;
+}
 .selectorRow__ext {
   display: flex;
   align-items: center;
@@ -151,16 +163,23 @@ const filterRows = ref([
   gap: 8px;
   padding: 10px;
 }
+/* 多选按钮:参照 .ext .sui-btn;更多链接:参照 .ext a */
 .selectorRow__ext .extBtn {
   background: #fff;
-  border: 1px solid #ddd;
-  padding: 4px 10px;
-  border-radius: 4px;
+  border: 1px solid #e1e1e1;
+  padding: 0 10px;
+  border-radius: 2px;
+  line-height: 18px;
   font-size: 12px;
-  color: #666;
+  color: #333;
+}
+.selectorRow__ext .extBtn:hover {
+  border-color: var(--theme-red);
+  color: var(--theme-red);
 }
 .selectorRow__ext .extLink {
   font-size: 12px;
-  color: #c81623;
+  color: #666;
 }
+.selectorRow__ext .extLink:hover { color: var(--theme-red); }
 </style>
