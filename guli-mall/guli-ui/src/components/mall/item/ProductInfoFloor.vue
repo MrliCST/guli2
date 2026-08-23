@@ -114,15 +114,15 @@ const activeThumb = ref(0)
 
 const isActive = (idx: number) => activeThumb.value === idx
 const thumbs = ref([
-  { small: '/mall/list/productInfo_show-s1.png', big: '/mall/list/productInfo_show-b1.png' },
-  { small: '/mall/list/productInfo_show-s2.png', big: '/mall/list/productInfo_show-b2.png' },
-  { small: '/mall/list/productInfo_show-s3.png', big: '/mall/list/productInfo_show-b3.png' },
-  { small: '/mall/list/productInfo_show-s1.png', big: '/mall/list/productInfo_show-b1.png' },
-  { small: '/mall/list/productInfo_show-s2.png', big: '/mall/list/productInfo_show-b2.png' },
-  { small: '/mall/list/productInfo_show-s3.png', big: '/mall/list/productInfo_show-b3.png' },
-  { small: '/mall/list/productInfo_show-s1.png', big: '/mall/list/productInfo_show-b1.png' },
-  { small: '/mall/list/productInfo_show-s2.png', big: '/mall/list/productInfo_show-b2.png' },
-  { small: '/mall/list/productInfo_show-s3.png', big: '/mall/list/productInfo_show-b3.png' }
+  { small: '/mall/item/productInfo_show-s1.png', big: '/mall/item/productInfo_show-b1.png' },
+  { small: '/mall/item/productInfo_show-s2.png', big: '/mall/item/productInfo_show-b2.png' },
+  { small: '/mall/item/productInfo_show-s3.png', big: '/mall/item/productInfo_show-b3.png' },
+  { small: '/mall/item/productInfo_show-s1.png', big: '/mall/item/productInfo_show-b1.png' },
+  { small: '/mall/item/productInfo_show-s2.png', big: '/mall/item/productInfo_show-b2.png' },
+  { small: '/mall/item/productInfo_show-s3.png', big: '/mall/item/productInfo_show-b3.png' },
+  { small: '/mall/item/productInfo_show-s1.png', big: '/mall/item/productInfo_show-b1.png' },
+  { small: '/mall/item/productInfo_show-s2.png', big: '/mall/item/productInfo_show-b2.png' },
+  { small: '/mall/item/productInfo_show-s3.png', big: '/mall/item/productInfo_show-b3.png' }
 ])
 
 function selectThumb(idx: number) {

@@ -69,6 +69,7 @@
 
         <!-- 详情 Tab -->
         <div class="detailTabs">
+          <!-- 细节导航栏 -->
           <div class="detailTabs_nav">
             <div
               class="detailTab"
@@ -78,6 +79,7 @@
               @click="detailTab = idx"
             >{{ tab }}</div>
           </div>
+          <!-- 细节内容 -->
           <div class="detailTabs_content">
             <!-- 商品介绍 -->
             <div v-show="detailTab === 0" class="tabPane">
@@ -265,6 +267,7 @@ const comments = ref([
     display: grid;
     grid-template-columns: 210px 1fr;
     gap: 12px;
+    align-items: start;
   }
 
   /* ===== 左侧栏 ===== */

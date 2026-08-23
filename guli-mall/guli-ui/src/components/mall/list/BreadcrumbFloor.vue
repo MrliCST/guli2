@@ -32,7 +32,8 @@ function removeTag(tag) {
 <style scoped>
 .breadcrumbFloor { padding:0 0 10px 0; }
 .breadcrumbFloor__inner {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -46,7 +47,7 @@ function removeTag(tag) {
   font-size: 13px;
 }
 .breadcrumbFloor__path a { color: #666; }
-.breadcrumbFloor__path a:hover { color: var(--theme-red); }
+.breadcrumbFloor__path a:hover { color: red; font-weight: bold; }
 .breadcrumbFloor__tags {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, auto));
@@ -68,7 +69,8 @@ function removeTag(tag) {
   transition: color 0.2s ease-out;
 }
 .breadcrumbFloor__tags .tag:hover {
-  color: #28a3ef;
+  color: red;
+  font-weight: bold;
 }
 .breadcrumbFloor__tags .tag i {
   font-style: normal;

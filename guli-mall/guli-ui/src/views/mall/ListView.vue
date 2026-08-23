@@ -34,7 +34,7 @@ import SideToolbar from '@/components/common/SideToolbar.vue'
 <style scoped>
 /* 列表页大框架:纵向 Grid 划分 8 层;fixed 侧栏不占轨道 */
 .list-page {
-  width: 80%;
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(8, auto);

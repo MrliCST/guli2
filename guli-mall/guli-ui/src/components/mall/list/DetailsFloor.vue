@@ -53,23 +53,27 @@ const activePage = ref(1)
 const pages = [1, 2, 3, 4, 5]
 
 const goods = ref([
-  { img: '/img/_/mobile01.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
-  { img: '/img/_/mobile02.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
-  { img: '/img/_/mobile03.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
-  { img: '/img/_/mobile04.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
-  { img: '/img/_/mobile05.png', price: '5288.00', title: '华为 HUAWEI Mate 60 Pro 12+512G 雅丹黑 麒麟9000S', comment: '3500' },
-  { img: '/img/_/mobile06.png', price: '4999.00', title: '小米14 Pro 16+512G 黑色 骁龙8 Gen3 徕卡光学镜头', comment: '1800' },
-  { img: '/img/_/mobile01.png', price: '3999.00', title: 'OPPO Find X7 16+512G 海阔天空 天玑9300', comment: '1200' },
-  { img: '/img/_/mobile02.png', price: '3699.00', title: 'vivo X100 Pro 12+256G 白月光 蔡司APO超级长焦', comment: '900' },
-  { img: '/img/_/mobile03.png', price: '2999.00', title: '荣耀 Magic6 12+256G 绒黑色 骁龙8 Gen3', comment: '1500' },
-  { img: '/img/_/mobile04.png', price: '2499.00', title: '一加 12 16+512G 留白 骁龙8 Gen3 哈苏全焦段', comment: '800' }
+  { img: '/mall/list/mobile01.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
+  { img: '/mall/list/mobile02.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
+  { img: '/mall/list/mobile03.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
+  { img: '/mall/list/mobile04.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699) Apple苹果iPhone 6s (A1699)', comment: '2000' },
+  { img: '/mall/list/mobile05.png', price: '5288.00', title: '华为 HUAWEI Mate 60 Pro 12+512G 雅丹黑 麒麟9000S', comment: '3500' },
+  { img: '/mall/list/mobile06.png', price: '4999.00', title: '小米14 Pro 16+512G 黑色 骁龙8 Gen3 徕卡光学镜头', comment: '1800' },
+  { img: '/mall/list/mobile01.png', price: '3999.00', title: 'OPPO Find X7 16+512G 海阔天空 天玑9300', comment: '1200' },
+  { img: '/mall/list/mobile02.png', price: '3699.00', title: 'vivo X100 Pro 12+256G 白月光 蔡司APO超级长焦', comment: '900' },
+  { img: '/mall/list/mobile03.png', price: '2999.00', title: '荣耀 Magic6 12+256G 绒黑色 骁龙8 Gen3', comment: '1500' },
+  { img: '/mall/list/mobile04.png', price: '2499.00', title: '一加 12 16+512G 留白 骁龙8 Gen3 哈苏全焦段', comment: '800' }
 ])
 </script>
 
-<style scoped>
-.detailsFloor { background: Seashell; padding: 10px 0; }
+<style scoped lang="scss">
+.detailsFloor {
+  padding: 10px 0;
+}
+
 .detailsFloor__inner {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto auto;
@@ -80,33 +84,37 @@ const goods = ref([
 .detailsFloor__sortBar {
   background: #fff;
   border: 1px solid #eee;
-  border-radius: 6px;
+  border-radius: 8px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   overflow: hidden;
-}
-.detailsFloor__sortBar .sortItem {
-  padding: 12px 0;
-  text-align: center;
-  font-size: 13px;
-  color: #555;
-  cursor: pointer;
-  border-right: 1px solid #eee;
-}
-.detailsFloor__sortBar .sortItem:last-child { border-right: none; }
-.detailsFloor__sortBar .sortItem.active {
-  background: #c81623;
-  color: #fff;
-}
-.detailsFloor__sortBar .sortItem:hover:not(.active) {
-  background: #f5f5f5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+  .sortItem {
+    padding: 12px 0;
+    text-align: center;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    border-right: 1px solid #eee;
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+    color: red;
+    font-weight: bold;
+    }
+  }
 }
 
 /* 商品网格 */
 .detailsFloor__goods {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 /* 分页 */
@@ -116,28 +124,41 @@ const goods = ref([
   align-items: center;
   gap: 6px;
   padding: 16px 0;
+
+  .pageItem {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+
+    &.active {
+      color: red;
+      font-weight: bold;
+    }
+
+    &:hover:not(.active):not(.disabled) {
+      border-color: red;
+      color: red;
+      font-weight: bold;
+    }
+
+    &.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .pageDotted {
+    color: #999;
+  }
+
+  .pageInfo {
+    font-size: 12px;
+    color: #999;
+    margin-left: 8px;
+  }
 }
-.detailsFloor__pagination .pageItem {
-  padding: 6px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #555;
-  cursor: pointer;
-}
-.detailsFloor__pagination .pageItem.active {
-  background: #c81623;
-  color: #fff;
-  border-color: #c81623;
-}
-.detailsFloor__pagination .pageItem:hover:not(.active):not(.disabled) {
-  border-color: #c81623;
-  color: #c81623;
-}
-.detailsFloor__pagination .pageItem.disabled {
-  color: #ccc;
-  cursor: not-allowed;
-}
-.detailsFloor__pagination .pageDotted { color: #999; }
-.detailsFloor__pagination .pageInfo { font-size: 12px; color: #999; margin-left: 8px; }
 </style>
