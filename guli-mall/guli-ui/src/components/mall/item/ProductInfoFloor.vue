@@ -148,7 +148,7 @@ const specs = reactive([
 <style scoped>
 .productInfoFloor { background: LavenderBlush; padding: 10px 0; }
 .productInfoFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto;
@@ -204,7 +204,7 @@ const specs = reactive([
   font-size: 14px;
   color: #999;
 }
-.thumbBtn:hover { border-color: var(--theme-red); color: var(--theme-red); }
+.thumbBtn:hover { border-color: #c81623; color: #c81623; }
 .thumbList {
   display: flex;
   gap: 6px;
@@ -219,7 +219,7 @@ const specs = reactive([
   overflow: hidden;
   cursor: pointer;
 }
-.thumbItem.active { border-color: var(--theme-red); }
+.thumbItem.active { border-color: #c81623; }
 .thumbItem img { width: 100%; height: 100%; object-fit: cover; }
 
 /* 右:商品信息 */
@@ -253,7 +253,7 @@ const specs = reactive([
   font-size: 13px;
 }
 .summaryRow__title { color: #999; text-align: right; }
-.summaryRow__price { color: var(--theme-red); font-size: 24px; font-weight: bold; }
+.summaryRow__price { color: #c81623; font-size: 24px; font-weight: bold; }
 .summaryRow__price i { font-style: normal; font-size: 14px; }
 .summaryRow__price em { font-style: normal; }
 .summaryRow__price .notice { font-size: 12px; color: #999; margin-left: 12px; cursor: pointer; }
@@ -261,7 +261,7 @@ const specs = reactive([
 .summaryRow__remark em { color: #333; font-style: normal; font-weight: bold; margin-left: 4px; }
 .summaryRow__promo { grid-column: 2 / 4; }
 .summaryRow__promo .redTag {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 1px 6px;
   border-radius: 3px;
@@ -296,11 +296,11 @@ const specs = reactive([
   text-decoration: none;
   cursor: pointer;
 }
-.chooseRow__options a:hover { border-color: var(--theme-red); }
+.chooseRow__options a:hover { border-color: #c81623; }
 .chooseRow__options a.selected {
-  border-color: var(--theme-red);
+  border-color: #c81623;
   background: rgba(200, 22, 35, 0.05);
-  color: var(--theme-red);
+  color: #c81623;
 }
 
 /* 数量 + 购物车 */
@@ -338,7 +338,7 @@ const specs = reactive([
   font-size: 14px;
 }
 .cartBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   border: none;
   padding: 8px 30px;

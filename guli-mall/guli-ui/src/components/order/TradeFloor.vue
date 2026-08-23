@@ -158,7 +158,7 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   margin: 0 0 12px;
   font-size: 14px;
   color: #333;
-  border-left: 3px solid var(--theme-red);
+  border-left: 3px solid #c81623;
   padding-left: 8px;
 }
 .section__body { padding-left: 11px; }
@@ -176,11 +176,11 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   cursor: pointer;
   background: #fafafa;
 }
-.addressItem.selected { border-color: var(--theme-red); background: #fff5f5; }
+.addressItem.selected { border-color: #c81623; background: #fff5f5; }
 .addrName { display: flex; align-items: center; gap: 8px; }
 .addrName em { font-style: normal; font-weight: bold; font-size: 14px; color: #333; }
 .defaultTag {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   font-size: 10px;
   padding: 1px 6px;
@@ -200,7 +200,7 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   color: #666;
   cursor: pointer;
 }
-.payType.selected { border-color: var(--theme-red); color: var(--theme-red); font-weight: bold; }
+.payType.selected { border-color: #c81623; color: #c81623; font-weight: bold; }
 
 /* 送货清单 */
 .deliveryInfo { margin-bottom: 16px; }
@@ -221,7 +221,7 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
 .goodsItem__img img { width: 70px; height: 70px; object-fit: cover; border-radius: 4px; }
 .goodsItem__desc .desc { font-size: 12px; color: #333; line-height: 1.4; }
 .goodsItem__desc .seven { font-size: 11px; color: #4CAF50; margin-top: 4px; }
-.goodsItem__price { color: var(--theme-red); font-size: 14px; font-weight: bold; }
+.goodsItem__price { color: #c81623; font-size: 14px; font-weight: bold; }
 .goodsItem__qty { font-size: 13px; color: #666; text-align: center; }
 .goodsItem__stock { font-size: 12px; color: #4CAF50; text-align: center; }
 
@@ -264,7 +264,7 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   margin: 4px 0;
 }
 .summaryRow em { font-style: normal; color: #333; font-weight: bold; }
-.allPrice { color: var(--theme-red); font-size: 16px; }
+.allPrice { color: #c81623; font-size: 16px; }
 
 /* 提交栏 */
 .submitBar {
@@ -278,10 +278,10 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
 }
 .submitBar__left { display: grid; gap: 8px; }
 .amount { font-size: 14px; color: #333; }
-.amount .price { color: var(--theme-red); font-size: 22px; font-weight: bold; }
+.amount .price { color: #c81623; font-size: 22px; font-weight: bold; }
 .receiverInfo { font-size: 12px; color: #999; }
 .submitBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 12px 40px;
   border-radius: 4px;

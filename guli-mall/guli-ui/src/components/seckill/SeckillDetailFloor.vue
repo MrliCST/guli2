@@ -140,7 +140,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
 <style scoped>
 .seckillDetailFloor { background: Seashell; padding: 10px 0; }
 .seckillDetailFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 210px 1fr;
@@ -159,7 +159,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
 }
 .shopName { font-size: 13px; color: #333; font-weight: bold; }
 .enterShop {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 4px 10px;
   border-radius: 4px;
@@ -179,7 +179,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   color: #666;
   cursor: pointer;
 }
-.asideTab.active { background: var(--theme-red); color: #fff; }
+.asideTab.active { background: #c81623; color: #fff; }
 .asideCol__content {
   background: #fff;
   border-radius: 0 0 6px 6px;
@@ -193,7 +193,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   border-bottom: 1px dashed #eee;
   cursor: pointer;
 }
-.catList li:hover { color: var(--theme-red); }
+.catList li:hover { color: #c81623; }
 .relatedGoods { display: grid; gap: 8px; }
 
 /* 右详情 */
@@ -203,7 +203,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   margin: 0 0 10px;
   font-size: 14px;
   color: #333;
-  border-left: 3px solid var(--theme-red);
+  border-left: 3px solid #c81623;
   padding-left: 8px;
 }
 .fittingBody {
@@ -214,7 +214,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
 }
 .masterGoods { text-align: center; position: relative; }
 .masterGoods img { width: 80px; height: 80px; object-fit: contain; }
-.masterGoods em { display: block; font-style: normal; color: var(--theme-red); font-size: 14px; margin-top: 4px; }
+.masterGoods em { display: block; font-style: normal; color: #c81623; font-size: 14px; margin-top: 4px; }
 .masterGoods i { position: absolute; right: -8px; top: 35px; font-style: normal; font-size: 18px; color: #ccc; font-weight: bold; }
 .suitsList { display: flex; gap: 10px; }
 .suitItem {
@@ -224,17 +224,17 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   border: 2px solid transparent;
   border-radius: 6px;
 }
-.suitItem.checked { border-color: var(--theme-red); background: rgba(200,22,35,0.05); }
+.suitItem.checked { border-color: #c81623; background: rgba(200,22,35,0.05); }
 .suitItem img { width: 60px; height: 60px; object-fit: contain; }
 .suitItem > i { display: block; font-style: normal; font-size: 11px; color: #555; margin: 4px 0; }
-.checkboxPretty { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; color: var(--theme-red); }
+.checkboxPretty { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; color: #c81623; }
 .checkboxPretty input { margin: 0; }
 .fittingResult { text-align: center; border-left: 1px solid #eee; padding-left: 12px; }
 .resultNum { font-size: 12px; color: #999; margin-bottom: 6px; }
 .resultLabel { font-size: 13px; color: #333; }
-.resultPrice { font-size: 20px; color: var(--theme-red); font-weight: bold; margin: 4px 0 8px; }
+.resultPrice { font-size: 20px; color: #c81623; font-weight: bold; margin: 4px 0 8px; }
 .cartBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   border: none;
   padding: 6px 16px;
@@ -253,7 +253,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   cursor: pointer;
   border-right: 1px solid #eee;
 }
-.detailTab.active { color: var(--theme-red); border-bottom: 2px solid var(--theme-red); font-weight: bold; }
+.detailTab.active { color: #c81623; border-bottom: 2px solid #c81623; font-weight: bold; }
 .detailTabs__content { padding: 16px; }
 .tabPane { font-size: 13px; color: #333; }
 .specList {

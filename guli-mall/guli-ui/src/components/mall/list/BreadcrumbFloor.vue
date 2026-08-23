@@ -32,7 +32,7 @@ function removeTag(tag) {
 <style scoped>
 .breadcrumbFloor { background: Lavender; padding: 10px 0; }
 .breadcrumbFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -70,5 +70,5 @@ function removeTag(tag) {
   cursor: pointer;
   font-size: 14px;
 }
-.breadcrumbFloor__tags .tag i:hover { color: var(--theme-red); }
+.breadcrumbFloor__tags .tag i:hover { color: #c81623; }
 </style>

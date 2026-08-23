@@ -2,7 +2,7 @@
   <section class="recommendFloor">
     <div class="recommendFloor_inner">
       <div class="recommendFloor_clock">
-        <img src="/img/clock.png" alt="" />
+        <div class="clockIcon"></div>
         <h3>今日推荐</h3>
       </div>
       <div class="recommendFloor_item" v-for="item in items" :key="item.name">
@@ -20,10 +20,10 @@
 import { ref } from 'vue'
 
 const items = ref([
-  { img: '/img/today01.png', name: '米家空气净化器Pro 高效除甲醛', price: '¥1299' },
-  { img: '/img/today02.png', name: '华为 Mate 60 Pro 12+512G', price: '¥6999' },
-  { img: '/img/today03.png', name: '戴森 V12 无线吸尘器', price: '¥3990' },
-  { img: '/img/today04.png', name: 'Apple AirPods Pro 2 主动降噪', price: '¥1799' }
+  { img: '/mall/index/recommend-1.png', name: '米家空气净化器Pro 高效除甲醛', price: '¥1299' },
+  { img: '/mall/index/recommend-2.png', name: '华为 Mate 60 Pro 12+512G', price: '¥6999' },
+  { img: '/mall/index/recommend-3.png', name: '戴森 V12 无线吸尘器', price: '¥3990' },
+  { img: '/mall/index/recommend-4.png', name: 'Apple AirPods Pro 2 主动降噪', price: '¥1799' }
 ])
 </script>
 
@@ -47,10 +47,13 @@ const items = ref([
       gap: 8px;
       text-align: center;
 
-      img {
-        width: 80px;
-        height: 80px;
-        object-fit: contain;
+      .clockIcon {
+        width: 57px;
+        height: 57px;
+        background-image: url('@/assets/mall/index/recommendClock.png');
+        background-size: 57px 57px;
+        background-repeat: no-repeat;
+        background-position: center;
         filter: brightness(0) invert(1);
       }
 

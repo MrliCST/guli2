@@ -107,7 +107,7 @@ onUnmounted(() => clearInterval(timer))
 <style scoped>
 .seckillInfoFloor { background: #fff0f5; padding: 10px 0; }
 .seckillInfoFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto;
@@ -145,7 +145,7 @@ onUnmounted(() => clearInterval(timer))
   color: #666;
   cursor: pointer;
 }
-.previewWrap__collect:hover { color: var(--theme-red); }
+.previewWrap__collect:hover { color: #c81623; }
 .previewWrap__collect img { width: 16px; height: 16px; }
 
 /* 右:商品信息 */
@@ -161,7 +161,7 @@ onUnmounted(() => clearInterval(timer))
 
 /* 秒杀倒计时条 */
 .itemInfo__seckillBar {
-  background: linear-gradient(135deg, #ff6b6b, var(--theme-red));
+  background: linear-gradient(135deg, #ff6b6b, #c81623);
   border-radius: 6px;
   padding: 8px 14px;
   display: flex;
@@ -184,7 +184,7 @@ onUnmounted(() => clearInterval(timer))
   font-size: 13px;
 }
 .summaryRow__title { color: #999; text-align: right; }
-.summaryRow__price { color: var(--theme-red); font-size: 24px; font-weight: bold; }
+.summaryRow__price { color: #c81623; font-size: 24px; font-weight: bold; }
 .summaryRow__price i { font-style: normal; font-size: 14px; }
 .summaryRow__price em { font-style: normal; }
 .summaryRow__price .notice { font-size: 12px; color: #999; margin-left: 12px; cursor: pointer; }
@@ -192,7 +192,7 @@ onUnmounted(() => clearInterval(timer))
 .summaryRow__remark em { color: #333; font-style: normal; font-weight: bold; margin-left: 4px; }
 .summaryRow__promo { grid-column: 2 / 4; }
 .summaryRow__promo .redTag {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 1px 6px;
   border-radius: 3px;
@@ -238,7 +238,7 @@ onUnmounted(() => clearInterval(timer))
   font-size: 14px;
 }
 .cartBtn {
-  background: linear-gradient(135deg, #ff6b6b, var(--theme-red));
+  background: linear-gradient(135deg, #ff6b6b, #c81623);
   color: #fff;
   border: none;
   padding: 8px 30px;

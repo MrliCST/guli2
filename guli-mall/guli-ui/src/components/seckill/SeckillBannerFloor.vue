@@ -59,7 +59,7 @@ function scrollTop() {
 <style scoped>
 .seckillBannerFloor { background: #fff5f5; padding: 10px 0; }
 .seckillBannerFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto auto;

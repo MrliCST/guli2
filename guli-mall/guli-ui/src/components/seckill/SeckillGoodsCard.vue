@@ -58,7 +58,7 @@ defineProps({
   overflow: hidden;
 }
 .seckillCard__price { display: flex; align-items: baseline; gap: 8px; }
-.secPrice { color: var(--theme-red); font-size: 18px; }
+.secPrice { color: #c81623; font-size: 18px; }
 .everPrice { color: #999; font-size: 13px; text-decoration: line-through; font-weight: normal; }
 .seckillCard__num { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: #999; }
 .sold { white-space: nowrap; }
@@ -70,13 +70,13 @@ defineProps({
 }
 .progressBar {
   height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, var(--theme-red));
+  background: linear-gradient(90deg, #ff6b6b, #c81623);
   border-radius: 5px;
   transition: width 0.3s;
 }
-.left b { color: var(--theme-red); }
+.left b { color: #c81623; }
 .seckillCard__btn {
-  background: linear-gradient(135deg, #ff6b6b, var(--theme-red));
+  background: linear-gradient(135deg, #ff6b6b, #c81623);
   color: #fff;
   text-align: center;
   padding: 8px 0;

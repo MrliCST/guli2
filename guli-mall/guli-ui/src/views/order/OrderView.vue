@@ -27,7 +27,7 @@ import FooterFloor from '@/components/common/FooterFloor.vue'
 }
 .myOrderPage__body { background: #f5f5f5; padding: 10px 0; }
 .myOrderPage__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 200px 1fr;

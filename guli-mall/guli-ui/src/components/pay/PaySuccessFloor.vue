@@ -33,7 +33,7 @@ const amount = ref('17,654')
   justify-content: center;
 }
 .paySuccessFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
 }
 
@@ -56,10 +56,10 @@ const amount = ref('17,654')
 }
 .successCard__detail { display: grid; gap: 6px; }
 .successCard__detail p { margin: 0; font-size: 14px; color: #666; }
-.payMoney { font-style: normal; color: var(--theme-red); font-weight: bold; font-size: 18px; }
+.payMoney { font-style: normal; color: #c81623; font-weight: bold; font-size: 18px; }
 .successCard__action { display: flex; gap: 20px; margin-top: 12px; }
 .btnOrder {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 10px 30px;
   border-radius: 4px;

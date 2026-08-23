@@ -69,7 +69,7 @@ const goods = ref([
 <style scoped>
 .detailsFloor { background: Seashell; padding: 10px 0; }
 .detailsFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto auto;
@@ -95,7 +95,7 @@ const goods = ref([
 }
 .detailsFloor__sortBar .sortItem:last-child { border-right: none; }
 .detailsFloor__sortBar .sortItem.active {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
 }
 .detailsFloor__sortBar .sortItem:hover:not(.active) {
@@ -126,13 +126,13 @@ const goods = ref([
   cursor: pointer;
 }
 .detailsFloor__pagination .pageItem.active {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
-  border-color: var(--theme-red);
+  border-color: #c81623;
 }
 .detailsFloor__pagination .pageItem:hover:not(.active):not(.disabled) {
-  border-color: var(--theme-red);
-  color: var(--theme-red);
+  border-color: #c81623;
+  color: #c81623;
 }
 .detailsFloor__pagination .pageItem.disabled {
   color: #ccc;

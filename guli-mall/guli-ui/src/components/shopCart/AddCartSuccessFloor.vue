@@ -56,7 +56,7 @@ const recommendGoods = ref([
 <style scoped>
 .addCartSuccessFloor { background: Honeydew; padding: 10px 0; }
 .addCartSuccessFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto;
@@ -112,7 +112,7 @@ const recommendGoods = ref([
   text-align: center;
 }
 .btnCart {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 8px 20px;
   border-radius: 4px;
@@ -131,7 +131,7 @@ const recommendGoods = ref([
   margin: 0 0 12px;
   font-size: 14px;
   color: #333;
-  border-left: 3px solid var(--theme-red);
+  border-left: 3px solid #c81623;
   padding-left: 8px;
 }
 .recommendBox__list {

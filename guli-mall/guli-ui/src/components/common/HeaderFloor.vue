@@ -1,7 +1,7 @@
 <template>
   <section class="headerFloor">
     <div class="cell headerFloor_logo">
-      <img src="/img/Logo1.png" alt="谷粒商城Logo" />
+      <img src="/img/logo.jpg" alt="谷粒商城Logo" />
     </div>
     <div class="headerFloor_search">
       <input class="searchInput" v-model="keyword" type="text" placeholder="搜索商品" />

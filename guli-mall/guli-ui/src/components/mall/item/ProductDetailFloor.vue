@@ -239,7 +239,7 @@ const comments = ref([
 <style scoped>
 .productDetailFloor { background: Seashell; padding: 10px 0; }
 .productDetailFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 210px 1fr;
@@ -265,7 +265,7 @@ const comments = ref([
   color: #666;
   cursor: pointer;
 }
-.asideTab.active { background: var(--theme-red); color: #fff; }
+.asideTab.active { background: #c81623; color: #fff; }
 .asideCol__content {
   background: #fff;
   border-radius: 0 0 6px 6px;
@@ -283,7 +283,7 @@ const comments = ref([
   border-bottom: 1px dashed #eee;
   cursor: pointer;
 }
-.catList li:hover { color: var(--theme-red); }
+.catList li:hover { color: #c81623; }
 .relatedGoods {
   display: grid;
   gap: 8px;
@@ -306,7 +306,7 @@ const comments = ref([
   margin: 0 0 10px;
   font-size: 14px;
   color: #333;
-  border-left: 3px solid var(--theme-red);
+  border-left: 3px solid #c81623;
   padding-left: 8px;
 }
 .fittingBody {
@@ -320,7 +320,7 @@ const comments = ref([
   position: relative;
 }
 .masterGoods img { width: 80px; height: 80px; object-fit: contain; }
-.masterGoods em { display: block; font-style: normal; color: var(--theme-red); font-size: 14px; margin-top: 4px; }
+.masterGoods em { display: block; font-style: normal; color: #c81623; font-size: 14px; margin-top: 4px; }
 .masterGoods i {
   position: absolute;
   right: -8px;
@@ -341,7 +341,7 @@ const comments = ref([
   border: 2px solid transparent;
   border-radius: 6px;
 }
-.suitItem.checked { border-color: var(--theme-red); background: rgba(200,22,35,0.05); }
+.suitItem.checked { border-color: #c81623; background: rgba(200,22,35,0.05); }
 .suitItem img { width: 60px; height: 60px; object-fit: contain; }
 .suitItem > i { display: block; font-style: normal; font-size: 11px; color: #555; margin: 4px 0; }
 .checkboxPretty {
@@ -350,7 +350,7 @@ const comments = ref([
   justify-content: center;
   gap: 4px;
   font-size: 12px;
-  color: var(--theme-red);
+  color: #c81623;
 }
 .checkboxPretty input { margin: 0; }
 .fittingResult {
@@ -360,9 +360,9 @@ const comments = ref([
 }
 .resultNum { font-size: 12px; color: #999; margin-bottom: 6px; }
 .resultLabel { font-size: 13px; color: #333; }
-.resultPrice { font-size: 20px; color: var(--theme-red); font-weight: bold; margin: 4px 0 8px; }
+.resultPrice { font-size: 20px; color: #c81623; font-weight: bold; margin: 4px 0 8px; }
 .cartBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   border: none;
   padding: 6px 16px;
@@ -389,8 +389,8 @@ const comments = ref([
   border-right: 1px solid #eee;
 }
 .detailTab.active {
-  color: var(--theme-red);
-  border-bottom: 2px solid var(--theme-red);
+  color: #c81623;
+  border-bottom: 2px solid #c81623;
   font-weight: bold;
 }
 .detailTabs__content { padding: 16px; }
@@ -423,7 +423,7 @@ const comments = ref([
 }
 .commentTitle { font-size: 16px; font-weight: bold; }
 .commentPercent { font-size: 14px; color: #666; }
-.commentPercent .percent { color: var(--theme-red); font-size: 24px; font-weight: bold; }
+.commentPercent .percent { color: #c81623; font-size: 24px; font-weight: bold; }
 .commentTypes {
   display: flex;
   gap: 8px;
@@ -438,7 +438,7 @@ const comments = ref([
   color: #555;
   cursor: pointer;
 }
-.commentType.active { border-color: var(--theme-red); color: var(--theme-red); }
+.commentType.active { border-color: #c81623; color: #c81623; }
 .commentList {
   display: grid;
   gap: 12px;
@@ -473,6 +473,6 @@ const comments = ref([
   border-radius: 4px;
   margin-top: 8px;
 }
-.replyName { color: var(--theme-red); font-weight: bold; }
+.replyName { color: #c81623; font-weight: bold; }
 .replyTime { font-size: 11px; color: #999; margin-top: 4px; }
 </style>

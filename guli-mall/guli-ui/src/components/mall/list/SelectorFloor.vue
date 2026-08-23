@@ -84,7 +84,7 @@ const filterRows = ref([
 <style scoped>
 .selectorFloor { background: MistyRose; padding: 10px 0; }
 .selectorFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: repeat(6, auto);
@@ -143,7 +143,7 @@ const filterRows = ref([
   font-size: 12px;
   color: #555;
 }
-.optionList li a:hover { color: var(--theme-red); }
+.optionList li a:hover { color: #c81623; }
 .selectorRow__ext {
   display: flex;
   align-items: center;
@@ -161,6 +161,6 @@ const filterRows = ref([
 }
 .selectorRow__ext .extLink {
   font-size: 12px;
-  color: var(--theme-red);
+  color: #c81623;
 }
 </style>

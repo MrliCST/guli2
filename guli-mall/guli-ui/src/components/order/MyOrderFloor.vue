@@ -139,7 +139,7 @@ function deleteOrder(idx) {
 }
 .orderTime { color: #999; }
 .deleteBtn { cursor: pointer; color: #999; }
-.deleteBtn:hover { color: var(--theme-red); }
+.deleteBtn:hover { color: #c81623; }
 
 .orderBlock__body {
   display: grid;
@@ -157,7 +157,7 @@ function deleteOrder(idx) {
 .goodsRow:last-child { border-bottom: none; }
 .goodsRow img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
 .goodsName { font-size: 12px; color: #333; text-decoration: none; line-height: 1.4; }
-.goodsName:hover { color: var(--theme-red); }
+.goodsName:hover { color: #c81623; }
 .goodsQty { font-size: 12px; color: #999; }
 .goodsAfter { list-style: none; margin: 0; padding: 0; grid-column: 2; }
 .goodsAfter li { font-size: 11px; color: #999; cursor: pointer; }
@@ -171,7 +171,7 @@ function deleteOrder(idx) {
 .col-amount div { margin: 2px 0; }
 .statusTag { color: #4CAF50; font-weight: bold; }
 .opLink { font-size: 12px; color: #666; text-decoration: none; }
-.opLink:hover { color: var(--theme-red); }
+.opLink:hover { color: #c81623; }
 
 /* 分页 */
 .pagination {
@@ -190,7 +190,7 @@ function deleteOrder(idx) {
   color: #666;
   cursor: pointer;
 }
-.pageBtn.active { background: var(--theme-red); color: #fff; border-color: var(--theme-red); }
+.pageBtn.active { background: #c81623; color: #fff; border-color: #c81623; }
 .pageBtn.disabled { color: #ccc; cursor: not-allowed; }
 .pageInfo { font-size: 12px; color: #999; margin-left: 8px; }
 

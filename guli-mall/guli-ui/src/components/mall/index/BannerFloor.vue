@@ -17,11 +17,27 @@
         <h4><a href="#">母婴、玩具</a></h4>
         <h4><a href="#">箱包</a></h4>
         <h4><a href="#">运动户外</a></h4>
-        <h4><a href="#">箱包</a></h4>
       </div>
       <!-- 滚动屏 -->
-      <div class="bannerFloor_carousel">
-        <img src="/img/banner1.jpg" alt="Banner" />
+      <div class="bannerFloor_carousel" @mouseenter="stopAuto" @mouseleave="startAuto">
+        <img
+          class="slide"
+          v-for="(b, i) in banners"
+          :key="b"
+          :src="b"
+          :class="{ active: i === current }"
+          alt="Banner"
+        />
+        <button class="arrow prev" @click="prev">‹</button>
+        <button class="arrow next" @click="next">›</button>
+        <div class="dots">
+          <span
+            v-for="(b, i) in banners"
+            :key="'dot' + i"
+            :class="{ active: i === current }"
+            @click="goTo(i)"
+          ></span>
+        </div>
       </div>
       <!-- banner边栏 -->
       <div class="bannerFloor_sidebar">
@@ -40,11 +56,14 @@
         </div>
         <!-- 服务区域 -->
         <div class="bannerSidebar_services">
-          <div class="serviceItem" v-for="s in services" :key="s">{{ s }}</div>
+          <div class="serviceItem" v-for="s in services" :key="s.label">
+            <span class="serviceIcon" :style="{ backgroundPosition: s.iconPos }"></span>
+            <span class="serviceText">{{ s.label }}</span>
+          </div>
         </div>
         <!-- 广告位 -->
         <div class="bannerSidebar_ad">
-          <img src="/img/ad1.png" alt="广告" />
+          <img :src="bannerSidebarAd" alt="广告" />
         </div>
       </div>
     </div>
@@ -52,7 +71,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const banners = ref([
+  '/mall/index/bannerCarousel-1.jpg',
+  '/mall/index/bannerCarousel-2.jpg',
+  '/mall/index/bannerCarousel-3.jpg'
+])
+const current = ref(0)
+const bannerSidebarAd = ref('/mall/index/bannerSidebarAd.png')
+
+let timer: ReturnType<typeof setInterval> | undefined
+const next = () => { current.value = (current.value + 1) % banners.value.length }
+const prev = () => { current.value = (current.value - 1 + banners.value.length) % banners.value.length }
+const goTo = (i: number) => { current.value = i }
+const startAuto = () => {
+  stopAuto()
+  timer = setInterval(next, 3000)
+}
+const stopAuto = () => {
+  if (timer) {
+    clearInterval(timer)
+    timer = undefined
+  }
+}
+onMounted(startAuto)
+onUnmounted(stopAuto)
 
 const news = ref([
   { tag: '特惠', text: '备战开学季 全民半价购数码', color: '#c81623' },
@@ -62,10 +106,20 @@ const news = ref([
   { tag: '特惠', text: '美妆盛典 买一送一', color: '#c81623' }
 ])
 
+// 服务项：label 文字 + iconPos 精灵图坐标（serviceIcons.png 为 4 列 × 3 行，每格 30×30）
 const services = ref([
-  '话费', '机票', '电影票', '游戏',
-  '彩票', '加油', '酒店', '火车票',
-  '众筹', '理财', '礼品卡', '白条'
+  { label: '话费', iconPos: '0px 0px' },
+  { label: '机票', iconPos: '-30px 0px' },
+  { label: '电影票', iconPos: '-60px 0px' },
+  { label: '游戏', iconPos: '-90px 0px' },
+  { label: '彩票', iconPos: '0px -30px' },
+  { label: '加油', iconPos: '-30px -30px' },
+  { label: '酒店', iconPos: '-60px -30px' },
+  { label: '火车票', iconPos: '-90px -30px' },
+  { label: '众筹', iconPos: '0px -60px' },
+  { label: '理财', iconPos: '-30px -60px' },
+  { label: '礼品卡', iconPos: '-60px -60px' },
+  { label: '白条', iconPos: '-90px -60px' }
 ])
 </script>
 
@@ -83,10 +137,12 @@ const services = ref([
 
 
     .categoryTreeTable {
+      padding: 10px 0;
+
       h4 {
         font-size: 14px;
         font-weight: normal;
-        margin: 4px 0 4px 12px;
+        margin: 8px 0 8px 12px;
 
         a {
           display: inline-block;
@@ -103,12 +159,72 @@ const services = ref([
 
     /** 滚动屏 */
     .bannerFloor_carousel {
-      height: 438px;
+      position: relative;
+      height: 539px;
+      overflow: hidden;
 
-      img {
+      .slide {
+        position: absolute;
+        inset: 0;
         width: 100%;
-        height: 438px;
+        height: 100%;
         object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+
+        &.active {
+          opacity: 1;
+        }
+      }
+
+      .arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 60px;
+        border: none;
+        background: rgba(0, 0, 0, 0.3);
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s;
+
+        &.prev {
+          left: 0;
+          border-radius: 0 4px 4px 0;
+        }
+
+        &.next {
+          right: 0;
+          border-radius: 4px 0 0 4px;
+        }
+      }
+
+      &:hover .arrow {
+        opacity: 1;
+      }
+
+      .dots {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+
+        span {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.5);
+          cursor: pointer;
+
+          &.active {
+            background: #c81623;
+          }
+        }
       }
     }
 
@@ -117,7 +233,7 @@ const services = ref([
       display: grid;
       grid-template-rows: auto auto auto 1fr;
 
-      /** 标题 */
+      /** 标题层 */
       .newsHeader {
         display: flex;
         justify-content: space-between;
@@ -125,11 +241,13 @@ const services = ref([
         padding: 12px;
         border: 1px solid #ccc;
 
+        /** 标题 */
         .title {
           font-size: 14px;
           font-weight: bold;
         }
 
+        /** 更多 */
         .more {
           color: #999;
           font-weight: normal;
@@ -172,6 +290,23 @@ const services = ref([
           padding: 12px 0;
           font-size: 12px;
           color: #555;
+          // 图标在上、文字在下
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+
+          .serviceIcon {
+            width: 30px;
+            height: 30px;
+            background-image: url('@/assets/mall/index/bannerServiceIcons.png');
+            background-repeat: no-repeat;
+          }
+
+          .serviceText {
+            font-size: 12px;
+            color: #555;
+          }
         }
       }
 

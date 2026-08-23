@@ -114,7 +114,7 @@ function removeSelected() {
 <style scoped>
 .cartTableFloor { background: AliceBlue; padding: 10px 0; }
 .cartTableFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto auto auto;
@@ -163,10 +163,10 @@ function removeSelected() {
 .goodsMsg { font-size: 12px; color: #333; line-height: 1.4; }
 .col-attr { font-size: 12px; color: #999; padding: 0 10px; }
 .col-price span { color: #333; }
-.col-sub .subPrice { color: var(--theme-red); font-weight: bold; }
+.col-sub .subPrice { color: #c81623; font-weight: bold; }
 .col-op { display: flex; flex-direction: column; gap: 6px; }
 .col-op a { font-size: 12px; color: #666; text-decoration: none; }
-.col-op a:hover { color: var(--theme-red); }
+.col-op a:hover { color: #c81623; }
 
 /* 数量 */
 .qtyBox {
@@ -211,16 +211,16 @@ function removeSelected() {
 .selectAllBox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666; }
 .options { display: flex; gap: 16px; }
 .options a { font-size: 12px; color: #666; text-decoration: none; }
-.options a:hover { color: var(--theme-red); }
+.options a:hover { color: #c81623; }
 .cartFooter__right { display: flex; align-items: center; gap: 24px; }
 .chosed { font-size: 13px; color: #666; }
-.chosed span { color: var(--theme-red); font-weight: bold; }
+.chosed span { color: #c81623; font-weight: bold; }
 .sumprice { text-align: right; }
 .sumprice div { font-size: 12px; color: #999; }
-.totalMoney { color: var(--theme-red); font-size: 20px; font-weight: bold; }
+.totalMoney { color: #c81623; font-size: 20px; font-weight: bold; }
 .saved b { color: #4CAF50; }
 .checkoutBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 10px 30px;
   border-radius: 4px;

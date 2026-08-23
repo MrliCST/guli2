@@ -34,7 +34,7 @@ const goods = ref([
 <style scoped>
 .hotSaleFloor { background: FloralWhite; padding: 10px 0; }
 .hotSaleFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto auto;

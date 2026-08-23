@@ -45,7 +45,7 @@ defineProps({
   border-radius: 4px;
 }
 .goodsCard__img img { width: 100%; height: 160px; object-fit: cover; }
-.goodsCard__price strong { color: var(--theme-red); font-size: 18px; }
+.goodsCard__price strong { color: #c81623; font-size: 18px; }
 .goodsCard__price em { font-style: normal; font-size: 12px; margin-right: 2px; }
 .goodsCard__price i { font-style: normal; }
 .goodsCard__attr a {
@@ -53,7 +53,7 @@ defineProps({
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.goodsCard__attr a:hover { color: var(--theme-red); }
+.goodsCard__attr a:hover { color: #c81623; }
 .goodsCard__commit { font-size: 12px; color: #999; }
 .goodsCard__commit span { color: #e4393c; font-weight: bold; }
 .goodsCard__operate {
@@ -62,7 +62,7 @@ defineProps({
   gap: 6px;
 }
 .goodsCard__operate .btn-cart {
-  background: var(--theme-red); color: #fff;
+  background: #c81623; color: #fff;
   text-align: center; padding: 6px 0;
   border-radius: 4px; font-size: 12px;
 }

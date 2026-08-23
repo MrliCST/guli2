@@ -40,7 +40,7 @@ dt {
   padding: 8px 0 6px;
   border-bottom: 1px solid #f0f0f0;
 }
-dt i { color: var(--theme-red); font-style: normal; margin-right: 4px; }
+dt i { color: #c81623; font-style: normal; margin-right: 4px; }
 dd {
   font-size: 13px;
   color: #666;
@@ -50,5 +50,5 @@ dd {
   margin: 0;
 }
 dd:hover { background: #f5f5f5; color: #333; }
-dd.active { color: var(--theme-red); font-weight: bold; }
+dd.active { color: #c81623; font-weight: bold; }
 </style>

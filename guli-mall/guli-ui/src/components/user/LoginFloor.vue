@@ -81,7 +81,7 @@ function handleLogin() {
   justify-content: center;
 }
 .loginFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   display: grid;
   grid-template-columns: 1fr 400px;
   gap: 40px;
@@ -110,9 +110,9 @@ function handleLogin() {
   cursor: pointer;
   border-bottom: 2px solid transparent;
 }
-.tab.active { border-bottom-color: var(--theme-red); }
+.tab.active { border-bottom-color: #c81623; }
 .tab h3 { margin: 0; font-size: 16px; color: #666; font-weight: normal; }
-.tab.active h3 { color: var(--theme-red); font-weight: bold; }
+.tab.active h3 { color: #c81623; font-weight: bold; }
 
 .loginBox__content { padding: 30px; }
 
@@ -130,7 +130,7 @@ function handleLogin() {
   border-radius: 4px;
   overflow: hidden;
 }
-.inputRow:focus-within { border-color: var(--theme-red); }
+.inputRow:focus-within { border-color: #c81623; }
 .icon { width: 40px; height: 40px; flex-shrink: 0; background: #f5f5f5; position: relative; }
 .userIcon::after { content: '👤'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 16px; }
 .pwdIcon::after { content: '🔒'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 16px; }
@@ -151,10 +151,10 @@ function handleLogin() {
 }
 .autoLogin { display: flex; align-items: center; gap: 4px; color: #666; cursor: pointer; }
 .forget { color: #666; text-decoration: none; }
-.forget:hover { color: var(--theme-red); }
+.forget:hover { color: #c81623; }
 
 .loginBtn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   border: none;
   height: 44px;
@@ -174,5 +174,5 @@ function handleLogin() {
 }
 .otherLogin__icons { display: flex; gap: 10px; }
 .otherLogin__icons img { width: 32px; height: 32px; cursor: pointer; }
-.registerLink { font-size: 13px; color: var(--theme-red); text-decoration: none; }
+.registerLink { font-size: 13px; color: #c81623; text-decoration: none; }
 </style>

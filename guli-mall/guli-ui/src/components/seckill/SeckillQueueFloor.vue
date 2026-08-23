@@ -59,7 +59,7 @@ const states = [
 <style scoped>
 .seckillQueueFloor { background: #fff5f5; padding: 40px 0; }
 .seckillQueueFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   display: grid;
   grid-template-rows: auto 1fr;
@@ -83,9 +83,9 @@ const states = [
   cursor: pointer;
 }
 .stateSwitcher button.active {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
-  border-color: var(--theme-red);
+  border-color: #c81623;
 }
 
 /* 状态卡片 */
@@ -111,17 +111,17 @@ const states = [
 }
 .spinner {
   border: 4px solid #ffe0e0;
-  border-top-color: var(--theme-red);
+  border-top-color: #c81623;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.fail { background: #fff0f0; color: var(--theme-red); }
+.fail { background: #fff0f0; color: #c81623; }
 .success { background: #f0fff0; color: #4CAF50; }
 .queueCard__text { font-size: 22px; font-weight: bold; color: #333; }
 .queueCard__sub { font-size: 14px; color: #999; }
 .queueCard__btn {
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   padding: 10px 30px;
   border-radius: 4px;

@@ -91,7 +91,7 @@ function handleRegister() {
   justify-content: center;
 }
 .registerFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   display: grid;
   grid-template-columns: 1fr 500px;
   gap: 40px;
@@ -118,7 +118,7 @@ function handleRegister() {
 }
 .registerBox__header h3 { margin: 0; font-size: 16px; color: #333; }
 .go { font-size: 13px; color: #999; }
-.go a { color: var(--theme-red); text-decoration: none; }
+.go a { color: #c81623; text-decoration: none; }
 
 /* 表单 */
 .registerForm { padding: 24px; display: grid; gap: 16px; }
@@ -139,13 +139,13 @@ function handleRegister() {
   outline: none;
   box-sizing: border-box;
 }
-.formRow__control input:focus { border-color: var(--theme-red); }
+.formRow__control input:focus { border-color: #c81623; }
 .codeRow { display: grid; grid-template-columns: 1fr 120px; gap: 8px; }
 .codeBtn {
   height: 38px;
-  border: 1px solid var(--theme-red);
+  border: 1px solid #c81623;
   background: #fff;
-  color: var(--theme-red);
+  color: #c81623;
   border-radius: 4px;
   font-size: 12px;
   cursor: pointer;
@@ -155,7 +155,7 @@ function handleRegister() {
 .registerBtn {
   width: 100%;
   height: 42px;
-  background: var(--theme-red);
+  background: #c81623;
   color: #fff;
   border: none;
   border-radius: 4px;

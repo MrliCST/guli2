@@ -25,7 +25,7 @@ import FooterFloor from '@/components/common/FooterFloor.vue'
 }
 .tradePage__body { background: #f5f5f5; padding: 10px 0; }
 .tradePage__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   background: #fff;
   border-radius: 8px;

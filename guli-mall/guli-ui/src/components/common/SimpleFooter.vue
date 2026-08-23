@@ -17,7 +17,7 @@ const links = ['关于我们', '联系我们', '联系客服', '商家入驻', '
 <style scoped>
 .simpleFooterFloor { background: #f5f5f5; padding: 20px 0; }
 .simpleFooterFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
@@ -30,7 +30,7 @@ const links = ['关于我们', '联系我们', '联系客服', '商家入驻', '
   margin: 0 0 10px;
 }
 .links li { font-size: 12px; color: #999; cursor: pointer; }
-.links li:hover { color: var(--theme-red); }
+.links li:hover { color: #c81623; }
 .address { font-size: 12px; color: #999; margin: 4px 0; }
 .beian { font-size: 12px; color: #999; margin: 4px 0; }
 </style>

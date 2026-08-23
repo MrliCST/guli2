@@ -1,7 +1,7 @@
 <template>
   <section class="brandFloor">
-    <div class="brandFloor__inner">
-      <div class="brandFloor__item" v-for="(b, idx) in brands" :key="idx">
+    <div class="brandFloor_inner">
+      <div class="brandFloor_item" v-for="(b, key) in brands" :key="key">
         <img :src="b" alt="" />
       </div>
     </div>
@@ -11,29 +11,56 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const brands = ref([
-  '/img/brand_21.png', '/img/brand_03.png', '/img/brand_05.png', '/img/brand_07.png', '/img/brand_09.png',
-  '/img/brand_11.png', '/img/brand_13.png', '/img/brand_15.png', '/img/brand_17.png', '/img/brand_19.png'
-])
+// 品牌图片路径表：key 为品牌名，value 为 public 下的路径
+const brands = ref({
+  anta: '/mall/index/brand-anta.png',
+  anward: '/mall/index/brand-anward.png',
+  blueAir: '/mall/index/brand-blueAir.png',
+  changhong: '/mall/index/brand-changhong.png',
+  flyco: '/mall/index/brand-flyco.png',
+  gree: '/mall/index/brand-gree.png',
+  hisense: '/mall/index/brand-hisense.png',
+  huawei: '/mall/index/brand-huawei.png',
+  leshi: '/mall/index/brand-leshi.png',
+  meizu: '/mall/index/brand-meizu.png',
+  midea: '/mall/index/brand-midea.png',
+  oppo: '/mall/index/brand-oppo.png',
+  philips: '/mall/index/brand-philips.png',
+  samsung: '/mall/index/brand-samsung.png',
+  siemens: '/mall/index/brand-siemens.png',
+  sony: '/mall/index/brand-sony.png',
+  supor: '/mall/index/brand-supor.png',
+  tcl: '/mall/index/brand-tcl.png',
+  vivo: '/mall/index/brand-vivo.png',
+  xiaomi: '/mall/index/brand-xiaomi.png'
+})
 </script>
 
-<style scoped>
-.brandFloor { background: Azure; padding: 10px 0; }
-.brandFloor__inner {
-  width: var(--page-width);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
+<style scoped lang="scss">
+.brandFloor {
+  margin: 10px 0;
+  padding: 10px 0;
+
+  .brandFloor_inner {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
+
+  .brandFloor_item {
+    display: grid;
+    height: 50px;
+    padding: 10px 0;
+    place-items: center;
+    border: 1px solid #dad9d9;
+
+
+    img {
+      max-width: 90%;
+      max-height: 70px;
+      object-fit: contain;
+    }
+  }
 }
-.brandFloor__item {
-  background: #fff;
-  height: 90px;
-  display: grid;
-  place-items: center;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid #eee;
-}
-.brandFloor__item img { max-width: 90%; max-height: 70px; object-fit: contain; }
 </style>

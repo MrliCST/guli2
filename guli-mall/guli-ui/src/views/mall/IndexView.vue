@@ -1,6 +1,8 @@
 <template>
   <div class="mall-page">
+    <!-- 顶部导航栏 -->
     <NavFloor />
+    <!-- 搜索头 -->
     <HeaderFloor />
     <!-- 种类 -->
     <CategoryFloor />
@@ -13,17 +15,11 @@
     <!-- 猜你喜欢 -->
     <LikeFloor />
     <!-- 家用电器 -->
-    <HomeApplianceFloor />
-    <!-- 手机通信 -->
-    <MobileFloor />
+    <ApplianceFloor />
     <!-- 品牌墙 -->
     <BrandFloor />
     <!-- 底层信息 -->
     <FooterFloor />
-
-    <!-- 固定悬浮:不参与主 Grid -->
-    <FloorIndex />
-    <SideToolbar />
   </div>
 </template>
 
@@ -35,12 +31,10 @@ import BannerFloor from '@/components/mall/index/BannerFloor.vue'
 import RecommendFloor from '@/components/mall/index/RecommendFloor.vue'
 import RankFloor from '@/components/mall/index/RankFloor.vue'
 import LikeFloor from '@/components/common/LikeFloor.vue'
-import HomeApplianceFloor from '@/components/mall/index/HomeApplianceFloor.vue'
-import MobileFloor from '@/components/mall/index/MobileFloor.vue'
+import ApplianceFloor from '@/components/mall/index/ApplianceFloor.vue'
 import BrandFloor from '@/components/mall/index/BrandFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
-import FloorIndex from '@/components/mall/index/FloorIndex.vue'
-import SideToolbar from '@/components/common/SideToolbar.vue'
+
 </script>
 
 <style scoped>

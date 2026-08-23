@@ -52,7 +52,7 @@
 <style scoped>
 .wxPayFloor { background: #f5f5f5; padding: 10px 0; }
 .wxPayFloor__inner {
-  width: var(--page-width);
+  width: 1200px;
   margin: 0 auto;
   background: #fff;
   border-radius: 8px;
@@ -83,7 +83,7 @@
 .successInfo { font-size: 16px; font-weight: bold; color: #333; }
 .noticeBox__right { text-align: right; font-size: 14px; color: #666; }
 .noticeBox__right em { font-style: normal; }
-.money { color: var(--theme-red); font-size: 22px; font-weight: bold; }
+.money { color: #c81623; font-size: 22px; font-weight: bold; }
 
 /* 微信支付区 */
 .wxPayArea { padding: 20px 0; }
@@ -157,5 +157,5 @@
 
 .otherLink { text-align: center; padding-top: 20px; }
 .otherLink a { font-size: 13px; color: #666; text-decoration: none; }
-.otherLink a:hover { color: var(--theme-red); }
+.otherLink a:hover { color: #c81623; }
 </style>
