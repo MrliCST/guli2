@@ -37,7 +37,7 @@ import FooterFloor from '@/components/common/FooterFloor.vue'
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /*
   把页面化为11个层，层的高度为 auto
   相当于: grid-template-rows: auto, auto, ...., auto; (共11个)

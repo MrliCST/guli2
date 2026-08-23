@@ -1,17 +1,18 @@
 <template>
   <section class="productDetailFloor">
     <div class="productDetailFloor_inner">
-      <!-- 左:相关分类侧栏 -->
+      <!-- 左边栏 wrapepr -->
       <div class="asideCol">
+        <!-- 左边栏 tab -->
         <div class="asideCol_tabs">
-          <div
-            class="asideTab"
-            :class="{ active: asideTab === idx }"
+          <div class="asideTab"
+            :class="{ active: isAsideTabActive(idx) }"
             v-for="(tab, idx) in asideTabs"
             :key="tab"
             @click="asideTab = idx"
           >{{ tab }}</div>
         </div>
+        <!-- 左边栏内容 -->
         <div class="asideCol_content">
           <!-- 相关分类列表 -->
           <ul class="catList">
@@ -30,18 +31,21 @@
           </div>
         </div>
       </div>
-
-      <!-- 右:详情主体 -->
+      <!-- 右边详情主体 -->
       <div class="detailCol">
         <!-- 选择搭配 -->
         <div class="fittingSection">
+          <!-- 标题 wrapper -->
           <h4 class="sectionTitle">选择搭配</h4>
+          <!-- 搭配 wrapper -->
           <div class="fittingBody">
+            <!-- 主货物 -->
             <div class="masterGoods">
               <img src="/img/_/l-m01.png" alt="" />
               <em>￥5299</em>
               <i>+</i>
             </div>
+            <!-- 搭配物 wrapper -->
             <div class="suitsList">
               <div
                 class="suitItem"
@@ -58,6 +62,7 @@
                 </label>
               </div>
             </div>
+            <!-- 搭配结果并加入购物车 -->
             <div class="fittingResult">
               <div class="resultNum">已选购{{ checkedCount }}件商品</div>
               <div class="resultLabel"><strong>套餐价</strong></div>
@@ -66,14 +71,13 @@
             </div>
           </div>
         </div>
-
-        <!-- 详情 Tab -->
+        <!-- 详情商品信息 -->
         <div class="detailTabs">
           <!-- 细节导航栏 -->
           <div class="detailTabs_nav">
             <div
               class="detailTab"
-              :class="{ active: detailTab === idx }"
+              :class="{ active: isDetailTabActive(idx) }"
               v-for="(tab, idx) in detailTabs"
               :key="tab"
               @click="detailTab = idx"
@@ -82,12 +86,12 @@
           <!-- 细节内容 -->
           <div class="detailTabs_content">
             <!-- 商品介绍 -->
-            <div v-show="detailTab === 0" class="tabPane">
+            <div v-show="showDetailTab0" class="tabPane">
               <table class="specTable">
                 <tbody>
                   <template v-for="group in specGroups" :key="group.groupName">
                     <tr v-for="(item, idx) in group.data" :key="group.groupName + '-' + idx">
-                      <td v-if="idx === 0" class="specGroup" :rowspan="group.data.length">{{ group.groupName }}</td>
+                      <td v-if="isFirstSpec(idx)" class="specGroup" :rowspan="group.data.length">{{ group.groupName }}</td>
                       <td class="specAttr">{{ item.attrName }}</td>
                       <td class="specValue">{{ item.attrValue }}</td>
                     </tr>
@@ -100,31 +104,34 @@
                 <img src="/img/_/intro03.png" alt="" />
               </div>
             </div>
-            <!-- 规格与包装 -->
-            <div v-show="detailTab === 1" class="tabPane">
-              <p>规格与包装</p>
+            <!-- 基本属性 -->
+            <div v-show="showDetailTab1" class="tabPane">
+              <p>基本属性</p>
             </div>
             <!-- 售后保障 -->
-            <div v-show="detailTab === 2" class="tabPane">
+            <div v-show="showDetailTab2" class="tabPane">
               <p>售后保障</p>
             </div>
             <!-- 商品评价 -->
-            <div v-show="detailTab === 3" class="tabPane">
+            <div v-show="showDetailTab3" class="tabPane">
+              <!-- 评价标题 -->
               <div class="commentSummary">
                 <div class="commentTitle">商品评价</div>
                 <div class="commentPercent">
                   好评度 <span class="percent">96%</span>
                 </div>
               </div>
+              <!-- 评价类型 -->
               <div class="commentTypes">
                 <div
                   class="commentType"
-                  :class="{ active: commentType === idx }"
+                  :class="{ active: isCommentTypeActive(idx) }"
                   v-for="(type, idx) in commentTypes"
                   :key="idx"
                   @click="commentType = idx"
                 >{{ type }}</div>
               </div>
+              <!-- 评价列表 -->
               <div class="commentList">
                 <div class="commentItem" v-for="(c, i) in comments" :key="i">
                   <div class="commentUser">
@@ -154,7 +161,7 @@
               </div>
             </div>
             <!-- 手机社区 -->
-            <div v-show="detailTab === 4" class="tabPane">
+            <div v-show="showDetailTab4" class="tabPane">
               <p>手机社区</p>
             </div>
           </div>
@@ -170,17 +177,25 @@ import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const asideTabs = ['相关分类', '推荐品牌']
 const asideTab = ref(0)
+const isAsideTabActive = (idx: number) => asideTab.value === idx
 
 const categories = ['手机', '手机壳', '内存卡', 'Iphone配件', '贴膜', '手机耳机', '移动电源', '平板电脑']
 
 const relatedGoods = ref([
-  { img: '/img/_/part01.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' },
-  { img: '/img/_/part02.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' },
-  { img: '/img/_/part03.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' }
+  { img: '/mall/item/relate-1.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' },
+  { img: '/mall/item/relate-2.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' },
+  { img: '/mall/item/relate-3.png', price: '6088.00', title: 'Apple苹果iPhone 6s (A1699)' }
 ])
 
 const detailTabs = ['商品介绍', '规格与包装', '售后保障', '商品评价', '手机社区']
 const detailTab = ref(0)
+const isDetailTabActive = (idx: number) => detailTab.value === idx
+const showDetailTab0 = computed(() => detailTab.value === 0)
+const showDetailTab1 = computed(() => detailTab.value === 1)
+const showDetailTab2 = computed(() => detailTab.value === 2)
+const showDetailTab3 = computed(() => detailTab.value === 3)
+const showDetailTab4 = computed(() => detailTab.value === 4)
+const isFirstSpec = (idx: number) => idx === 0
 
 const specGroups = [
   {
@@ -211,12 +226,13 @@ const specGroups = [
 
 const commentTypes = ['全部评价(123456)', '晒图(500)', '追评(500)', '好评(500)', '中评(500)', '差评(500)']
 const commentType = ref(0)
+const isCommentTypeActive = (idx: number) => commentType.value === idx
 
 const suits = reactive([
-  { img: '/img/_/dp01.png', name: 'Feless费勒斯VR', price: 39, checked: false },
-  { img: '/img/_/dp02.png', name: 'Feless费勒斯VR', price: 50, checked: false },
-  { img: '/img/_/dp03.png', name: 'Feless费勒斯VR', price: 59, checked: false },
-  { img: '/img/_/dp04.png', name: 'Feless费勒斯VR', price: 99, checked: false }
+  { img: '/mall/item/suit-1.png', name: 'Feless费勒斯VR', price: 39, checked: false },
+  { img: '/mall/item/suit-2.png', name: 'Feless费勒斯VR', price: 50, checked: false },
+  { img: '/mall/item/suit-3.png', name: 'Feless费勒斯VR', price: 59, checked: false },
+  { img: '/mall/item/suit-4.png', name: 'Feless费勒斯VR', price: 99, checked: false }
 ])
 
 const checkedCount = computed(() => suits.filter(s => s.checked).length)
@@ -261,26 +277,27 @@ const comments = ref([
   background: Seashell;
   padding: 10px 0;
 
+  /** 产品详情 wrapper */
   .productDetailFloor_inner {
-    width: 1200px;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: 210px 1fr;
     gap: 12px;
     align-items: start;
   }
 
-  /* ===== 左侧栏 ===== */
+  /* ===== 左侧栏 wrapper ===== */
   .asideCol {
     display: grid;
     grid-template-rows: auto 1fr;
 
+    /** 左侧栏 tabs */
     .asideCol_tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-radius: 6px 6px 0 0;
       overflow: hidden;
 
+      /** 左侧栏 tab */
       .asideTab {
         background: #f5f5f5;
         padding: 10px 0;
@@ -288,19 +305,22 @@ const comments = ref([
         font-size: 13px;
         color: #666;
         cursor: pointer;
+      }
 
-        &.active {
-          background: #c81623;
-          color: #fff;
-        }
+      /** 激活样式 */
+      .active {
+        background: #c81623;
+        color: #fff;
       }
     }
 
+    /** 左边栏内容 */
     .asideCol_content {
       background: #fff;
       border-radius: 0 0 6px 6px;
       padding: 10px;
 
+      /** 分类列表 */
       .catList {
         list-style: none;
         padding: 0;
@@ -319,6 +339,7 @@ const comments = ref([
         }
       }
 
+      /** 相关商品 */
       .relatedGoods {
         display: grid;
         gap: 8px;
@@ -332,12 +353,13 @@ const comments = ref([
     grid-template-rows: auto auto;
     gap: 12px;
 
-    /* 选择搭配 */
+    /* 选择搭配 wrapper */
     .fittingSection {
       background: #fff;
       border-radius: 6px;
       padding: 12px;
 
+      /** 标题 */
       .sectionTitle {
         margin: 0 0 10px;
         font-size: 14px;
@@ -346,12 +368,14 @@ const comments = ref([
         padding-left: 8px;
       }
 
+      /** 搭配 wrapper */
       .fittingBody {
         display: grid;
         grid-template-columns: 120px 1fr 140px;
         gap: 12px;
         align-items: center;
 
+        /** 主货物 */
         .masterGoods {
           text-align: center;
           position: relative;
@@ -362,6 +386,7 @@ const comments = ref([
             object-fit: contain;
           }
 
+          /** ￥符号样式 */
           em {
             display: block;
             font-style: normal;
@@ -370,6 +395,7 @@ const comments = ref([
             margin-top: 4px;
           }
 
+          /** +符号样式 */
           i {
             position: absolute;
             right: -8px;
@@ -381,10 +407,12 @@ const comments = ref([
           }
         }
 
+        /** 搭配列表 wrapper */
         .suitsList {
           display: flex;
           gap: 10px;
 
+          /** 搭配列表 */
           .suitItem {
             text-align: center;
             cursor: pointer;
@@ -392,18 +420,14 @@ const comments = ref([
             border: 2px solid transparent;
             border-radius: 6px;
 
-            &.checked {
-              border-color: #c81623;
-              background: rgba(200, 22, 35, 0.05);
-            }
-
             img {
               width: 60px;
               height: 60px;
               object-fit: contain;
             }
 
-            > i {
+            /** 搭配物字体 */
+            i {
               display: block;
               font-style: normal;
               font-size: 11px;
@@ -411,6 +435,7 @@ const comments = ref([
               margin: 4px 0;
             }
 
+            /** 多选框样式 */
             .checkboxPretty {
               display: flex;
               align-items: center;
@@ -424,8 +449,15 @@ const comments = ref([
               }
             }
           }
+
+          /** suitsList标记类上标记该属性生效 */
+          .checked {
+            border-color: #c81623;
+            background: rgba(200, 22, 35, 0.05);
+          }
         }
 
+        /** 决定并加入购物车 */
         .fittingResult {
           text-align: center;
           border-left: 1px solid #eee;
@@ -462,39 +494,45 @@ const comments = ref([
       }
     }
 
-    /* 详情 Tab */
+    /* 详情内容Tabs wrapper */
     .detailTabs {
       background: #fff;
       border-radius: 6px;
       overflow: hidden;
 
+      /** 导航条 wrapper */
       .detailTabs_nav {
         display: flex;
         border-bottom: 1px solid #eee;
 
+        /** 导航项 */
         .detailTab {
           padding: 12px 20px;
           font-size: 13px;
           color: #666;
           cursor: pointer;
           border-right: 1px solid #eee;
+        }
 
-          &.active {
-            color: #c81623;
-            border-bottom: 2px solid #c81623;
-            font-weight: bold;
-          }
+        /** 激活 */
+        .active {
+          color: #c81623;
+          border-bottom: 2px solid #c81623;
+          font-weight: bold;
         }
       }
 
+      /** 详情Tabs内容 （仪表盘们的 wrapper） */
       .detailTabs_content {
         padding: 16px;
 
+        /** tab仪表盘 */
         .tabPane {
           font-size: 13px;
           color: #333;
 
-          /* 商品介绍 */
+          // =========== 商品详情 =================
+          /* 商品详情介绍 */
           .specTable {
             width: 100%;
             border-collapse: collapse;
@@ -526,6 +564,7 @@ const comments = ref([
             }
           }
 
+          /** 商品介绍大图 */
           .introImages {
             img {
               width: 100%;
@@ -534,7 +573,8 @@ const comments = ref([
             }
           }
 
-          /* 商品评价 */
+          // =========== 商品评价 =================
+          /* 评价标题（概括） */
           .commentSummary {
             display: flex;
             justify-content: space-between;
@@ -558,6 +598,7 @@ const comments = ref([
             }
           }
 
+          /**评价种类 */
           .commentTypes {
             display: flex;
             gap: 8px;
@@ -579,6 +620,7 @@ const comments = ref([
             }
           }
 
+          /** 评价列表 */
           .commentList {
             display: grid;
             gap: 12px;

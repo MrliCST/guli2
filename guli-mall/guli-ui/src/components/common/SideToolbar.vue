@@ -1,6 +1,6 @@
 <template>
   <aside class="sideToolbar">
-    <div class="sideToolbar__item" v-for="t in tools" :key="t">{{ t }}</div>
+    <div class="sideToolbar_item" v-for="t in tools" :key="t">{{ t }}</div>
   </aside>
 </template>
 
@@ -10,7 +10,7 @@ import { ref } from 'vue'
 const tools = ref(['购物车', '关注', '足迹', '顶部'])
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .sideToolbar {
   position: fixed;
   right: 20px;
@@ -25,7 +25,7 @@ const tools = ref(['购物车', '关注', '足迹', '顶部'])
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 50;
 }
-.sideToolbar__item {
+.sideToolbar_item {
   background: rgba(255, 255, 255, 0.8);
   padding: 12px;
   border-radius: 4px;

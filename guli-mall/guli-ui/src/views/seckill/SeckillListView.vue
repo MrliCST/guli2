@@ -14,7 +14,7 @@ import SeckillBannerFloor from '@/components/seckill/SeckillBannerFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillList-page {
   display: grid;
   grid-template-rows: repeat(4, auto);

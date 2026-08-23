@@ -14,6 +14,6 @@ import WxPayFloor from '@/components/pay/WxPayFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .wxPayPage { display: grid; grid-template-rows: auto auto 1fr auto; }
 </style>

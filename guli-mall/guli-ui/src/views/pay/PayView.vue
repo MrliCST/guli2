@@ -14,6 +14,6 @@ import PayFloor from '@/components/pay/PayFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .payPage { display: grid; grid-template-rows: auto auto 1fr auto; }
 </style>

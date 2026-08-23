@@ -1,21 +1,21 @@
 <template>
   <section class="wxPayFloor">
-    <div class="wxPayFloor__inner">
+    <div class="wxPayFloor_inner">
       <!-- 提示栏 -->
       <div class="noticeBox">
-        <div class="noticeBox__left">
+        <div class="noticeBox_left">
           <span class="successIcon">✓</span>
           <span class="successInfo">订单提交成功，请您及时付款！订单号：56789065645</span>
         </div>
-        <div class="noticeBox__right">
+        <div class="noticeBox_right">
           <em>应付金额：<b class="money">￥17,654</b>元</em>
         </div>
       </div>
 
       <!-- 微信扫码支付区 -->
       <div class="wxPayArea">
-        <div class="wxPayArea__label">微信支付</div>
-        <div class="wxPayArea__body">
+        <div class="wxPayArea_label">微信支付</div>
+        <div class="wxPayArea_body">
           <div class="qrSection">
             <div class="qrBox">
               <div class="qrPlaceholder">
@@ -49,9 +49,9 @@
 <script setup lang="ts">
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .wxPayFloor { background: #f5f5f5; padding: 10px 0; }
-.wxPayFloor__inner {
+.wxPayFloor_inner {
   width: 1200px;
   margin: 0 auto;
   background: #fff;
@@ -72,7 +72,7 @@
   border-radius: 6px;
   padding: 16px;
 }
-.noticeBox__left { display: flex; align-items: center; gap: 12px; }
+.noticeBox_left { display: flex; align-items: center; gap: 12px; }
 .successIcon {
   width: 32px; height: 32px;
   background: #4CAF50; color: #fff;
@@ -81,20 +81,20 @@
   font-size: 16px; font-weight: bold;
 }
 .successInfo { font-size: 16px; font-weight: bold; color: #333; }
-.noticeBox__right { text-align: right; font-size: 14px; color: #666; }
-.noticeBox__right em { font-style: normal; }
+.noticeBox_right { text-align: right; font-size: 14px; color: #666; }
+.noticeBox_right em { font-style: normal; }
 .money { color: #c81623; font-size: 22px; font-weight: bold; }
 
 /* 微信支付区 */
 .wxPayArea { padding: 20px 0; }
-.wxPayArea__label {
+.wxPayArea_label {
   font-size: 18px;
   font-weight: bold;
   color: #07c160;
   padding: 8px 16px;
   border-left: 4px solid #07c160;
 }
-.wxPayArea__body { padding: 30px 0; }
+.wxPayArea_body { padding: 30px 0; }
 
 .qrSection {
   display: grid;

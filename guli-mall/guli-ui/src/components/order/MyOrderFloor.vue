@@ -1,7 +1,7 @@
 <template>
   <div class="myOrderFloor">
     <!-- 标题 -->
-    <div class="myOrderFloor__title">
+    <div class="myOrderFloor_title">
       <strong>我的订单</strong>
     </div>
 
@@ -19,12 +19,12 @@
     <div class="orderList">
       <div class="orderBlock" v-for="(order, i) in orders" :key="i">
         <!-- 订单头 -->
-        <div class="orderBlock__header">
+        <div class="orderBlock_header">
           <span class="orderTime">{{ order.date }} 订单编号：{{ order.num }}</span>
           <span class="deleteBtn" @click="deleteOrder(i)">删除</span>
         </div>
         <!-- 订单体 -->
-        <div class="orderBlock__body">
+        <div class="orderBlock_body">
           <div class="col-goods">
             <div class="goodsRow" v-for="(g, gi) in order.goods" :key="gi">
               <img :src="g.img" alt="" />
@@ -55,8 +55,8 @@
 
     <!-- 猜你喜欢 -->
     <div class="likeSection">
-      <div class="likeSection__title"><strong>猜你喜欢</strong></div>
-      <div class="likeSection__list">
+      <div class="likeSection_title"><strong>猜你喜欢</strong></div>
+      <div class="likeSection_list">
         <BaseGoodsCard
           v-for="(g, i) in likeGoods"
           :key="i"
@@ -103,9 +103,9 @@ function deleteOrder(idx) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .myOrderFloor { display: grid; gap: 0; }
-.myOrderFloor__title { padding: 12px 0; font-size: 16px; color: #333; }
+.myOrderFloor_title { padding: 12px 0; font-size: 16px; color: #333; }
 
 /* 表头 */
 .orderHeader {
@@ -128,7 +128,7 @@ function deleteOrder(idx) {
   overflow: hidden;
   border: 1px solid #f0f0f0;
 }
-.orderBlock__header {
+.orderBlock_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -141,7 +141,7 @@ function deleteOrder(idx) {
 .deleteBtn { cursor: pointer; color: #999; }
 .deleteBtn:hover { color: #c81623; }
 
-.orderBlock__body {
+.orderBlock_body {
   display: grid;
   grid-template-columns: 29% 31% 8% 13% 1fr 1fr;
   align-items: center;
@@ -196,8 +196,8 @@ function deleteOrder(idx) {
 
 /* 猜你喜欢 */
 .likeSection { margin-top: 20px; }
-.likeSection__title { padding: 12px 0; font-size: 16px; color: #333; }
-.likeSection__list {
+.likeSection_title { padding: 12px 0; font-size: 16px; color: #333; }
+.likeSection_list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;

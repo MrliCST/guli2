@@ -12,9 +12,6 @@
     <!-- 复用公共组件 -->
     <LikeFloor />
     <FooterFloor />
-
-    <!-- 固定悬浮 -->
-    <SideToolbar />
   </div>
 </template>
 
@@ -26,10 +23,9 @@ import ProductInfoFloor from '@/components/mall/item/ProductInfoFloor.vue'
 import ProductDetailFloor from '@/components/mall/item/ProductDetailFloor.vue'
 import LikeFloor from '@/components/common/LikeFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
-import SideToolbar from '@/components/common/SideToolbar.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .item-page {
   width: 80%;
   margin: 0 auto;

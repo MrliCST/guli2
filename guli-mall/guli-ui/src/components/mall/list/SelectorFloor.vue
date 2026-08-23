@@ -1,17 +1,17 @@
 <template>
   <section class="selectorFloor">
-    <div class="selectorFloor__inner">
+    <div class="selectorFloor_inner">
       <div
         class="selectorRow"
         v-for="row in filterRows"
         :key="row.key"
       >
-        <div class="cell selectorRow__key">
+        <div class="cell selectorRow_key">
           <span>{{ row.key }}</span>
         </div>
-        <div class="selectorRow__value">
+        <div class="selectorRow_value">
           <!-- 品牌行: logo 图片 + 文字 -->
-          <template v-if="row.type === 'logo'">
+          <template v-if="isLogoRow(row)">
             <ul class="logoList">
               <li v-for="(src, name) in row.brands" :key="name">
                 <img :src="src" :alt="name" />
@@ -28,7 +28,7 @@
             </ul>
           </template>
         </div>
-        <!-- <div class="selectorRow__ext" v-if="row.ext">
+        <!-- <div class="selectorRow_ext" v-if="row.ext">
           <a href="#" v-if="row.ext.multi" class="extBtn">多选</a>
           <a href="#" v-if="row.ext.more" class="extLink">更多</a>
         </div> -->
@@ -39,6 +39,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+
+const isLogoRow = (row: { type: string }) => row.type === 'logo'
 
 const filterRows = ref([
   {
@@ -99,7 +101,7 @@ const filterRows = ref([
   padding: 10px 0;
 }
 
-.selectorFloor__inner {
+.selectorFloor_inner {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -117,46 +119,47 @@ const filterRows = ref([
   gap: 0;
   background: #fff;
   align-items: stretch;
+}
 
-  /* 行标题:参照 list.html 的 .type-wrap .key,灰底、右对齐 */
-  &__key {
-    background: #f1f1f1;
-    font-size: 16px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* 行标题:参照 list.html 的 .type-wrap .key,灰底、右对齐 */
+.selectorRow_key {
+  background: #f1f1f1;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  &__value {
-    padding: 10px 0 0 15px;
-    display: flex;
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-  // 行扩展:参照 list.html 的 .type-wrap .ext,右对齐、内边距、flex 居中
-  &__ext {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px;
+.selectorRow_value {
+  padding: 10px 0 0 15px;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
 
-    .extBtn {
-      background: #fff;
-      border: 1px solid #e1e1e1;
-      padding: 0 10px;
-      border-radius: 2px;
-      line-height: 18px;
-      font-size: 14px;
-      color: #333;
-    }
+// 行扩展:参照 list.html 的 .type-wrap .ext,右对齐、内边距、flex 居中
+.selectorRow_ext {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+}
 
-    .extLink:hover {
-      color: red;
-      font-weight: bold;
-    }
-  }
+.extBtn {
+  background: #fff;
+  border: 1px solid #e1e1e1;
+  padding: 0 10px;
+  border-radius: 2px;
+  line-height: 18px;
+  font-size: 14px;
+  color: #333;
+}
+
+.extLink:hover {
+  color: red;
+  font-weight: bold;
 }
 
 /* 品牌格:参照 .logo-list li,105x52 圆角灰边框小格、红色斜体字

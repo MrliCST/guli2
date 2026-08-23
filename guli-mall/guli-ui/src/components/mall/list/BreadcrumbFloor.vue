@@ -1,10 +1,10 @@
 <template>
   <section class="breadcrumbFloor">
-    <div class="breadcrumbFloor__inner">
-      <div class="cell breadcrumbFloor__path">
+    <div class="breadcrumbFloor_inner">
+      <div class="cell breadcrumbFloor_path">
         <a href="#">全部结果</a>
       </div>
-      <div class="breadcrumbFloor__tags">
+      <div class="breadcrumbFloor_tags">
         <span class="tag" v-for="tag in tags" :key="tag.text">
           {{ tag.text }}
           <i v-if="tag.closable" @click="removeTag(tag)">×</i>
@@ -29,9 +29,9 @@ function removeTag(tag) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .breadcrumbFloor { padding:0 0 10px 0; }
-.breadcrumbFloor__inner {
+.breadcrumbFloor_inner {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -42,19 +42,19 @@ function removeTag(tag) {
   min-height: 40px;
 }
 /* 面包屑:参照 list.html 的 .bread > .sui-breadcrumb,纯文本、无卡片背景 */
-.breadcrumbFloor__path {
+.breadcrumbFloor_path {
   padding: 3px 15px;
   font-size: 13px;
 }
-.breadcrumbFloor__path a { color: #666; }
-.breadcrumbFloor__path a:hover { color: red; font-weight: bold; }
-.breadcrumbFloor__tags {
+.breadcrumbFloor_path a { color: #666; }
+.breadcrumbFloor_path a:hover { color: red; font-weight: bold; }
+.breadcrumbFloor_tags {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, auto));
   gap: 8px;
 }
 /* 筛选标签:参照 list.html 的 .sui-tag,灰色小标签 */
-.breadcrumbFloor__tags .tag {
+.breadcrumbFloor_tags .tag {
   height: 20px;
   padding: 0 7px;
   background: #f7f7f7;
@@ -68,11 +68,11 @@ function removeTag(tag) {
   justify-content: center;
   transition: color 0.2s ease-out;
 }
-.breadcrumbFloor__tags .tag:hover {
+.breadcrumbFloor_tags .tag:hover {
   color: red;
   font-weight: bold;
 }
-.breadcrumbFloor__tags .tag i {
+.breadcrumbFloor_tags .tag i {
   font-style: normal;
   margin-left: 10px;
   color: #999;

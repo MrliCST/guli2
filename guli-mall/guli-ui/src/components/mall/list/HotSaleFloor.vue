@@ -1,10 +1,10 @@
 <template>
   <section class="hotSaleFloor">
-    <div class="hotSaleFloor__inner">
-      <div class="hotSaleFloor__title">
+    <div class="hotSaleFloor_inner">
+      <div class="hotSaleFloor_title">
         <b>热卖商品</b>
       </div>
-      <div class="hotSaleFloor__list">
+      <div class="hotSaleFloor_list">
         <BaseGoodsCard
           v-for="(g, i) in goods"
           :key="i"
@@ -36,7 +36,7 @@ const goods = ref([
   padding: 10px 0;
 }
 
-.hotSaleFloor__inner {
+.hotSaleFloor_inner {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -46,7 +46,7 @@ const goods = ref([
 }
 
 /* 标题:左侧主题红竖条 + 加粗标题,无底色卡片化 */
-.hotSaleFloor__title {
+.hotSaleFloor_title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -66,7 +66,7 @@ const goods = ref([
   }
 }
 
-.hotSaleFloor__list {
+.hotSaleFloor_list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;

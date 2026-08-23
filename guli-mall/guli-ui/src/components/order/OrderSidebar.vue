@@ -5,7 +5,7 @@
       <dd
         v-for="item in group.items"
         :key="item"
-        :class="{ active: item === activeItem }"
+        :class="{ active: isItemActive(item) }"
         @click="activeItem = item"
       >{{ item }}</dd>
     </dl>
@@ -16,6 +16,7 @@
 import { ref } from 'vue'
 
 const activeItem = ref('我的订单')
+const isItemActive = (item: string) => item === activeItem.value
 
 const menuGroups = [
   { title: '订单中心', items: ['我的订单', '团购订单', '本地生活订单', '我的预售', '评价晒单', '取消订单记录'] },
@@ -26,7 +27,7 @@ const menuGroups = [
 ]
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .orderSidebar {
   background: #fff;
   border-radius: 6px;

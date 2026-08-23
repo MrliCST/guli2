@@ -1,22 +1,22 @@
 <template>
   <section class="seckillDetailFloor">
-    <div class="seckillDetailFloor__inner">
+    <div class="seckillDetailFloor_inner">
       <!-- 左:店铺 + 相关分类 -->
       <div class="asideCol">
         <div class="shopBox">
           <span class="shopName">三星旗舰店</span>
           <a href="#" class="enterShop">进入店铺</a>
         </div>
-        <div class="asideCol__tabs">
+        <div class="asideCol_tabs">
           <div
             class="asideTab"
-            :class="{ active: asideTab === idx }"
+            :class="{ active: isAsideTabActive(idx) }"
             v-for="(tab, idx) in asideTabs"
             :key="tab"
             @click="asideTab = idx"
           >{{ tab }}</div>
         </div>
-        <div class="asideCol__content">
+        <div class="asideCol_content">
           <ul class="catList">
             <li v-for="cat in categories" :key="cat">{{ cat }}</li>
           </ul>
@@ -71,17 +71,17 @@
 
         <!-- 详情 Tab -->
         <div class="detailTabs">
-          <div class="detailTabs__nav">
+          <div class="detailTabs_nav">
             <div
               class="detailTab"
-              :class="{ active: detailTab === idx }"
+              :class="{ active: isDetailTabActive(idx) }"
               v-for="(tab, idx) in detailTabs"
               :key="tab"
               @click="detailTab = idx"
             >{{ tab }}</div>
           </div>
-          <div class="detailTabs__content">
-            <div v-show="detailTab === 0" class="tabPane">
+          <div class="detailTabs_content">
+            <div v-show="showDetailTab0" class="tabPane">
               <ul class="specList">
                 <li v-for="spec in specList" :key="spec">{{ spec }}</li>
               </ul>
@@ -91,10 +91,10 @@
                 <img src="/img/_/intro03.png" alt="" />
               </div>
             </div>
-            <div v-show="detailTab === 1" class="tabPane"><p>规格与包装</p></div>
-            <div v-show="detailTab === 2" class="tabPane"><p>售后保障</p></div>
-            <div v-show="detailTab === 3" class="tabPane"><p>商品评价</p></div>
-            <div v-show="detailTab === 4" class="tabPane"><p>手机社区</p></div>
+            <div v-show="showDetailTab1" class="tabPane"><p>规格与包装</p></div>
+            <div v-show="showDetailTab2" class="tabPane"><p>售后保障</p></div>
+            <div v-show="showDetailTab3" class="tabPane"><p>商品评价</p></div>
+            <div v-show="showDetailTab4" class="tabPane"><p>手机社区</p></div>
           </div>
         </div>
       </div>
@@ -108,6 +108,7 @@ import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const asideTabs = ['相关分类', '推荐品牌']
 const asideTab = ref(0)
+const isAsideTabActive = (idx: number) => asideTab.value === idx
 const categories = ['手机', '手机壳', '内存卡', 'Iphone配件', '贴膜', '手机耳机', '移动电源', '平板电脑']
 
 const relatedGoods = ref([
@@ -118,6 +119,12 @@ const relatedGoods = ref([
 
 const detailTabs = ['商品介绍', '规格与包装', '售后保障', '商品评价', '手机社区']
 const detailTab = ref(0)
+const isDetailTabActive = (idx: number) => detailTab.value === idx
+const showDetailTab0 = computed(() => detailTab.value === 0)
+const showDetailTab1 = computed(() => detailTab.value === 1)
+const showDetailTab2 = computed(() => detailTab.value === 2)
+const showDetailTab3 = computed(() => detailTab.value === 3)
+const showDetailTab4 = computed(() => detailTab.value === 4)
 
 const specList = [
   '分辨率：1920*1080(FHD)', '后置摄像头：1200万像素', '前置摄像头：500万像素',
@@ -137,9 +144,9 @@ const checkedCount = computed(() => suits.filter(s => s.checked).length)
 const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((sum, s) => sum + s.price, 0))
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillDetailFloor { background: Seashell; padding: 10px 0; }
-.seckillDetailFloor__inner {
+.seckillDetailFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -166,7 +173,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   font-size: 12px;
   text-decoration: none;
 }
-.asideCol__tabs {
+.asideCol_tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-top: 1px solid #eee;
@@ -180,7 +187,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   cursor: pointer;
 }
 .asideTab.active { background: #c81623; color: #fff; }
-.asideCol__content {
+.asideCol_content {
   background: #fff;
   border-radius: 0 0 6px 6px;
   padding: 10px;
@@ -245,7 +252,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
 
 /* 详情Tab */
 .detailTabs { background: #fff; border-radius: 6px; overflow: hidden; }
-.detailTabs__nav { display: flex; border-bottom: 1px solid #eee; }
+.detailTabs_nav { display: flex; border-bottom: 1px solid #eee; }
 .detailTab {
   padding: 12px 20px;
   font-size: 13px;
@@ -254,7 +261,7 @@ const totalPrice = computed(() => 5299 + suits.filter(s => s.checked).reduce((su
   border-right: 1px solid #eee;
 }
 .detailTab.active { color: #c81623; border-bottom: 2px solid #c81623; font-weight: bold; }
-.detailTabs__content { padding: 16px; }
+.detailTabs_content { padding: 16px; }
 .tabPane { font-size: 13px; color: #333; }
 .specList {
   list-style: none;

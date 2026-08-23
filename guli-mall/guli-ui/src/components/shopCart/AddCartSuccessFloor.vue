@@ -1,13 +1,13 @@
 <template>
   <section class="addCartSuccessFloor">
-    <div class="addCartSuccessFloor__inner">
+    <div class="addCartSuccessFloor_inner">
       <!-- 成功提示 + 商品信息 + 去结算 -->
       <div class="successBox">
-        <div class="successBox__left">
+        <div class="successBox_left">
           <div class="successIcon">✓</div>
           <div class="successText">商品已成功加入购物车！</div>
         </div>
-        <div class="successBox__goods">
+        <div class="successBox_goods">
           <div class="goodsPic">
             <img src="/img/_/gocart.jpg" alt="" />
           </div>
@@ -16,7 +16,7 @@
             <p class="goodsAttr">颜色：WFZ5099IH/5L钛金釜内胆 数量：1</p>
           </div>
         </div>
-        <div class="successBox__action">
+        <div class="successBox_action">
           <a href="/item" class="btnDetail">查看商品详情</a>
           <a href="/cart" class="btnCart">去购物车结算 ></a>
         </div>
@@ -24,8 +24,8 @@
 
       <!-- 购买该商品的朋友还购买了 -->
       <div class="recommendBox">
-        <h4 class="recommendBox__title">购买该商品的朋友还购买了</h4>
-        <div class="recommendBox__list">
+        <h4 class="recommendBox_title">购买该商品的朋友还购买了</h4>
+        <div class="recommendBox_list">
           <BaseGoodsCard
             v-for="(g, i) in recommendGoods"
             :key="i"
@@ -53,9 +53,9 @@ const recommendGoods = ref([
 ])
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .addCartSuccessFloor { background: Honeydew; padding: 10px 0; }
-.addCartSuccessFloor__inner {
+.addCartSuccessFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -73,7 +73,7 @@ const recommendGoods = ref([
   gap: 20px;
   align-items: center;
 }
-.successBox__left {
+.successBox_left {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -91,7 +91,7 @@ const recommendGoods = ref([
   font-weight: bold;
 }
 .successText { font-size: 18px; font-weight: bold; color: #333; }
-.successBox__goods {
+.successBox_goods {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -101,7 +101,7 @@ const recommendGoods = ref([
 .goodsPic img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; }
 .goodsInfo .goodsTitle { font-size: 13px; color: #333; margin: 0 0 6px; }
 .goodsInfo .goodsAttr { font-size: 12px; color: #999; margin: 0; }
-.successBox__action { display: flex; flex-direction: column; gap: 8px; }
+.successBox_action { display: flex; flex-direction: column; gap: 8px; }
 .btnDetail {
   border: 1px solid #ddd;
   padding: 8px 20px;
@@ -127,14 +127,14 @@ const recommendGoods = ref([
   border-radius: 8px;
   padding: 16px;
 }
-.recommendBox__title {
+.recommendBox_title {
   margin: 0 0 12px;
   font-size: 14px;
   color: #333;
   border-left: 3px solid #c81623;
   padding-left: 8px;
 }
-.recommendBox__list {
+.recommendBox_list {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;

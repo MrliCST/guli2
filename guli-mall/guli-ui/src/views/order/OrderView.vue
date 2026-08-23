@@ -2,8 +2,8 @@
   <div class="myOrderPage">
     <NavFloor />
     <HeaderFloor />
-    <div class="myOrderPage__body">
-      <div class="myOrderPage__inner">
+    <div class="myOrderPage_body">
+      <div class="myOrderPage_inner">
         <OrderSidebar />
         <MyOrderFloor />
       </div>
@@ -20,13 +20,13 @@ import MyOrderFloor from '@/components/order/MyOrderFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .myOrderPage {
   display: grid;
   grid-template-rows: auto auto 1fr auto;
 }
-.myOrderPage__body { background: #f5f5f5; padding: 10px 0; }
-.myOrderPage__inner {
+.myOrderPage_body { background: #f5f5f5; padding: 10px 0; }
+.myOrderPage_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;

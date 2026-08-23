@@ -20,7 +20,7 @@ import FooterFloor from '@/components/common/FooterFloor.vue'
 import SideToolbar from '@/components/common/SideToolbar.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillItem-page {
   display: grid;
   grid-template-rows: repeat(6, auto);

@@ -1,6 +1,6 @@
 <template>
   <footer class="simpleFooterFloor">
-    <div class="simpleFooterFloor__inner">
+    <div class="simpleFooterFloor_inner">
       <ul class="links">
         <li v-for="link in links" :key="link">{{ link }}</li>
       </ul>
@@ -14,9 +14,9 @@
 const links = ['关于我们', '联系我们', '联系客服', '商家入驻', '营销中心', '手机谷粒', '销售联盟', '谷粒社区']
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .simpleFooterFloor { background: #f5f5f5; padding: 20px 0; }
-.simpleFooterFloor__inner {
+.simpleFooterFloor_inner {
   width: 1200px;
   margin: 0 auto;
   text-align: center;

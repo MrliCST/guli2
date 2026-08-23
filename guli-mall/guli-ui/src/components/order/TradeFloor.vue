@@ -2,12 +2,12 @@
   <div class="tradeFloor">
     <!-- 收件人信息 -->
     <div class="section">
-      <div class="section__title"><h5>收件人信息</h5></div>
-      <div class="section__body">
+      <div class="section_title"><h5>收件人信息</h5></div>
+      <div class="section_body">
         <div class="addressList">
           <div
             class="addressItem"
-            :class="{ selected: idx === selectedAddr }"
+            :class="{ selected: isAddrSelected(idx) }"
             v-for="(addr, idx) in addresses"
             :key="idx"
             @click="selectedAddr = idx"
@@ -29,12 +29,12 @@
 
     <!-- 支付方式 -->
     <div class="section">
-      <div class="section__title"><h5>支付方式</h5></div>
-      <div class="section__body">
+      <div class="section_title"><h5>支付方式</h5></div>
+      <div class="section_body">
         <div class="payTypes">
           <div
             class="payType"
-            :class="{ selected: payType === idx }"
+            :class="{ selected: isPayTypeSelected(idx) }"
             v-for="(p, idx) in payTypes"
             :key="idx"
             @click="payType = idx"
@@ -47,8 +47,8 @@
 
     <!-- 送货清单 -->
     <div class="section">
-      <div class="section__title"><h5>送货清单</h5></div>
-      <div class="section__body">
+      <div class="section_title"><h5>送货清单</h5></div>
+      <div class="section_body">
         <div class="deliveryInfo">
           <div class="deliveryType">
             <span class="label">配送方式：</span>
@@ -58,14 +58,14 @@
         </div>
         <div class="goodsList">
           <div class="goodsItem" v-for="(g, i) in goods" :key="i">
-            <div class="goodsItem__img"><img :src="g.img" alt="" /></div>
-            <div class="goodsItem__desc">
+            <div class="goodsItem_img"><img :src="g.img" alt="" /></div>
+            <div class="goodsItem_desc">
               <div class="desc">{{ g.name }}</div>
               <div class="seven">7天无理由退货</div>
             </div>
-            <div class="goodsItem__price">￥{{ g.price }}</div>
-            <div class="goodsItem__qty">X{{ g.qty }}</div>
-            <div class="goodsItem__stock">有货</div>
+            <div class="goodsItem_price">￥{{ g.price }}</div>
+            <div class="goodsItem_qty">X{{ g.qty }}</div>
+            <div class="goodsItem_stock">有货</div>
           </div>
         </div>
         <div class="buyMessage">
@@ -79,8 +79,8 @@
 
     <!-- 发票信息 -->
     <div class="section">
-      <div class="section__title"><h5>发票信息</h5></div>
-      <div class="section__body">
+      <div class="section_title"><h5>发票信息</h5></div>
+      <div class="section_body">
         <span class="invoiceTag">普通发票（电子）</span>
         <span class="invoiceTag">个人</span>
         <span class="invoiceTag">明细</span>
@@ -91,7 +91,7 @@
 
     <!-- 使用优惠/抵用 -->
     <div class="section">
-      <div class="section__title"><h5>使用优惠/抵用</h5></div>
+      <div class="section_title"><h5>使用优惠/抵用</h5></div>
     </div>
 
     <!-- 订单汇总 -->
@@ -114,7 +114,7 @@
 
     <!-- 提交栏 -->
     <div class="submitBar">
-      <div class="submitBar__left">
+      <div class="submitBar_left">
         <div class="amount">应付金额: <span class="price">¥{{ totalAmount }}</span></div>
         <div class="receiverInfo">
           寄送至：{{ addresses[selectedAddr].place }}
@@ -131,6 +131,7 @@
 import { ref, computed } from 'vue'
 
 const selectedAddr = ref(0)
+const isAddrSelected = (idx: number) => idx === selectedAddr.value
 const addresses = ref([
   { name: '张三', place: '北京市海淀区', phone: '15988888882', isDefault: true },
   { name: '李四', place: '北京市昌平区洪福科技园', phone: '18745698888', isDefault: false },
@@ -138,6 +139,7 @@ const addresses = ref([
 ])
 
 const payType = ref(0)
+const isPayTypeSelected = (idx: number) => payType.value === idx
 const payTypes = ['在线支付', '货到付款']
 
 const goods = ref([
@@ -150,18 +152,18 @@ const totalQty = computed(() => goods.value.reduce((s, g) => s + g.qty, 0))
 const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g.price) * g.qty, 0).toFixed(2))
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .tradeFloor { display: grid; gap: 0; }
 
 .section { padding: 16px 0; }
-.section__title h5 {
+.section_title h5 {
   margin: 0 0 12px;
   font-size: 14px;
   color: #333;
   border-left: 3px solid #c81623;
   padding-left: 8px;
 }
-.section__body { padding-left: 11px; }
+.section_body { padding-left: 11px; }
 .hr { border-top: 1px solid #f0f0f0; }
 
 /* 收件人地址 */
@@ -218,12 +220,12 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   padding: 10px 0;
   border-bottom: 1px dashed #f0f0f0;
 }
-.goodsItem__img img { width: 70px; height: 70px; object-fit: cover; border-radius: 4px; }
-.goodsItem__desc .desc { font-size: 12px; color: #333; line-height: 1.4; }
-.goodsItem__desc .seven { font-size: 11px; color: #4CAF50; margin-top: 4px; }
-.goodsItem__price { color: #c81623; font-size: 14px; font-weight: bold; }
-.goodsItem__qty { font-size: 13px; color: #666; text-align: center; }
-.goodsItem__stock { font-size: 12px; color: #4CAF50; text-align: center; }
+.goodsItem_img img { width: 70px; height: 70px; object-fit: cover; border-radius: 4px; }
+.goodsItem_desc .desc { font-size: 12px; color: #333; line-height: 1.4; }
+.goodsItem_desc .seven { font-size: 11px; color: #4CAF50; margin-top: 4px; }
+.goodsItem_price { color: #c81623; font-size: 14px; font-weight: bold; }
+.goodsItem_qty { font-size: 13px; color: #666; text-align: center; }
+.goodsItem_stock { font-size: 12px; color: #4CAF50; text-align: center; }
 
 .buyMessage {
   display: flex;
@@ -276,7 +278,7 @@ const totalAmount = computed(() => goods.value.reduce((s, g) => s + parseFloat(g
   padding: 20px;
   margin-top: 12px;
 }
-.submitBar__left { display: grid; gap: 8px; }
+.submitBar_left { display: grid; gap: 8px; }
 .amount { font-size: 14px; color: #333; }
 .amount .price { color: #c81623; font-size: 22px; font-weight: bold; }
 .receiverInfo { font-size: 12px; color: #999; }

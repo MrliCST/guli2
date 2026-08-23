@@ -109,7 +109,7 @@ const goods = reactive({
   comment: '123456'
 })
 
-const mainImg = ref('/mall/list/productInfo_show-b1.png')
+const mainImg = ref('/mall/item/productInfo_show-b1.png')
 const activeThumb = ref(0)
 
 const isActive = (idx: number) => activeThumb.value === idx

@@ -16,7 +16,7 @@ import LikeFloor from '@/components/common/LikeFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .cart-page {
   display: grid;
   grid-template-rows: repeat(5, auto);

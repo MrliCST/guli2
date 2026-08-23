@@ -10,7 +10,7 @@ import RegisterFloor from '@/components/user/RegisterFloor.vue'
 import SimpleFooter from '@/components/common/SimpleFooter.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .registerPage {
   display: grid;
   grid-template-rows: 1fr auto;

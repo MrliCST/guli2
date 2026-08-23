@@ -1,8 +1,8 @@
 <template>
   <section class="cartTableFloor">
-    <div class="cartTableFloor__inner">
+    <div class="cartTableFloor_inner">
       <!-- 标题 -->
-      <div class="cartTableFloor__title">
+      <div class="cartTableFloor_title">
         <h4>全部商品 <span>{{ cartItems.length }}</span></h4>
       </div>
 
@@ -48,7 +48,7 @@
 
       <!-- 工具栏 -->
       <div class="cartFooter">
-        <div class="cartFooter__left">
+        <div class="cartFooter_left">
           <div class="selectAllBox">
             <input type="checkbox" v-model="allChecked" @change="toggleAll" />
             <span>全选</span>
@@ -59,7 +59,7 @@
             <a href="#">清除下柜商品</a>
           </div>
         </div>
-        <div class="cartFooter__right">
+        <div class="cartFooter_right">
           <div class="chosed">已选择 <span>{{ checkedCount }}</span> 件商品</div>
           <div class="sumprice">
             <div>总价（不含运费）：<b class="totalMoney">¥{{ totalMoney }}</b></div>
@@ -111,9 +111,9 @@ function removeSelected() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .cartTableFloor { background: AliceBlue; padding: 10px 0; }
-.cartTableFloor__inner {
+.cartTableFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -122,9 +122,9 @@ function removeSelected() {
 }
 
 /* 标题 */
-.cartTableFloor__title { padding: 10px 0; }
-.cartTableFloor__title h4 { margin: 0; font-size: 16px; color: #333; }
-.cartTableFloor__title span { color: #999; font-size: 13px; margin-left: 8px; }
+.cartTableFloor_title { padding: 10px 0; }
+.cartTableFloor_title h4 { margin: 0; font-size: 16px; color: #333; }
+.cartTableFloor_title span { color: #999; font-size: 13px; margin-left: 8px; }
 
 /* 表头 */
 .cartHeader {
@@ -207,12 +207,12 @@ function removeSelected() {
   padding: 16px 20px;
   margin-top: 12px;
 }
-.cartFooter__left { display: flex; align-items: center; gap: 20px; }
+.cartFooter_left { display: flex; align-items: center; gap: 20px; }
 .selectAllBox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666; }
 .options { display: flex; gap: 16px; }
 .options a { font-size: 12px; color: #666; text-decoration: none; }
 .options a:hover { color: #c81623; }
-.cartFooter__right { display: flex; align-items: center; gap: 24px; }
+.cartFooter_right { display: flex; align-items: center; gap: 24px; }
 .chosed { font-size: 13px; color: #666; }
 .chosed span { color: #c81623; font-weight: bold; }
 .sumprice { text-align: right; }

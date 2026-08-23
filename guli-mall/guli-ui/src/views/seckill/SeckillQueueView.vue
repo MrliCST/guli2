@@ -14,7 +14,7 @@ import SeckillQueueFloor from '@/components/seckill/SeckillQueueFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillQueue-page {
   display: grid;
   grid-template-rows: repeat(4, auto);

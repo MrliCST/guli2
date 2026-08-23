@@ -1,13 +1,13 @@
 <template>
   <section class="payFloor">
-    <div class="payFloor__inner">
+    <div class="payFloor_inner">
       <!-- 订单成功提示 -->
       <div class="noticeBox">
-        <div class="noticeBox__left">
+        <div class="noticeBox_left">
           <span class="successIcon">✓</span>
           <span class="successInfo">订单提交成功，请您及时付款，以便尽快为您发货~~</span>
         </div>
-        <div class="noticeBox__right">
+        <div class="noticeBox_right">
           <span>请您在提交订单<em class="time">4小时</em>之内完成支付，超时订单会自动取消。订单号：<em>145687</em></span>
           <em class="amount">应付金额：<b class="money">￥17,654</b></em>
         </div>
@@ -31,12 +31,12 @@
 
       <!-- 支付平台 -->
       <div class="section">
-        <div class="section__title"><h5>支付平台</h5></div>
-        <div class="section__body">
+        <div class="section_title"><h5>支付平台</h5></div>
+        <div class="section_body">
           <div class="payOptions">
             <div
               class="payOption"
-              :class="{ selected: selectedPlatform === idx }"
+              :class="{ selected: isPlatformSelected(idx) }"
               v-for="(p, idx) in platforms"
               :key="idx"
               @click="selectedPlatform = idx"
@@ -51,12 +51,12 @@
 
       <!-- 支付网银 -->
       <div class="section">
-        <div class="section__title"><h5>支付网银</h5></div>
-        <div class="section__body">
+        <div class="section_title"><h5>支付网银</h5></div>
+        <div class="section_body">
           <div class="bankGrid">
             <div
               class="bankItem"
-              :class="{ selected: selectedBank === idx }"
+              :class="{ selected: isBankSelected(idx) }"
               v-for="(b, idx) in banks"
               :key="idx"
               @click="selectedBank = idx"
@@ -75,8 +75,8 @@
 
       <!-- 其他支付方式 -->
       <div class="section">
-        <div class="section__title"><h5>其他支付方式</h5></div>
-        <div class="section__body">
+        <div class="section_title"><h5>其他支付方式</h5></div>
+        <div class="section_body">
           <router-link to="/wxpay" class="otherPay">微信支付</router-link>
           <span class="otherPay">中国银联</span>
         </div>
@@ -89,9 +89,11 @@
 import { ref } from 'vue'
 
 const selectedPlatform = ref(0)
+const isPlatformSelected = (idx: number) => selectedPlatform.value === idx
 const platforms = ['/img/_/pay2.jpg', '/img/_/pay3.jpg']
 
 const selectedBank = ref(0)
+const isBankSelected = (idx: number) => selectedBank.value === idx
 const banks = [
   '/img/_/pay10.jpg', '/img/_/pay11.jpg', '/img/_/pay12.jpg', '/img/_/pay13.jpg',
   '/img/_/pay14.jpg', '/img/_/pay15.jpg', '/img/_/pay16.jpg', '/img/_/pay17.jpg',
@@ -100,9 +102,9 @@ const banks = [
 ]
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .payFloor { background: #f5f5f5; padding: 10px 0; }
-.payFloor__inner {
+.payFloor_inner {
   width: 1200px;
   margin: 0 auto;
   background: #fff;
@@ -123,7 +125,7 @@ const banks = [
   border-radius: 6px;
   padding: 16px;
 }
-.noticeBox__left { display: flex; align-items: center; gap: 12px; }
+.noticeBox_left { display: flex; align-items: center; gap: 12px; }
 .successIcon {
   width: 32px; height: 32px;
   background: #4CAF50; color: #fff;
@@ -132,8 +134,8 @@ const banks = [
   font-size: 16px; font-weight: bold;
 }
 .successInfo { font-size: 16px; font-weight: bold; color: #333; }
-.noticeBox__right { text-align: right; display: grid; gap: 4px; font-size: 13px; color: #666; }
-.noticeBox__right em { font-style: normal; }
+.noticeBox_right { text-align: right; display: grid; gap: 4px; font-size: 13px; color: #666; }
+.noticeBox_right em { font-style: normal; }
 .time { color: #c81623; font-weight: bold; }
 .amount { font-size: 14px; }
 .money { color: #c81623; font-size: 20px; font-weight: bold; }
@@ -153,14 +155,14 @@ const banks = [
 
 /* 通用 section */
 .section { padding: 8px 0; }
-.section__title h5 {
+.section_title h5 {
   margin: 0 0 12px;
   font-size: 14px;
   color: #333;
   border-left: 3px solid #c81623;
   padding-left: 8px;
 }
-.section__body { padding-left: 11px; }
+.section_body { padding-left: 11px; }
 .hr { border-top: 1px solid #f0f0f0; }
 
 /* 支付平台选项 */

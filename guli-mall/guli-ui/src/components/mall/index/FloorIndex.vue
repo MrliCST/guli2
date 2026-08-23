@@ -1,6 +1,6 @@
 <template>
   <aside class="floorIndex">
-    <div class="floorIndex__item" v-for="f in floors" :key="f.id">
+    <div class="floorIndex_item" v-for="f in floors" :key="f.id">
       {{ f.id }}F {{ f.name }}
     </div>
   </aside>
@@ -18,7 +18,7 @@ const floors = ref([
 ])
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .floorIndex {
   position: fixed;
   left: 20px;
@@ -33,7 +33,7 @@ const floors = ref([
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 50;
 }
-.floorIndex__item {
+.floorIndex_item {
   background: rgba(255, 255, 255, 0.8);
   padding: 10px 12px;
   border-radius: 4px;

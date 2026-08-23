@@ -14,7 +14,7 @@ import AddCartSuccessFloor from '@/components/cart/AddCartSuccessFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .addCart-page {
   display: grid;
   grid-template-rows: repeat(4, auto);

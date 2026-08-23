@@ -1,6 +1,6 @@
 <template>
   <section class="seckillBannerFloor">
-    <div class="seckillBannerFloor__inner">
+    <div class="seckillBannerFloor_inner">
       <div class="banner">
         <img src="/img/_/banner.png" alt="秒杀活动" />
       </div>
@@ -56,9 +56,9 @@ function scrollTop() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillBannerFloor { background: #fff5f5; padding: 10px 0; }
-.seckillBannerFloor__inner {
+.seckillBannerFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;

@@ -14,6 +14,6 @@ import PaySuccessFloor from '@/components/pay/PaySuccessFloor.vue'
 import FooterFloor from '@/components/common/FooterFloor.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .paySuccessPage { display: grid; grid-template-rows: auto auto 1fr auto; }
 </style>

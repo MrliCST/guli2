@@ -10,10 +10,10 @@ import LoginFloor from '@/components/user/LoginFloor.vue'
 import SimpleFooter from '@/components/common/SimpleFooter.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .loginPage {
+  height: 100%;
   display: grid;
   grid-template-rows: 1fr auto;
-  min-height: 100vh;
 }
 </style>

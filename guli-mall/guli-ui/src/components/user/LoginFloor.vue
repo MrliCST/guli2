@@ -1,33 +1,28 @@
 <template>
   <section class="loginFloor">
-    <div class="loginFloor__inner">
-      <!-- logo -->
-      <div class="logoArea">
-        <img :src="'/img/logo1.png'" alt="谷粒商城" />
-      </div>
-
+    <div class="loginFloor_inner">
       <!-- 登录框 -->
       <div class="loginBox">
         <!-- Tab 导航 -->
-        <div class="loginBox__tabs">
-          <div class="tab" :class="{ active: tab === 'qr' }" @click="tab = 'qr'">
+        <div class="loginBox_tabs">
+          <div class="tab" :class="{ active: isQrTab }" @click="tab = 'qr'">
             <h3>扫描登录</h3>
           </div>
-          <div class="tab" :class="{ active: tab === 'form' }" @click="tab = 'form'">
+          <div class="tab" :class="{ active: isFormTab }" @click="tab = 'form'">
             <h3>账户登录</h3>
           </div>
         </div>
 
         <!-- Tab 内容 -->
-        <div class="loginBox__content">
+        <div class="loginBox_content">
           <!-- 扫码登录 -->
-          <div v-show="tab === 'qr'" class="qrPane">
+          <div v-show="isQrTab" class="qrPane">
             <p>二维码登录，暂为官网二维码</p>
             <img :src="'/img/wx_cz.jpg'" alt="二维码" />
           </div>
 
           <!-- 账户登录 -->
-          <div v-show="tab === 'form'" class="formPane">
+          <div v-show="isFormTab" class="formPane">
             <div class="inputRow">
               <span class="icon userIcon"></span>
               <input v-model="form.username" type="text" placeholder="邮箱/用户名/手机号" />
@@ -47,7 +42,7 @@
 
             <!-- 第三方登录 -->
             <div class="otherLogin">
-              <div class="otherLogin__icons">
+              <div class="otherLogin_icons">
                 <img v-for="src in socialIcons" :key="src" :src="src" alt="" />
               </div>
               <router-link to="/register" class="registerLink">立即注册</router-link>
@@ -60,9 +55,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 
 const tab = ref('form')
+const isQrTab = computed(() => tab.value === 'qr')
+const isFormTab = computed(() => tab.value === 'form')
 const form = reactive({ username: '', password: '', autoLogin: true })
 const socialIcons = ['/img/qq.png', '/img/sina.png', '/img/ali.png', '/img/weixin.png']
 
@@ -72,34 +69,31 @@ function handleLogin() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .loginFloor {
-  background: linear-gradient(135deg, #f0f4f8 0%, #e8edf5 100%);
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 100%;
+  .loginFloor_inner {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 80px;
+    background-image: url('@/assets/user/login/loginbg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }
-.loginFloor__inner {
-  width: 1200px;
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 40px;
-  align-items: center;
-}
-
-/* logo */
-.logoArea { text-align: center; }
-.logoArea img { width: 300px; }
 
 /* 登录框 */
 .loginBox {
+  width: 400px;
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
-.loginBox__tabs {
+.loginBox_tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid #eee;
@@ -114,7 +108,7 @@ function handleLogin() {
 .tab h3 { margin: 0; font-size: 16px; color: #666; font-weight: normal; }
 .tab.active h3 { color: #c81623; font-weight: bold; }
 
-.loginBox__content { padding: 30px; }
+.loginBox_content { padding: 30px; }
 
 /* 扫码 */
 .qrPane { text-align: center; }
@@ -172,7 +166,7 @@ function handleLogin() {
   border-top: 1px solid #eee;
   padding-top: 16px;
 }
-.otherLogin__icons { display: flex; gap: 10px; }
-.otherLogin__icons img { width: 32px; height: 32px; cursor: pointer; }
+.otherLogin_icons { display: flex; gap: 10px; }
+.otherLogin_icons img { width: 32px; height: 32px; cursor: pointer; }
 .registerLink { font-size: 13px; color: #c81623; text-decoration: none; }
 </style>

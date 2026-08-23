@@ -1,57 +1,38 @@
 <template>
   <section class="registerFloor">
-    <div class="registerFloor__inner">
-      <!-- logo -->
-      <div class="logoArea">
-        <img :src="'/img/logo1.png'" alt="谷粒商城" />
-      </div>
-
+    <div class="registerFloor_inner">
       <!-- 注册框 -->
       <div class="registerBox">
-        <div class="registerBox__header">
+        <div class="registerBox_header">
           <h3>注册新用户</h3>
           <span class="go">我有账号，去<router-link to="/login">登陆</router-link></span>
         </div>
 
         <form class="registerForm" @submit.prevent="handleRegister">
-          <div class="formRow">
-            <label class="formRow__label">手机号：</label>
-            <div class="formRow__control">
-              <input v-model="form.phone" type="text" placeholder="请输入你的手机号" />
-            </div>
+          <div class="inputRow">
+            <span class="icon phoneIcon"></span>
+            <input v-model="form.phone" type="text" placeholder="请输入你的手机号" />
           </div>
-          <div class="formRow">
-            <label class="formRow__label">验证码：</label>
-            <div class="formRow__control codeRow">
-              <input v-model="form.code" type="text" placeholder="验证码" />
-              <button type="button" class="codeBtn" @click="sendCode">{{ codeText }}</button>
-            </div>
+          <div class="inputRow codeRow">
+            <span class="icon codeIcon"></span>
+            <input v-model="form.code" type="text" placeholder="验证码" />
+            <button type="button" class="codeBtn" @click="sendCode">{{ codeText }}</button>
           </div>
-          <div class="formRow">
-            <label class="formRow__label">登录密码：</label>
-            <div class="formRow__control">
-              <input v-model="form.password" type="password" placeholder="设置登录密码" />
-            </div>
+          <div class="inputRow">
+            <span class="icon pwdIcon"></span>
+            <input v-model="form.password" type="password" placeholder="设置登录密码" />
           </div>
-          <div class="formRow">
-            <label class="formRow__label">确认密码：</label>
-            <div class="formRow__control">
-              <input v-model="form.confirm" type="password" placeholder="再次确认密码" />
-            </div>
+          <div class="inputRow">
+            <span class="icon pwdIcon"></span>
+            <input v-model="form.confirm" type="password" placeholder="再次确认密码" />
           </div>
-          <div class="formRow">
-            <label class="formRow__label"></label>
-            <div class="formRow__control agreeRow">
+          <div class="settingRow">
+            <label class="agreeCheck">
               <input type="checkbox" v-model="form.agreed" />
               <span>同意协议并注册《谷粒商城用户协议》</span>
-            </div>
+            </label>
           </div>
-          <div class="formRow">
-            <label class="formRow__label"></label>
-            <div class="formRow__control">
-              <button type="submit" class="registerBtn">完成注册</button>
-            </div>
-          </div>
+          <button class="registerBtn" @click.prevent="handleRegister">完成注册</button>
         </form>
       </div>
     </div>
@@ -64,15 +45,15 @@ import { reactive, ref } from 'vue'
 const form = reactive({ phone: '', code: '', password: '', confirm: '', agreed: true })
 const codeText = ref('获取验证码')
 
-let timer = null
+let timer: ReturnType<typeof setInterval> | null = null
 function sendCode() {
   if (timer) return
-  let count = 60
+  let count: number = 60
   codeText.value = `${count}秒后重发`
   timer = setInterval(() => {
     count--
     codeText.value = `${count}秒后重发`
-    if (count <= 0) { clearInterval(timer); timer = null; codeText.value = '获取验证码' }
+    if (count <= 0) { clearInterval(timer!); timer = null; codeText.value = '获取验证码' }
   }, 1000)
 }
 
@@ -82,86 +63,129 @@ function handleRegister() {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .registerFloor {
-  background: linear-gradient(135deg, #f0f4f8 0%, #e8edf5 100%);
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.registerFloor__inner {
-  width: 1200px;
-  display: grid;
-  grid-template-columns: 1fr 500px;
-  gap: 40px;
-  align-items: center;
+  height: 100%;
+
+  .registerFloor_inner {
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 80px;
+    background-image: url('@/assets/user/login/loginbg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 }
 
-/* logo */
-.logoArea { text-align: center; }
-.logoArea img { width: 300px; }
-
-/* 注册框 */
 .registerBox {
+  width: 400px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   overflow: hidden;
-}
-.registerBox__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #eee;
-}
-.registerBox__header h3 { margin: 0; font-size: 16px; color: #333; }
-.go { font-size: 13px; color: #999; }
-.go a { color: #c81623; text-decoration: none; }
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 
-/* 表单 */
-.registerForm { padding: 24px; display: grid; gap: 16px; }
-.formRow {
+  .registerBox_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #eee;
+
+    h3 { margin: 0; font-size: 16px; color: #333; }
+    .go { font-size: 13px; color: #999; }
+    .go a { color: #c81623; text-decoration: none; }
+  }
+}
+
+.registerForm {
+  padding: 30px;
   display: grid;
-  grid-template-columns: 90px 1fr;
-  gap: 10px;
-  align-items: center;
+  gap: 16px;
+
+  .inputRow {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+
+    &:focus-within { border-color: #c81623; }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      background: #f5f5f5;
+      position: relative;
+
+      &::after {
+        content: '📝';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        font-size: 16px;
+      }
+    }
+
+    .pwdIcon::after { content: '🔒'; }
+    .phoneIcon::after { content: '📱'; }
+    .codeIcon::after { content: '🔢'; }
+
+    input {
+      flex: 1;
+      height: 40px;
+      border: none;
+      padding: 0 12px;
+      font-size: 14px;
+      outline: none;
+    }
+  }
+
+  .codeRow {
+    .codeBtn {
+      height: 40px;
+      border: none;
+      border-left: 1px solid #ddd;
+      background: #fff;
+      color: #c81623;
+      padding: 0 12px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover { background: rgba(200,22,35,0.05); }
+    }
+  }
+
+  .settingRow {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .agreeCheck {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
+    cursor: pointer;
+  }
+
+  .registerBtn {
+    background: #c81623;
+    color: #fff;
+    border: none;
+    height: 44px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &:hover { opacity: 0.9; }
+  }
 }
-.formRow__label { font-size: 13px; color: #666; text-align: right; }
-.formRow__control input {
-  width: 100%;
-  height: 38px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0 12px;
-  font-size: 14px;
-  outline: none;
-  box-sizing: border-box;
-}
-.formRow__control input:focus { border-color: #c81623; }
-.codeRow { display: grid; grid-template-columns: 1fr 120px; gap: 8px; }
-.codeBtn {
-  height: 38px;
-  border: 1px solid #c81623;
-  background: #fff;
-  color: #c81623;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.codeBtn:hover { background: rgba(200,22,35,0.05); }
-.agreeRow { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666; }
-.registerBtn {
-  width: 100%;
-  height: 42px;
-  background: #c81623;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.registerBtn:hover { opacity: 0.9; }
 </style>

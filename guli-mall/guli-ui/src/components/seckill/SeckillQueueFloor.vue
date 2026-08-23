@@ -1,52 +1,57 @@
 <template>
   <section class="seckillQueueFloor">
-    <div class="seckillQueueFloor__inner">
+    <div class="seckillQueueFloor_inner">
       <!-- 状态切换器 -->
       <div class="stateSwitcher">
         <button
           v-for="(s, i) in states"
           :key="i"
-          :class="{ active: current === i }"
+          :class="{ active: isStateActive(i) }"
           @click="current = i"
         >{{ s.label }}</button>
       </div>
 
       <!-- 排队中 -->
-      <div class="queueCard" v-if="current === 0">
-        <div class="queueCard__icon spinner"></div>
-        <div class="queueCard__text">排队中...</div>
-        <div class="queueCard__sub">系统正在处理您的抢购请求，请稍候</div>
+      <div class="queueCard" v-if="isQueueing">
+        <div class="queueCard_icon spinner"></div>
+        <div class="queueCard_text">排队中...</div>
+        <div class="queueCard_sub">系统正在处理您的抢购请求，请稍候</div>
       </div>
 
       <!-- 抢购失败 -->
-      <div class="queueCard" v-else-if="current === 1">
-        <div class="queueCard__icon fail">✕</div>
-        <div class="queueCard__text">抢购失败</div>
-        <div class="queueCard__sub">商品已抢完，下次早点来哦</div>
-        <a href="/seckill" class="queueCard__btn">返回秒杀列表</a>
+      <div class="queueCard" v-else-if="isFailed">
+        <div class="queueCard_icon fail">✕</div>
+        <div class="queueCard_text">抢购失败</div>
+        <div class="queueCard_sub">商品已抢完，下次早点来哦</div>
+        <a href="/seckill" class="queueCard_btn">返回秒杀列表</a>
       </div>
 
       <!-- 抢购成功 - 去下单 -->
-      <div class="queueCard" v-else-if="current === 2">
-        <div class="queueCard__icon success">✓</div>
-        <div class="queueCard__text">抢购成功</div>
-        <a href="/seckill-item" class="queueCard__btn">去下单</a>
+      <div class="queueCard" v-else-if="isSuccessOrder">
+        <div class="queueCard_icon success">✓</div>
+        <div class="queueCard_text">抢购成功</div>
+        <a href="/seckill-item" class="queueCard_btn">去下单</a>
       </div>
 
       <!-- 抢购成功 - 我的订单 -->
-      <div class="queueCard" v-else-if="current === 3">
-        <div class="queueCard__icon success">✓</div>
-        <div class="queueCard__text">抢购成功</div>
-        <a href="/" class="queueCard__btn">我的订单</a>
+      <div class="queueCard" v-else-if="isSuccessMyOrder">
+        <div class="queueCard_icon success">✓</div>
+        <div class="queueCard_text">抢购成功</div>
+        <a href="/" class="queueCard_btn">我的订单</a>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const current = ref(0)
+const isStateActive = (i: number) => current.value === i
+const isQueueing = computed(() => current.value === 0)
+const isFailed = computed(() => current.value === 1)
+const isSuccessOrder = computed(() => current.value === 2)
+const isSuccessMyOrder = computed(() => current.value === 3)
 
 const states = [
   { label: '排队中' },
@@ -56,9 +61,9 @@ const states = [
 ]
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillQueueFloor { background: #fff5f5; padding: 40px 0; }
-.seckillQueueFloor__inner {
+.seckillQueueFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -99,7 +104,7 @@ const states = [
   border-radius: 8px;
   padding: 60px 20px;
 }
-.queueCard__icon {
+.queueCard_icon {
   width: 64px;
   height: 64px;
   border-radius: 50%;
@@ -118,9 +123,9 @@ const states = [
 @keyframes spin { to { transform: rotate(360deg); } }
 .fail { background: #fff0f0; color: #c81623; }
 .success { background: #f0fff0; color: #4CAF50; }
-.queueCard__text { font-size: 22px; font-weight: bold; color: #333; }
-.queueCard__sub { font-size: 14px; color: #999; }
-.queueCard__btn {
+.queueCard_text { font-size: 22px; font-weight: bold; color: #333; }
+.queueCard_sub { font-size: 14px; color: #999; }
+.queueCard_btn {
   background: #c81623;
   color: #fff;
   padding: 10px 30px;
@@ -128,5 +133,5 @@ const states = [
   font-size: 14px;
   text-decoration: none;
 }
-.queueCard__btn:hover { opacity: 0.9; }
+.queueCard_btn:hover { opacity: 0.9; }
 </style>

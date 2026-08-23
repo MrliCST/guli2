@@ -1,11 +1,11 @@
 <template>
   <section class="detailsFloor">
-    <div class="detailsFloor__inner">
+    <div class="detailsFloor_inner">
       <!-- 排序栏 -->
-      <div class="detailsFloor__sortBar">
+      <div class="detailsFloor_sortBar">
         <div
           class="sortItem"
-          :class="{ active: idx === activeSort }"
+          :class="{ active: isSortActive(idx) }"
           v-for="(item, idx) in sortItems"
           :key="item"
           @click="activeSort = idx"
@@ -13,7 +13,7 @@
       </div>
 
       <!-- 商品网格 -->
-      <div class="detailsFloor__goods">
+      <div class="detailsFloor_goods">
         <BaseGoodsCard
           v-for="(g, i) in goods"
           :key="i"
@@ -26,11 +26,11 @@
       </div>
 
       <!-- 分页 -->
-      <div class="detailsFloor__pagination">
-        <span class="pageItem prev" :class="{ disabled: activePage === 1 }">« 上一页</span>
+      <div class="detailsFloor_pagination">
+        <span class="pageItem prev" :class="{ disabled: isPrevDisabled }">« 上一页</span>
         <span
           class="pageItem"
-          :class="{ active: activePage === p }"
+          :class="{ active: isPageActive(p) }"
           v-for="p in pages"
           :key="p"
           @click="activePage = p"
@@ -44,12 +44,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import BaseGoodsCard from '@/components/common/BaseGoodsCard.vue'
 
 const sortItems = ['综合', '销量', '新品', '评价', '价格 ↑', '价格 ↓']
 const activeSort = ref(0)
+const isSortActive = (idx: number) => idx === activeSort.value
 const activePage = ref(1)
+const isPrevDisabled = computed(() => activePage.value === 1)
+const isPageActive = (p: number) => activePage.value === p
 const pages = [1, 2, 3, 4, 5]
 
 const goods = ref([
@@ -71,7 +74,7 @@ const goods = ref([
   padding: 10px 0;
 }
 
-.detailsFloor__inner {
+.detailsFloor_inner {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -81,7 +84,7 @@ const goods = ref([
 }
 
 /* 排序栏 */
-.detailsFloor__sortBar {
+.detailsFloor_sortBar {
   background: #fff;
   border: 1px solid #eee;
   border-radius: 8px;
@@ -111,14 +114,14 @@ const goods = ref([
 }
 
 /* 商品网格 */
-.detailsFloor__goods {
+.detailsFloor_goods {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
 }
 
 /* 分页 */
-.detailsFloor__pagination {
+.detailsFloor_pagination {
   display: flex;
   justify-content: center;
   align-items: center;

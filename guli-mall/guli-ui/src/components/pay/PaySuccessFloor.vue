@@ -1,16 +1,16 @@
 <template>
   <section class="paySuccessFloor">
-    <div class="paySuccessFloor__inner">
+    <div class="paySuccessFloor_inner">
       <div class="successCard">
-        <div class="successCard__icon">
+        <div class="successCard_icon">
           <img :src="'/img/_/right.png'" alt="成功" />
         </div>
-        <h3 class="successCard__title">恭喜您，支付成功啦！</h3>
-        <div class="successCard__detail">
+        <h3 class="successCard_title">恭喜您，支付成功啦！</h3>
+        <div class="successCard_detail">
           <p>支付方式：微信</p>
           <p>支付金额：￥<em class="payMoney">{{ amount }}</em>元</p>
         </div>
-        <div class="successCard__action">
+        <div class="successCard_action">
           <router-link to="/myorder" class="btnOrder">查看订单</router-link>
           <router-link to="/" class="btnShop">继续购物</router-link>
         </div>
@@ -24,7 +24,7 @@ import { ref } from 'vue'
 const amount = ref('17,654')
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .paySuccessFloor {
   background: linear-gradient(135deg, #f0fff0 0%, #e8f5e9 100%);
   min-height: 400px;
@@ -32,7 +32,7 @@ const amount = ref('17,654')
   align-items: center;
   justify-content: center;
 }
-.paySuccessFloor__inner {
+.paySuccessFloor_inner {
   width: 1200px;
   margin: 0 auto;
 }
@@ -47,17 +47,17 @@ const amount = ref('17,654')
   gap: 16px;
   justify-items: center;
 }
-.successCard__icon img { width: 48px; height: 48px; }
-.successCard__title {
+.successCard_icon img { width: 48px; height: 48px; }
+.successCard_title {
   margin: 0;
   font-size: 24px;
   color: #333;
   font-weight: bold;
 }
-.successCard__detail { display: grid; gap: 6px; }
-.successCard__detail p { margin: 0; font-size: 14px; color: #666; }
+.successCard_detail { display: grid; gap: 6px; }
+.successCard_detail p { margin: 0; font-size: 14px; color: #666; }
 .payMoney { font-style: normal; color: #c81623; font-weight: bold; font-size: 18px; }
-.successCard__action { display: flex; gap: 20px; margin-top: 12px; }
+.successCard_action { display: flex; gap: 20px; margin-top: 12px; }
 .btnOrder {
   background: #c81623;
   color: #fff;

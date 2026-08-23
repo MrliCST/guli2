@@ -25,7 +25,7 @@
           v-for="(b, i) in banners"
           :key="b"
           :src="b"
-          :class="{ active: i === current }"
+          :class="{ active: isSlideActive(i) }"
           alt="Banner"
         />
         <button class="arrow prev" @click="prev">‹</button>
@@ -34,7 +34,7 @@
           <span
             v-for="(b, i) in banners"
             :key="'dot' + i"
-            :class="{ active: i === current }"
+            :class="{ active: isSlideActive(i) }"
             @click="goTo(i)"
           ></span>
         </div>
@@ -79,6 +79,7 @@ const banners = ref([
   '/mall/index/bannerCarousel-3.jpg'
 ])
 const current = ref(0)
+const isSlideActive = (i: number) => i === current.value
 const bannerSidebarAd = ref('/mall/index/bannerSidebarAd.png')
 
 let timer: ReturnType<typeof setInterval> | undefined

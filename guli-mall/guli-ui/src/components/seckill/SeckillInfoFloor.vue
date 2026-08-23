@@ -1,6 +1,6 @@
 <template>
   <section class="seckillInfoFloor">
-    <div class="seckillInfoFloor__inner">
+    <div class="seckillInfoFloor_inner">
       <!-- 面包屑 -->
       <div class="crumb">
         <a href="#">Apple苹果</a>
@@ -12,10 +12,10 @@
       <div class="main">
         <!-- 左:图片预览 + 收藏 -->
         <div class="previewWrap">
-          <div class="previewWrap__main">
+          <div class="previewWrap_main">
             <img :src="mainImg" alt="" />
           </div>
-          <div class="previewWrap__collect">
+          <div class="previewWrap_collect">
             <img src="/img/_/shi_heart.png" alt="" />
             <span>收藏</span>
           </div>
@@ -23,10 +23,10 @@
 
         <!-- 右:商品信息 -->
         <div class="itemInfo">
-          <h4 class="itemInfo__name">Apple iPhone 6s（A1700）64G玫瑰金色 移动通信电信4G手机</h4>
+          <h4 class="itemInfo_name">Apple iPhone 6s（A1700）64G玫瑰金色 移动通信电信4G手机</h4>
 
           <!-- 秒杀倒计时 -->
-          <div class="itemInfo__seckillBar">
+          <div class="itemInfo_seckillBar">
             <span class="seckillIcon">
               <img src="/img/_/clock.png" alt="" />
               谷粒秒杀
@@ -35,20 +35,20 @@
           </div>
 
           <!-- 价格区 -->
-          <div class="itemInfo__summary">
+          <div class="itemInfo_summary">
             <div class="summaryRow">
-              <div class="summaryRow__title">价　　格</div>
-              <div class="summaryRow__price">
+              <div class="summaryRow_title">价　　格</div>
+              <div class="summaryRow_price">
                 <i>¥</i><em>5299.00</em>
                 <span class="notice">降价通知</span>
               </div>
-              <div class="summaryRow__remark">
+              <div class="summaryRow_remark">
                 <i>累计评价</i><em>612188</em>
               </div>
             </div>
             <div class="summaryRow">
-              <div class="summaryRow__title">促　　销</div>
-              <div class="summaryRow__promo">
+              <div class="summaryRow_title">促　　销</div>
+              <div class="summaryRow_promo">
                 <i class="redTag">加价购</i>
                 <em>满999.00另加20.00元，或满1999.00另加30.00元，即可换购热销商品</em>
               </div>
@@ -56,19 +56,19 @@
           </div>
 
           <!-- 支持区 -->
-          <div class="itemInfo__support">
+          <div class="itemInfo_support">
             <div class="summaryRow">
-              <div class="summaryRow__title">支　　持</div>
-              <div class="summaryRow__value">以旧换新，闲置手机回收 4G套餐超值抢 礼品购</div>
+              <div class="summaryRow_title">支　　持</div>
+              <div class="summaryRow_value">以旧换新，闲置手机回收 4G套餐超值抢 礼品购</div>
             </div>
             <div class="summaryRow">
-              <div class="summaryRow__title">配 送 至</div>
-              <div class="summaryRow__value">北京市 昌平区</div>
+              <div class="summaryRow_title">配 送 至</div>
+              <div class="summaryRow_value">北京市 昌平区</div>
             </div>
           </div>
 
           <!-- 数量 + 加入购物车 -->
-          <div class="itemInfo__action">
+          <div class="itemInfo_action">
             <div class="qtyBox">
               <button class="qtyBtn" @click="qty > 1 && qty--">-</button>
               <input class="qtyInput" v-model="qty" type="text" />
@@ -104,9 +104,9 @@ onMounted(() => {
 onUnmounted(() => clearInterval(timer))
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillInfoFloor { background: #fff0f5; padding: 10px 0; }
-.seckillInfoFloor__inner {
+.seckillInfoFloor_inner {
   width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -124,7 +124,7 @@ onUnmounted(() => clearInterval(timer))
 
 /* 左:图片预览 + 收藏 */
 .previewWrap { display: grid; grid-template-rows: 400px auto; gap: 10px; }
-.previewWrap__main {
+.previewWrap_main {
   background: #fff;
   border-radius: 6px;
   overflow: hidden;
@@ -132,8 +132,8 @@ onUnmounted(() => clearInterval(timer))
   align-items: center;
   justify-content: center;
 }
-.previewWrap__main img { width: 100%; height: 100%; object-fit: contain; }
-.previewWrap__collect {
+.previewWrap_main img { width: 100%; height: 100%; object-fit: contain; }
+.previewWrap_collect {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,8 +145,8 @@ onUnmounted(() => clearInterval(timer))
   color: #666;
   cursor: pointer;
 }
-.previewWrap__collect:hover { color: #c81623; }
-.previewWrap__collect img { width: 16px; height: 16px; }
+.previewWrap_collect:hover { color: #c81623; }
+.previewWrap_collect img { width: 16px; height: 16px; }
 
 /* 右:商品信息 */
 .itemInfo {
@@ -157,10 +157,10 @@ onUnmounted(() => clearInterval(timer))
   grid-template-rows: auto auto auto auto auto;
   gap: 12px;
 }
-.itemInfo__name { font-size: 16px; color: #333; margin: 0; line-height: 1.4; }
+.itemInfo_name { font-size: 16px; color: #333; margin: 0; line-height: 1.4; }
 
 /* 秒杀倒计时条 */
-.itemInfo__seckillBar {
+.itemInfo_seckillBar {
   background: linear-gradient(135deg, #ff6b6b, #c81623);
   border-radius: 6px;
   padding: 8px 14px;
@@ -175,7 +175,7 @@ onUnmounted(() => clearInterval(timer))
 .countdown b { font-size: 18px; font-weight: bold; margin-left: 4px; font-family: monospace; }
 
 /* summary 行 */
-.itemInfo__summary, .itemInfo__support { display: grid; gap: 4px; }
+.itemInfo_summary, .itemInfo_support { display: grid; gap: 4px; }
 .summaryRow {
   display: grid;
   grid-template-columns: 80px 1fr auto;
@@ -183,15 +183,15 @@ onUnmounted(() => clearInterval(timer))
   align-items: center;
   font-size: 13px;
 }
-.summaryRow__title { color: #999; text-align: right; }
-.summaryRow__price { color: #c81623; font-size: 24px; font-weight: bold; }
-.summaryRow__price i { font-style: normal; font-size: 14px; }
-.summaryRow__price em { font-style: normal; }
-.summaryRow__price .notice { font-size: 12px; color: #999; margin-left: 12px; cursor: pointer; }
-.summaryRow__remark { font-size: 13px; color: #999; }
-.summaryRow__remark em { color: #333; font-style: normal; font-weight: bold; margin-left: 4px; }
-.summaryRow__promo { grid-column: 2 / 4; }
-.summaryRow__promo .redTag {
+.summaryRow_title { color: #999; text-align: right; }
+.summaryRow_price { color: #c81623; font-size: 24px; font-weight: bold; }
+.summaryRow_price i { font-style: normal; font-size: 14px; }
+.summaryRow_price em { font-style: normal; }
+.summaryRow_price .notice { font-size: 12px; color: #999; margin-left: 12px; cursor: pointer; }
+.summaryRow_remark { font-size: 13px; color: #999; }
+.summaryRow_remark em { color: #333; font-style: normal; font-weight: bold; margin-left: 4px; }
+.summaryRow_promo { grid-column: 2 / 4; }
+.summaryRow_promo .redTag {
   background: #c81623;
   color: #fff;
   padding: 1px 6px;
@@ -200,11 +200,11 @@ onUnmounted(() => clearInterval(timer))
   font-size: 12px;
   margin-right: 6px;
 }
-.summaryRow__promo em { font-style: normal; color: #666; font-size: 12px; }
-.summaryRow__value { color: #666; font-size: 12px; }
+.summaryRow_promo em { font-style: normal; color: #666; font-size: 12px; }
+.summaryRow_value { color: #666; font-size: 12px; }
 
 /* 数量 + 购物车 */
-.itemInfo__action {
+.itemInfo_action {
   display: flex;
   align-items: center;
   gap: 16px;

@@ -1,21 +1,21 @@
 <template>
   <div class="seckillCard">
-    <div class="seckillCard__pic">
+    <div class="seckillCard_pic">
       <img :src="img" alt="" />
     </div>
-    <div class="seckillCard__intro">{{ intro }}</div>
-    <div class="seckillCard__price">
+    <div class="seckillCard_intro">{{ intro }}</div>
+    <div class="seckillCard_price">
       <b class="secPrice">￥{{ secPrice }}</b>
       <b class="everPrice">￥{{ everPrice }}</b>
     </div>
-    <div class="seckillCard__num">
+    <div class="seckillCard_num">
       <div class="sold">已售{{ sold }}</div>
       <div class="progress">
         <div class="progressBar" :style="{ width: rate + '%' }"></div>
       </div>
       <div class="left">剩余<b>{{ left }}</b>件</div>
     </div>
-    <a class="seckillCard__btn" :href="link">立即抢购</a>
+    <a class="seckillCard_btn" :href="link">立即抢购</a>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ defineProps({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .seckillCard {
   background: #fff;
   border-radius: 6px;
@@ -43,12 +43,12 @@ defineProps({
   transition: box-shadow 0.2s;
 }
 .seckillCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-.seckillCard__pic {
+.seckillCard_pic {
   overflow: hidden;
   border-radius: 4px;
 }
-.seckillCard__pic img { width: 100%; height: 180px; object-fit: cover; }
-.seckillCard__intro {
+.seckillCard_pic img { width: 100%; height: 180px; object-fit: cover; }
+.seckillCard_intro {
   font-size: 12px;
   color: #333;
   line-height: 1.4;
@@ -57,10 +57,10 @@ defineProps({
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.seckillCard__price { display: flex; align-items: baseline; gap: 8px; }
+.seckillCard_price { display: flex; align-items: baseline; gap: 8px; }
 .secPrice { color: #c81623; font-size: 18px; }
 .everPrice { color: #999; font-size: 13px; text-decoration: line-through; font-weight: normal; }
-.seckillCard__num { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: #999; }
+.seckillCard_num { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: center; font-size: 11px; color: #999; }
 .sold { white-space: nowrap; }
 .progress {
   height: 10px;
@@ -75,7 +75,7 @@ defineProps({
   transition: width 0.3s;
 }
 .left b { color: #c81623; }
-.seckillCard__btn {
+.seckillCard_btn {
   background: linear-gradient(135deg, #ff6b6b, #c81623);
   color: #fff;
   text-align: center;
@@ -85,5 +85,5 @@ defineProps({
   font-weight: bold;
   text-decoration: none;
 }
-.seckillCard__btn:hover { opacity: 0.9; }
+.seckillCard_btn:hover { opacity: 0.9; }
 </style>
