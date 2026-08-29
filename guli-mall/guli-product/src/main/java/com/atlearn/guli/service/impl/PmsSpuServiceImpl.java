@@ -20,20 +20,20 @@ import com.atlearn.guli.domain.PmsSkuSaleAttrValue;
 import com.atlearn.guli.domain.PmsSpuImages;
 import com.atlearn.guli.domain.PmsSpuInfo;
 import com.atlearn.guli.domain.PmsSpuInfoDesc;
-import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
-import com.atlearn.guli.domain.RemoteSkuLadderBo;
-import com.atlearn.guli.domain.RemoteSpuBoundsBo;
 import com.atlearn.guli.domain.bo.PmsAttrBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBo;
 import com.atlearn.guli.domain.bo.PmsCategoryBrandRelationBo;
 import com.atlearn.guli.domain.bo.PmsSpuBo;
+import com.atlearn.guli.domain.bo.RmeSkuFullReductionBo;
+import com.atlearn.guli.domain.bo.RmeSkuLadderBo;
+import com.atlearn.guli.domain.bo.RmeSpuBoundsBo;
 import com.atlearn.guli.domain.vo.PmsAttrGroupWithAttrsVo;
 import com.atlearn.guli.domain.vo.PmsAttrVo;
 import com.atlearn.guli.domain.vo.PmsBrandVo;
 import com.atlearn.guli.domain.vo.PmsCategoryBrandRelationVo;
 import com.atlearn.guli.domain.vo.PmsCategoryVo;
-import com.atlearn.guli.dto.SkuEsModel;
-import com.atlearn.guli.esmapper.SkuEsMapper;
+import com.atlearn.guli.domain.SkuEsModel;
+import org.dromara.easyes.core.kernel.BaseEsMapper;
 import com.atlearn.guli.mapper.PmsAttrAttrgroupRelationMapper;
 import com.atlearn.guli.mapper.PmsProductAttrValueMapper;
 import com.atlearn.guli.mapper.PmsSkuImagesMapper;
@@ -86,7 +86,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     private final PmsSkuInfoMapper skuInfoMapper;
     private final PmsSkuSaleAttrValueMapper skuSaleAttrValueMapper;
     private final PmsSkuImagesMapper skuImagesMapper;
-    private final SkuEsMapper skuEsMapper;
+    private final BaseEsMapper<SkuEsModel> skuEsMapper;
 
     @Override
     @Transactional
@@ -133,7 +133,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
         SpuInfoDescMapper.insert(desc);
 
         // 4. 保存购物积分和成长值
-        RemoteSpuBoundsBo bound = RemoteSpuBoundsBo.builder()
+        RmeSpuBoundsBo bound = RmeSpuBoundsBo.builder()
                 .spuId(spuId)
                 .growBounds(spuInfo.getGrowBounds())    
                 .buyBounds(spuInfo.getBuyBounds())
@@ -199,7 +199,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
 
             // 6d. 保存 "满几件打几折" 的优惠策略(未填写则跳过)
             if (sku.getFullCount() != null && sku.getDiscount() != null) {
-                RemoteSkuLadderBo ladder = RemoteSkuLadderBo.builder()
+                RmeSkuLadderBo ladder = RmeSkuLadderBo.builder()
                         .skuId(skuId)
                         .fullCount(sku.getFullCount())
                         .discount(sku.getDiscount())
@@ -209,7 +209,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
 
             // 6e. 保存 "满几件减几元" 的优惠策略(未填写则跳过)
             if (sku.getFullPrice() != null && sku.getReducePrice() != null) {
-                RemoteSkuFullReductionBo reduction = RemoteSkuFullReductionBo.builder()
+                RmeSkuFullReductionBo reduction = RmeSkuFullReductionBo.builder()
                         .skuId(skuId)
                         .fullPrice(new BigDecimal(sku.getFullPrice()))
                         .reducePrice(new BigDecimal(sku.getReducePrice()))

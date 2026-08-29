@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import com.atlearn.guli.RemoteCouponService;
-import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
-import com.atlearn.guli.domain.RemoteSkuLadderBo;
-import com.atlearn.guli.domain.RemoteSpuBoundsBo;
 import com.atlearn.guli.domain.SmsSkuFullReduction;
 import com.atlearn.guli.domain.SmsSkuLadder;
 import com.atlearn.guli.domain.SmsSpuBounds;
+import com.atlearn.guli.domain.bo.RmeSkuFullReductionBo;
+import com.atlearn.guli.domain.bo.RmeSkuLadderBo;
+import com.atlearn.guli.domain.bo.RmeSpuBoundsBo;
 import com.atlearn.guli.mapper.SmsSkuFullReductionMapper;
 import com.atlearn.guli.mapper.SmsSkuLadderMapper;
 import com.atlearn.guli.mapper.SmsSpuBoundsMapper;
@@ -41,7 +41,7 @@ public class RemoteCouponServiceImpl implements RemoteCouponService {
      * 新增sku满几减免信息
      */
     @Override
-    public Boolean insertSkuFullReductionByBo(RemoteSkuFullReductionBo bo) {
+    public Boolean insertSkuFullReductionByBo(RmeSkuFullReductionBo bo) {
         SmsSkuFullReduction entity = BeanUtil.copyProperties(bo, SmsSkuFullReduction.class);
         return skuFullReductionMapper.insert(entity) > 0;
     }
@@ -50,7 +50,7 @@ public class RemoteCouponServiceImpl implements RemoteCouponService {
      * 新增sku满几打折信息
      */
     @Override
-    public Boolean insertSkuLadderByBo(RemoteSkuLadderBo bo) {
+    public Boolean insertSkuLadderByBo(RmeSkuLadderBo bo) {
         SmsSkuLadder entity = BeanUtil.copyProperties(bo, SmsSkuLadder.class);
         return skuLadderMapper.insert(entity) > 0;
     }
@@ -59,7 +59,7 @@ public class RemoteCouponServiceImpl implements RemoteCouponService {
      * 新增spu积分与成长信息
      */
     @Override
-    public Boolean insertSpuBoundsByBo(RemoteSpuBoundsBo bo) {
+    public Boolean insertSpuBoundsByBo(RmeSpuBoundsBo bo) {
         SmsSpuBounds entity = BeanUtil.copyProperties(bo, SmsSpuBounds.class);
         return spuBoundsMapper.insert(entity) > 0;
     }

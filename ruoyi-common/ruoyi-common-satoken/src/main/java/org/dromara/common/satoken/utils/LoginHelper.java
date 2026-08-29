@@ -48,6 +48,7 @@ public class LoginHelper {
      */
     public static void login(LoginUser loginUser, SaLoginParameter model) {
         model = ObjectUtil.defaultIfNull(model, new SaLoginParameter());
+        // 生成 token
         StpUtil.login(loginUser.getLoginId(),
             model.setExtra(TENANT_KEY, loginUser.getTenantId())
                 .setExtra(USER_KEY, loginUser.getUserId())
@@ -56,6 +57,7 @@ public class LoginHelper {
                 .setExtra(DEPT_NAME_KEY, loginUser.getDeptName())
                 .setExtra(DEPT_CATEGORY_KEY, loginUser.getDeptCategory())
         );
+        // 存到的session会话中
         StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginUser);
     }
 

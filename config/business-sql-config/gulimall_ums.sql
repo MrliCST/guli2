@@ -231,3 +231,66 @@ CREATE TABLE `undo_log` (
 -- ----------------------------
 -- Records of undo_log
 -- ----------------------------
+
+-- =============================================
+-- RuoYi-Vue-Plus 审计字段批量追加
+-- BaseEntity 标准字段: create_dept, create_by, create_time, update_by, update_time
+-- =============================================
+
+ALTER TABLE `ums_growth_change_history`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_integration_change_history`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_collect_spu`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_collect_subject`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_level`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_login_log`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_receive_address`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `ums_member_statistics_info`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';

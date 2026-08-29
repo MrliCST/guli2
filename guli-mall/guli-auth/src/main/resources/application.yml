@@ -1,0 +1,48 @@
+# Tomcat
+server:
+  port: 9219
+
+# Spring
+spring:
+  application:
+    # 应用名称
+    name: guli-auth
+  profiles:
+    # 环境配置
+    active: @profiles.active@
+
+--- # nacos 配置
+spring:
+  cloud:
+    nacos:
+      # nacos 服务地址
+      server-addr: @nacos.server@
+      username: @nacos.username@
+      password: @nacos.password@
+      discovery:
+        # 注册组
+        group: @nacos.discovery.group@
+        namespace: ${spring.profiles.active}
+      config:
+        # 配置组
+        group: @nacos.config.group@
+        namespace: ${spring.profiles.active}
+  config:
+    import:
+      - optional:nacos:application-common.yml
+      - optional:nacos:datasource.yml
+      - optional:nacos:${spring.application.name}.yml
+
+--- # mail 邮件发送配置
+mail:
+  enabled: true
+  host: smtp.qq.com
+  port: 465
+  auth: true
+  from: ${MAIL_FROM:your_qq@qq.com}
+  user: ${MAIL_USER:your_qq@qq.com}
+  pass: ${MAIL_PASS:your_authorization_code}
+  starttls-enable: false
+  ssl-enable: true
+  timeout: 0
+  connection-timeout: 0

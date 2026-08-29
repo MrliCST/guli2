@@ -159,3 +159,47 @@ CREATE TABLE `wms_ware_sku` (
 -- ----------------------------
 -- Records of wms_ware_sku
 -- ----------------------------
+
+-- =============================================
+-- RuoYi-Vue-Plus 审计字段批量追加
+-- BaseEntity 标准字段: create_dept, create_by, create_time, update_by, update_time
+-- =============================================
+
+ALTER TABLE `wms_purchase`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者';
+
+ALTER TABLE `wms_purchase_detail`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `wms_ware_info`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `wms_ware_order_task`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `wms_ware_order_task_detail`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';
+
+ALTER TABLE `wms_ware_sku`
+  ADD COLUMN `create_dept` bigint(20) DEFAULT NULL COMMENT '创建部门',
+  ADD COLUMN `create_by`   bigint(20) DEFAULT NULL COMMENT '创建者',
+  ADD COLUMN `create_time` datetime   DEFAULT NULL COMMENT '创建时间',
+  ADD COLUMN `update_by`   bigint(20) DEFAULT NULL COMMENT '更新者',
+  ADD COLUMN `update_time` datetime   DEFAULT NULL COMMENT '更新时间';

@@ -48,7 +48,8 @@ public class AuthFilter {
                         // 检查 header 与 param 里的 clientid 与 token 里的是否一致
                         String headerCid = request.getHeaders().getFirst(LoginHelper.CLIENT_KEY);
                         String paramCid = request.getQueryParams().getFirst(LoginHelper.CLIENT_KEY);
-                        String clientId = StpUtil.getExtra(LoginHelper.CLIENT_KEY).toString();
+                        // 核对请求和token中的clientId是否一致
+                        String clientId = StpUtil.getExtra(LoginHelper.CLIENT_KEY).toString(); 
                         if (!StringUtils.equalsAny(clientId, headerCid, paramCid)) {
                             // token 无效
                             throw NotLoginException.newInstance(StpUtil.getLoginType(),

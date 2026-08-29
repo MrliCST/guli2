@@ -66,6 +66,8 @@ public class PasswordAuthStrategy implements IAuthStrategy {
         });
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());
+        
+        // 构成生成token的 model
         SaLoginParameter model = new SaLoginParameter();
         model.setDeviceType(client.getDeviceType());
         // 自定义分配 不同用户体系 不同 token 授权时间 不设置默认走全局 yml 配置
@@ -73,7 +75,7 @@ public class PasswordAuthStrategy implements IAuthStrategy {
         model.setTimeout(client.getTimeout());
         model.setActiveTimeout(client.getActiveTimeout());
         model.setExtra(LoginHelper.CLIENT_KEY, client.getClientId());
-        // 生成token
+        // 生成token，并存储loginUser到 Sa-Token 会话
         LoginHelper.login(loginUser, model);
 
         LoginVo loginVo = new LoginVo();

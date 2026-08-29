@@ -46,6 +46,18 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-doc</artifactId>
         </dependency>
+
+        <!-- 数据库服务 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-mybatis</artifactId>
+        </dependency>
+
+        <!-- guli-common 公共模块 -->
+        <dependency>
+            <groupId>com.atlearn.guli</groupId>
+            <artifactId>guli-common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

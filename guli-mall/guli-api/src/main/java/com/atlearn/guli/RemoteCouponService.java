@@ -1,8 +1,8 @@
 package com.atlearn.guli;
 
-import com.atlearn.guli.domain.RemoteSkuFullReductionBo;
-import com.atlearn.guli.domain.RemoteSkuLadderBo;
-import com.atlearn.guli.domain.RemoteSpuBoundsBo;
+import com.atlearn.guli.domain.bo.RmeSkuFullReductionBo;
+import com.atlearn.guli.domain.bo.RmeSkuLadderBo;
+import com.atlearn.guli.domain.bo.RmeSpuBoundsBo;
 
 public interface RemoteCouponService {
     /**
@@ -10,19 +10,19 @@ public interface RemoteCouponService {
      * @param bo 远程新增 BO
      * @return 是否新增成功
      */
-    Boolean insertSkuFullReductionByBo(RemoteSkuFullReductionBo bo);
+    Boolean insertSkuFullReductionByBo(RmeSkuFullReductionBo bo);
 
     /**
      * 新增sku满几打折信息
      * @param bo
      * @return
      */
-    Boolean insertSkuLadderByBo(RemoteSkuLadderBo bo);
+    Boolean insertSkuLadderByBo(RmeSkuLadderBo bo);
 
     /**
      * 新增spu积分与成长信息
      * @param bo
      * @return
      */
-    Boolean insertSpuBoundsByBo(RemoteSpuBoundsBo bo);
+    Boolean insertSpuBoundsByBo(RmeSpuBoundsBo bo);
 }

@@ -1,8 +1,8 @@
 package com.atlearn.guli.service;
 
 import com.atlearn.guli.domain.vo.PmsSkuItemVo;
-import com.atlearn.guli.dto.ESearchListVo;
-import com.atlearn.guli.dto.ESearchParam;
+import com.atlearn.guli.domain.ESearchListVo;
+import com.atlearn.guli.domain.ESearchParam;
 
 /**
  * 商品展示Service接口
