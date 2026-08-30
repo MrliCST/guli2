@@ -59,4 +59,14 @@ public class RmeCartItemVo implements Serializable {
      */
     private Boolean hasStock;
 
+    /**
+     * 小计金额 = 单价 × 数量
+     */
+    public BigDecimal getTotalPrice() {
+        if (price == null || count == null) {
+            return BigDecimal.ZERO;
+        }
+        return price.multiply(BigDecimal.valueOf(count));
+    }
+
 }

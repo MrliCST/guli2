@@ -3,9 +3,7 @@ package com.atlearn.guli.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 线程池配置
@@ -13,18 +11,21 @@ import java.util.concurrent.TimeUnit;
  * @author guli
  */
 @Configuration
-public class ThreadPoolConfig {
+public class GuliThreadPoolConfig {
 
     @Bean
     public ThreadPoolExecutor executor() {
+        int corePoolSize = 20;
+        int maximumPoolSize = 200;
+        long keepAliveTime = 60;
+        int queueCapacity = 10000;
         return new ThreadPoolExecutor(
-            20,
-            200,
-            10,
-            TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(10000),
+            corePoolSize,
+            maximumPoolSize,
+            keepAliveTime,
+            java.util.concurrent.TimeUnit.SECONDS,
+            new java.util.concurrent.LinkedBlockingQueue<>(queueCapacity),
             new ThreadPoolExecutor.CallerRunsPolicy()
         );
     }
-
 }

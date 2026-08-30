@@ -102,7 +102,7 @@ CREATE TABLE `oms_order_item` (
   `spu_id` bigint(20) DEFAULT NULL COMMENT 'spu_id',
   `spu_name` varchar(255) DEFAULT NULL COMMENT 'spu_name',
   `spu_pic` varchar(500) DEFAULT NULL COMMENT 'spu_pic',
-  `spu_brand` varchar(200) DEFAULT NULL COMMENT '品牌',
+  `spu_brand_id` bigint(20) DEFAULT NULL COMMENT '品牌id',
   `category_id` bigint(20) DEFAULT NULL COMMENT '商品分类id',
   `sku_id` bigint(20) DEFAULT NULL COMMENT '商品sku编号',
   `sku_name` varchar(255) DEFAULT NULL COMMENT '商品sku名字',

@@ -58,6 +58,12 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-doc</artifactId>
         </dependency>
+
+        <!-- 幂等性（防重复提交） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-idempotent</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

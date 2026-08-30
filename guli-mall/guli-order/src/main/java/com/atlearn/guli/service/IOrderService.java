@@ -1,5 +1,6 @@
 package com.atlearn.guli.service;
 
+import com.atlearn.guli.domain.bo.SubmitOrderBo;
 import com.atlearn.guli.domain.vo.OrderConfirmVo;
 
 import java.util.List;
@@ -18,5 +19,13 @@ public interface IOrderService {
      * @return 订单确认页数据
      */
     OrderConfirmVo confirmOrder(List<Long> skuIds);
+
+    /**
+     * 提交订单
+     *
+     * @param bo 提交订单参数
+     * @return 订单号
+     */
+    String submitOrder(SubmitOrderBo bo);
 
 }

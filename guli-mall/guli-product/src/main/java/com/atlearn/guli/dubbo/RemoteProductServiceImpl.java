@@ -15,6 +15,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +50,14 @@ public class RemoteProductServiceImpl implements RemoteProductService {
             return null;
         }
         return BeanUtil.copyProperties(skuInfo, RmeSkuInfoVo.class); // 源 -> 目标 的拷贝
+    }
+
+    @Override
+    public Map<Long, RmeSkuInfoVo> getSkuInfoMapBySkuIds(List<Long> skuIds) {
+        List<PmsSkuInfo> list = skuInfoMapper.selectBatchIds(skuIds);
+        return list.stream()
+            .collect(Collectors.toMap(PmsSkuInfo::getSkuId,
+                item -> BeanUtil.copyProperties(item, RmeSkuInfoVo.class)));
     }
 
 }

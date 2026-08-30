@@ -1,9 +1,11 @@
 package com.atlearn.guli.controller;
 
+import com.atlearn.guli.domain.bo.SubmitOrderBo;
 import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +32,18 @@ public class OrderController {
     @PostMapping("/order/confirm")
     public R<OrderConfirmVo> confirmOrder(@RequestBody List<Long> skuIds) {
         return R.ok(orderService.confirmOrder(skuIds));
+    }
+
+    /**
+     * 提交订单
+     *
+     * @param bo 提交订单参数
+     * @return 订单号
+     */
+    @RepeatSubmit()
+    @PostMapping("/order/submit")
+    public R<String> submitOrder(@RequestBody SubmitOrderBo bo) {
+        return R.ok(orderService.submitOrder(bo));
     }
 
 }

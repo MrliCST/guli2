@@ -60,9 +60,9 @@ public class OmsOrderItem extends BaseEntity {
     private String spuPic;
 
     /**
-     * 品牌
+     * 品牌id
      */
-    private String spuBrand;
+    private Long spuBrandId;
 
     /**
      * 商品分类id

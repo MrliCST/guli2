@@ -37,4 +37,12 @@ public interface RemoteMemberService {
      */
     List<RmeMemberReceiveAddressVO> getReceiveAddressList(Long memberId);
 
+    /**
+     * 根据地址 id 获取收货地址
+     *
+     * @param id 地址id
+     * @return 收货地址
+     */
+    RmeMemberReceiveAddressVO getReceiveAddressById(Long id);
+
 }

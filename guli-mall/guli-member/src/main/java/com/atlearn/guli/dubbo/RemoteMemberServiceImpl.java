@@ -69,4 +69,13 @@ public class RemoteMemberServiceImpl implements RemoteMemberService {
         );
         return BeanUtil.copyToList(list, RmeMemberReceiveAddressVO.class);
     }
+
+    @Override
+    public RmeMemberReceiveAddressVO getReceiveAddressById(Long id) {
+        UmsMemberReceiveAddress address = umsMemberReceiveAddressMapper.selectById(id);
+        if (address == null) {
+            return null;
+        }
+        return BeanUtil.copyProperties(address, RmeMemberReceiveAddressVO.class);
+    }
 }
