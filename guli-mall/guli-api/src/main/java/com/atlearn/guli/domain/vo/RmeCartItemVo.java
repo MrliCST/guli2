@@ -1,21 +1,25 @@
-package com.atlearn.guli.domain;
+package com.atlearn.guli.domain.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.atlearn.guli.domain.vo.RmeSkuSaleAttrValueVo;
-
 /**
- * 购物车项
+ * 购物车项远程 VO
  *
  * @author guli
  */
 @Data
-public class CartItem implements Serializable {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class RmeCartItemVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -49,15 +53,5 @@ public class CartItem implements Serializable {
      * 商品销售属性
      */
     private List<RmeSkuSaleAttrValueVo> saleAttr;
-
-    /**
-     * 小计金额 = 单价 × 数量
-     */
-    public BigDecimal getTotalPrice() {
-        if (price == null || count == null) {
-            return BigDecimal.ZERO;
-        }
-        return price.multiply(BigDecimal.valueOf(count));
-    }
 
 }

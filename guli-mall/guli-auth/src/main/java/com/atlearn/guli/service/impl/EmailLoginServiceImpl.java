@@ -4,8 +4,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.atlearn.guli.RemoteMemberService;
 import com.atlearn.guli.constant.AuthConstant;
 import com.atlearn.guli.core.UserInfo;
-import com.atlearn.guli.domain.RmeMemberImg;
+import com.atlearn.guli.domain.bo.RmeMemberBo;
 import com.atlearn.guli.domain.vo.LoginVo;
+import com.atlearn.guli.domain.vo.RmeMemberVo;
 import com.atlearn.guli.exception.BusinessException;
 import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.form.EmailLoginBody;
@@ -52,8 +53,8 @@ public class EmailLoginServiceImpl implements ILoginService {
         }
 
         // 调用远程服务查询用户信息
-        RmeMemberImg member = remoteMemberService.findByCondition(
-            RmeMemberImg.builder().email(emailBody.getEmail()).build());
+        RmeMemberVo member = remoteMemberService.findByCondition(
+            RmeMemberBo.builder().email(emailBody.getEmail()).build());
         if (member == null) {
             throw new BusinessException(ErrorCodeEnum.USER_NOT_FOUND);
         }
@@ -67,7 +68,7 @@ public class EmailLoginServiceImpl implements ILoginService {
     }
 
     // 构造登录返回对象
-    private LoginVo buildLoginVo(RmeMemberImg member) {
+    private LoginVo buildLoginVo(RmeMemberVo member) {
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(member.getId());
         loginUser.setUsername(member.getUsername());
@@ -82,7 +83,11 @@ public class EmailLoginServiceImpl implements ILoginService {
         userInfo.setUserId(member.getId());
         userInfo.setUserKey(token);
         userInfo.setIsTempUser(false);
-        RedisUtils.setCacheObject(AuthConstant.AUTH_TOKEN_KEY_PREFIX + token, userInfo, Duration.ofSeconds(timeout));
+        RedisUtils.setCacheObject(
+            AuthConstant.AUTH_TOKEN_KEY_PREFIX + token, 
+            userInfo, 
+            Duration.ofSeconds(timeout)
+        );
 
         LoginVo vo = new LoginVo();
         vo.setAccessToken(token);

@@ -1,4 +1,4 @@
-package com.atlearn.guli.domain;
+package com.atlearn.guli.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 会员远程镜像对象（与 UmsMember 字段同步）
+ * 会员远程 VO（返回对象，字段尽可能全）
  *
  * @author guli
  */
@@ -18,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RmeMemberImg implements Serializable {
+public class RmeMemberVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

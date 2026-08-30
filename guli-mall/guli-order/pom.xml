@@ -47,6 +47,12 @@
             <artifactId>guli-api</artifactId>
         </dependency>
 
+        <!-- 数据库服务 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-mybatis</artifactId>
+        </dependency>
+
         <!-- 接口文档 -->
         <dependency>
             <groupId>org.dromara</groupId>

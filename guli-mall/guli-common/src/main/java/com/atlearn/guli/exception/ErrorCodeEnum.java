@@ -43,6 +43,15 @@ public enum ErrorCodeEnum {
     /** 未登录 */
     UNAUTHORIZED(10011, "未登录，请先登录"),
 
+    /** 购物车项不存在 */
+    DATA_NOT_FOUND(10012, "数据不存在"),
+
+    /** 购物车数量不能小于1 */
+    CART_COUNT_MIN(10013, "购物车数量不能小于1，如需移除请点击删除"),
+
+    /** 不支持的操作类型 */
+    CART_TYPE_INVALID(10014, "不支持的操作类型"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 

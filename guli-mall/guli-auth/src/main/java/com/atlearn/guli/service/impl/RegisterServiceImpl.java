@@ -3,7 +3,8 @@ package com.atlearn.guli.service.impl;
 import cn.hutool.crypto.digest.BCrypt;
 import com.atlearn.guli.RemoteMemberService;
 import com.atlearn.guli.constant.AuthConstant;
-import com.atlearn.guli.domain.RmeMemberImg;
+import com.atlearn.guli.domain.bo.RmeMemberBo;
+import com.atlearn.guli.domain.vo.RmeMemberVo;
 import com.atlearn.guli.exception.BusinessException;
 import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.form.RegisterBody;
@@ -35,25 +36,25 @@ public class RegisterServiceImpl implements IRegisterService {
         }
 
         // 用户名不能重复
-        RmeMemberImg byUsername = remoteMemberService.findByCondition(
-            RmeMemberImg.builder().username(body.getUsername()).build());
+        RmeMemberVo byUsername = remoteMemberService.findByCondition(
+            RmeMemberBo.builder().username(body.getUsername()).build());
         if (byUsername != null) {
             throw new BusinessException(ErrorCodeEnum.USERNAME_EXISTS);
         }
         // 邮箱不能重复
-        RmeMemberImg byEmail = remoteMemberService.findByCondition(
-            RmeMemberImg.builder().email(body.getEmail()).build());
+        RmeMemberVo byEmail = remoteMemberService.findByCondition(
+            RmeMemberBo.builder().email(body.getEmail()).build());
         if (byEmail != null) {
             throw new BusinessException(ErrorCodeEnum.EMAIL_EXISTS);
         }
 
         // 注册用户
-        RmeMemberImg bo = RmeMemberImg.builder()
+        RmeMemberBo bo = RmeMemberBo.builder()
             .username(body.getUsername())
             .password(BCrypt.hashpw(body.getPassword()))
             .email(body.getEmail())
             .build();
-        Long memberId = remoteMemberService.register(bo);
+        Long memberId = remoteMemberService.insertMember(bo);
 
         // 删除验证码
         RedisUtils.deleteObject(AuthConstant.CODE_KEY_PREFIX + body.getEmail());

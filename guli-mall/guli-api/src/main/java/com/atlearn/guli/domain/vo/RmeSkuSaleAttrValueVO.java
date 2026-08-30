@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RmeSkuSaleAttrValueVO {
+public class RmeSkuSaleAttrValueVo {
     @Serial
     private static final long serialVersionUID = 1L;
 

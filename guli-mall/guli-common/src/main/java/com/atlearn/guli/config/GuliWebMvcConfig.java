@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Web MVC 配置
  * <p>
- * 注册 {@link UserInfoInterceptor}，拦截所有请求。
+ * 注册 {@link UserInfoInterceptor}，拦截所有请求，排除认证模块的公开端点。
  *
  * @author guli
  */
@@ -18,7 +18,12 @@ public class GuliWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new UserInfoInterceptor())
-            .addPathPatterns("/**");
+            .addPathPatterns("/**")
+            .excludePathPatterns(
+                "/login",
+                "/register",
+                "/sendCode"
+            );
     }
 
 }

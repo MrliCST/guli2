@@ -28,6 +28,7 @@
         <module>guli-shopcart</module>
         <module>guli-ware</module>
         <module>guli-seckill</module>
+        <module>guli-pay</module>
     </modules>
 
 </project>
