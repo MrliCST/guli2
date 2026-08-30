@@ -54,4 +54,9 @@ public class RmeCartItemVo implements Serializable {
      */
     private List<RmeSkuSaleAttrValueVo> saleAttr;
 
+    /**
+     * 是否有库存
+     */
+    private Boolean hasStock;
+
 }

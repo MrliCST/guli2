@@ -1,6 +1,8 @@
 package com.atlearn.guli.service;
 
-import com.atlearn.guli.domain.OmsOrder;
+import com.atlearn.guli.domain.vo.OrderConfirmVo;
+
+import java.util.List;
 
 /**
  * 订单服务接口
@@ -10,10 +12,11 @@ import com.atlearn.guli.domain.OmsOrder;
 public interface IOrderService {
 
     /**
-     * 创建订单
+     * 订单确认页数据
      *
-     * @return 订单
+     * @param skuIds 用户勾选的购物车项 skuId 列表
+     * @return 订单确认页数据
      */
-    OmsOrder createOrder();
+    OrderConfirmVo confirmOrder(List<Long> skuIds);
 
 }

@@ -1,5 +1,6 @@
 package com.atlearn.guli;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -11,4 +12,11 @@ public interface RemoteWareService {
      * @return map[skuId] => skuAvailableStock
      */
     Map<Long,Long> getSkuAvailableStock(List<Long> skuIds);
+
+    /**
+     * 模拟获取运费
+     * @return
+     */
+    BigDecimal getShippingFee(String ReceiverAddressInfo);
+
 }

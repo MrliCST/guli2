@@ -248,8 +248,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
     }
 
     @Override
-    public Boolean 
-    upToEsearch(Long spuId) {
+    public Boolean upToEsearch(Long spuId) {
         // 查询当前spuId对应的所有sku信息
         List<PmsSkuInfo> skuInfos = skuInfoMapper.selectList(
             Wrappers.<PmsSkuInfo>lambdaQuery().eq(x -> x.getSpuId(), spuId)

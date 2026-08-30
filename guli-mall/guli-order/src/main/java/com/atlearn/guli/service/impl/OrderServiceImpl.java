@@ -1,25 +1,26 @@
 package com.atlearn.guli.service.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.atlearn.guli.RemoteMemberService;
 import com.atlearn.guli.RemoteShopCartService;
+import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.core.UserInfoContext;
-import com.atlearn.guli.domain.OmsOrder;
-import com.atlearn.guli.domain.OmsOrderItem;
+import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.domain.vo.RmeCartItemVo;
 import com.atlearn.guli.domain.vo.RmeMemberReceiveAddressVO;
-import com.atlearn.guli.mapper.OmsOrderItemMapper;
-import com.atlearn.guli.mapper.OmsOrderMapper;
+import com.atlearn.guli.exception.BusinessException;
+import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.service.IOrderService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  *
  * @author guli
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements IOrderService {
@@ -37,89 +39,61 @@ public class OrderServiceImpl implements IOrderService {
     @DubboReference
     private RemoteShopCartService remoteShopCartService;
 
-    private final OmsOrderMapper omsOrderMapper;
-    private final OmsOrderItemMapper omsOrderItemMapper;
+    @DubboReference
+    private RemoteWareService remoteWareService;
 
+    private final Executor executor;
+
+    /**
+     * 展示订单，以供用户确认
+     */
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public OmsOrder createOrder() {
+    public OrderConfirmVo confirmOrder(List<Long> skuIds) {
         Long memberId = UserInfoContext.getUserId();
 
         // 并行获取收货地址和购物车列表
         CompletableFuture<List<RmeMemberReceiveAddressVO>> addressFuture = CompletableFuture.supplyAsync(
-            () -> remoteMemberService.getReceiveAddressList(memberId));
-        CompletableFuture<List<RmeCartItemVo>> cartFuture = CompletableFuture.supplyAsync(
-            () -> remoteShopCartService.getCartItemList());
+            () -> remoteMemberService.getReceiveAddressList(memberId), executor
+        ).exceptionally(throwable -> {
+            log.error("获取收货地址失败", throwable);
+            throw new BusinessException(ErrorCodeEnum.ORDER_CONFIRM_FAILED);
+        });
+
+        CompletableFuture<List<RmeCartItemVo>> cartFuture = CompletableFuture.supplyAsync(() -> {
+            List<RmeCartItemVo> cartItemList = remoteShopCartService.getCartItemList();
+            // 查询有货的 sku | map[skuid] => stockNum
+            Map<Long, Long> skuAvailableStock = remoteWareService.getSkuAvailableStock(skuIds);
+            // 用户选中的 sku
+            Set<Long> skuIdSet = Set.copyOf(skuIds);
+            return cartItemList.stream()
+                .filter(item -> skuIdSet.contains(item.getSkuId()))
+                .map(item -> {
+                    item.setHasStock(skuAvailableStock.getOrDefault(item.getSkuId(), 0L) > 0);
+                    return item;
+                })
+                .collect(Collectors.toList());
+        }, executor).exceptionally(throwable -> {
+            log.error("获取购物车或库存信息失败", throwable);
+            throw new BusinessException(ErrorCodeEnum.ORDER_CONFIRM_FAILED);
+        });
 
         CompletableFuture.allOf(addressFuture, cartFuture).join();
 
         List<RmeMemberReceiveAddressVO> addressList = addressFuture.join();
-        List<RmeCartItemVo> cartItemList = cartFuture.join();
+        List<RmeCartItemVo> selectedItems = cartFuture.join();
 
-        // 计算订单金额
-        BigDecimal totalAmount = cartItemList.stream()
+        // 计算金额
+        BigDecimal productAmount = selectedItems.stream()
             .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getCount())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal shippingFee = remoteWareService.getShippingFee("河北地质大学");
+        BigDecimal totalAmount = productAmount.add(shippingFee);
 
-        // 选取默认收货地址
-        RmeMemberReceiveAddressVO address = addressList.stream()
-            .filter(a -> a.getDefaultStatus() != null && a.getDefaultStatus() == 1)
-            .findFirst()
-            .orElse(addressList.isEmpty() ? null : addressList.get(0));
-
-        // 生成订单号
-        String orderSn = UUID.randomUUID().toString().replace("-", "");
-
-        // 构建订单
-        OmsOrder order = OmsOrder.builder()
-            .memberId(memberId)
-            .orderSn(orderSn)
+        return OrderConfirmVo.builder()
+            .memberReceiveAddressList(addressList)
+            .cartItemList(selectedItems)
             .totalAmount(totalAmount)
             .payAmount(totalAmount)
-            .freightAmount(BigDecimal.ZERO)
-            .promotionAmount(BigDecimal.ZERO)
-            .integrationAmount(BigDecimal.ZERO)
-            .couponAmount(BigDecimal.ZERO)
-            .discountAmount(BigDecimal.ZERO)
-            .sourceType(0)
-            .status(0)
-            .confirmStatus(0)
-            .deleteStatus(0)
-            .integration(0)
-            .growth(0)
-            .receiverName(address != null ? address.getName() : null)
-            .receiverPhone(address != null ? address.getPhone() : null)
-            .receiverPostCode(address != null ? address.getPostCode() : null)
-            .receiverProvince(address != null ? address.getProvince() : null)
-            .receiverCity(address != null ? address.getCity() : null)
-            .receiverRegion(address != null ? address.getRegion() : null)
-            .receiverDetailAddress(address != null ? address.getDetailAddress() : null)
             .build();
-
-        omsOrderMapper.insert(order);
-
-        // 构建订单项
-        List<OmsOrderItem> orderItems = cartItemList.stream().map(item -> OmsOrderItem.builder()
-            .orderId(order.getId())
-            .orderSn(orderSn)
-            .skuId(item.getSkuId())
-            .skuName(item.getTitle())
-            .skuPic(item.getDefaultImage())
-            .skuPrice(item.getPrice())
-            .skuQuantity(item.getCount())
-            .realAmount(item.getPrice().multiply(BigDecimal.valueOf(item.getCount())))
-            .promotionAmount(BigDecimal.ZERO)
-            .couponAmount(BigDecimal.ZERO)
-            .integrationAmount(BigDecimal.ZERO)
-            .giftIntegration(0)
-            .giftGrowth(0)
-            .skuAttrsVals(JSONUtil.toJsonStr(item.getSaleAttr()))
-            .build()
-        ).collect(Collectors.toList());
-
-        orderItems.forEach(omsOrderItemMapper::insert);
-
-        return order;
     }
-
 }

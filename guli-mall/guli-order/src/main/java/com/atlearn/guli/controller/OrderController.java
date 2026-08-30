@@ -1,11 +1,14 @@
 package com.atlearn.guli.controller;
 
-import com.atlearn.guli.domain.OmsOrder;
+import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 订单控制器
@@ -19,13 +22,14 @@ public class OrderController {
     private final IOrderService orderService;
 
     /**
-     * 创建订单
+     * 订单确认页数据
      *
-     * @return 订单
+     * @param skuIds 用户勾选的购物车项 skuId 列表
+     * @return 订单确认页数据
      */
-    @PostMapping("/order/create")
-    public R<OmsOrder> createOrder() {
-        return R.ok(orderService.createOrder());
+    @PostMapping("/order/confirm")
+    public R<OrderConfirmVo> confirmOrder(@RequestBody List<Long> skuIds) {
+        return R.ok(orderService.confirmOrder(skuIds));
     }
 
 }

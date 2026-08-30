@@ -52,6 +52,9 @@ public enum ErrorCodeEnum {
     /** 不支持的操作类型 */
     CART_TYPE_INVALID(10014, "不支持的操作类型"),
 
+    /** 订单确认数据获取失败 */
+    ORDER_CONFIRM_FAILED(10015, "订单确认数据获取失败"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 

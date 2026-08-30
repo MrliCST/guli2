@@ -51,6 +51,11 @@ public class CartItem implements Serializable {
     private List<RmeSkuSaleAttrValueVo> saleAttr;
 
     /**
+     * 是否有库存
+     */
+    private Boolean hasStock;
+
+    /**
      * 小计金额 = 单价 × 数量
      */
     public BigDecimal getTotalPrice() {
