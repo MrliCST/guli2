@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 public class SubmitOrderBo {
     private Long memberReceiveAddressId;
     private Integer payType;
-    private BigDecimal payAmount;
+    private BigDecimal payRefenceAmount;  // 确认订单业务计算的参考价格，待验价
     private String note;
-    /** 防重令牌 */
-    private String orderToken;
 }

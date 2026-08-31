@@ -10,8 +10,7 @@
     </resultMap>
 
     <select id="getSkuIdToStockMap" resultMap="skuStockVoMap">
-        select sku_id,
-               coalesce(sum(stock - stock_locked), 0) as stock
+        select sku_id, coalesce(sum(stock - stock_locked), 0) as stock
         from wms_ware_sku
         where sku_id in
         <foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
@@ -20,29 +19,30 @@
         group by sku_id
     </select>
 
-    <!-- 查询某sku所在的所有仓库 -->
-    <select id="listWareBySkuId" resultType="com.atlearn.guli.domain.WmsWareSku">
-        select id, sku_id, ware_id, stock, sku_name, stock_locked
+    <select id="getWareSkuListBySkuIds" resultType="com.atlearn.guli.domain.vo.RmeWareSkuVo">
+        select id,
+               sku_id   as skuId,
+               ware_id  as wareId,
+               sku_name as skuName,
+               (stock - stock_locked) as availableStock
         from wms_ware_sku
-        where sku_id = #{skuId}
-          and stock - stock_locked &gt; 0
-        order by stock - stock_locked desc
+        where sku_id in
+        <foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
+            #{skuId}
+        </foreach>
+        order by availableStock desc
     </select>
 
-    <!-- 乐观锁锁定库存 -->
-    <update id="lockStock">
-        update wms_ware_sku
-        set stock_locked = stock_locked + #{num}
-        where id = #{id}
-          and stock - stock_locked &gt;= #{num}
-    </update>
-
-    <!-- 解锁库存 -->
-    <update id="unlockStock">
-        update wms_ware_sku
-        set stock_locked = stock_locked - #{num}
-        where id = #{id}
-          and stock_locked &gt;= #{num}
+    <update id="lockWareSkuBatch">
+        <foreach collection="list" item="bo" separator=";">
+            <foreach collection="bo.wareDistribute" item="dist" separator=";">
+                update wms_ware_sku
+                set stock_locked = stock_locked + #{dist.lockNum}
+                where ware_id = #{dist.wareId}
+                  and sku_id = #{bo.skuId}
+                  and stock - stock_locked >= #{dist.lockNum}
+            </foreach>
+        </foreach>
     </update>
 
 </mapper>

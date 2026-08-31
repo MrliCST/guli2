@@ -42,7 +42,7 @@ public class RemoteProductServiceImpl implements RemoteProductService {
             .collect(Collectors.toList());
     }
 
-    // 获取 SKU 信息
+    // 根据 skuId 获取 SKU 信息
     @Override
     public RmeSkuInfoVo getSkuInfoBySkuId(Long skuId) {
         PmsSkuInfo skuInfo = skuInfoMapper.selectById(skuId);
@@ -52,12 +52,11 @@ public class RemoteProductServiceImpl implements RemoteProductService {
         return BeanUtil.copyProperties(skuInfo, RmeSkuInfoVo.class); // 源 -> 目标 的拷贝
     }
 
+    // 根据 skuId 列表批量获取 SKU 信息
     @Override
     public Map<Long, RmeSkuInfoVo> getSkuInfoMapBySkuIds(List<Long> skuIds) {
-        List<PmsSkuInfo> list = skuInfoMapper.selectBatchIds(skuIds);
-        return list.stream()
-            .collect(Collectors.toMap(PmsSkuInfo::getSkuId,
-                item -> BeanUtil.copyProperties(item, RmeSkuInfoVo.class)));
+        List<PmsSkuInfo> list = skuInfoMapper.selectByIds(skuIds);
+        return list.stream().collect(Collectors.toMap(x -> x.getSkuId(),item -> BeanUtil.copyProperties(item, RmeSkuInfoVo.class)));
     }
 
 }

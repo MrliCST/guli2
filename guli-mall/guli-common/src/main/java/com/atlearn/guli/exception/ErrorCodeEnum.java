@@ -73,6 +73,12 @@ public enum ErrorCodeEnum {
     /** 收货地址不存在 */
     ADDRESS_NOT_FOUND(10021, "收货地址不存在"),
 
+    /** 库存不足 */
+    STOCK_INSUFFICIENT(10022, "商品库存不足"),
+
+    /** 库存不足，锁定失败 */
+    STOCK_NOT_ENOUGH(10023, "库存不足，锁定失败"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 
