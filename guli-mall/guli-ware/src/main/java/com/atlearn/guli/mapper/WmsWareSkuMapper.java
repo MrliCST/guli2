@@ -24,4 +24,30 @@ public interface WmsWareSkuMapper extends BaseMapperPlus<WmsWareSku, WmsWareSkuV
      */
     List<SkuIdToStockDTO> getSkuIdToStockMap(@Param("skuIds") List<Long> skuIds);
 
+    /**
+     * 查询某 sku 所在的所有仓库（按 id 排序）
+     *
+     * @param skuId skuId
+     * @return 仓库库存列表
+     */
+    List<WmsWareSku> listWareBySkuId(@Param("skuId") Long skuId);
+
+    /**
+     * 乐观锁锁定库存
+     *
+     * @param id  库存记录id
+     * @param num 锁定数量
+     * @return 受影响行数
+     */
+    int lockStock(@Param("id") Long id, @Param("num") Long num);
+
+    /**
+     * 解锁库存
+     *
+     * @param id  库存记录id
+     * @param num 解锁数量
+     * @return 受影响行数
+     */
+    int unlockStock(@Param("id") Long id, @Param("num") Long num);
+
 }

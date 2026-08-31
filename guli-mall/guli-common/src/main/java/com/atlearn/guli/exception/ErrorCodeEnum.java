@@ -55,6 +55,24 @@ public enum ErrorCodeEnum {
     /** 订单确认数据获取失败 */
     ORDER_CONFIRM_FAILED(10015, "订单确认数据获取失败"),
 
+    /** 订单令牌无效 */
+    ORDER_TOKEN_INVALID(10016, "订单令牌无效，请刷新页面后重试"),
+
+    /** 订单提交失败 */
+    ORDER_SUBMIT_FAILED(10017, "订单提交失败，请稍后重试"),
+
+    /** 商品价格已变动 */
+    PRICE_CHANGED(10018, "商品价格已变动，请刷新后重新提交"),
+
+    /** 库存锁定失败 */
+    STOCK_LOCK_FAILED(10019, "库存不足，锁定失败"),
+
+    /** 购物车中没有选中的商品 */
+    CART_EMPTY(10020, "购物车中没有选中的商品"),
+
+    /** 收货地址不存在 */
+    ADDRESS_NOT_FOUND(10021, "收货地址不存在"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 

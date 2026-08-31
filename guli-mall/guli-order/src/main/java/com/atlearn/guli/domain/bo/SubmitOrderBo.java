@@ -16,4 +16,6 @@ public class SubmitOrderBo {
     private Integer payType;
     private BigDecimal payAmount;
     private String note;
+    /** 防重令牌 */
+    private String orderToken;
 }

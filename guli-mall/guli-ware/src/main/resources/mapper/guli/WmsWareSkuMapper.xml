@@ -20,4 +20,29 @@
         group by sku_id
     </select>
 
+    <!-- 查询某sku所在的所有仓库 -->
+    <select id="listWareBySkuId" resultType="com.atlearn.guli.domain.WmsWareSku">
+        select id, sku_id, ware_id, stock, sku_name, stock_locked
+        from wms_ware_sku
+        where sku_id = #{skuId}
+          and stock - stock_locked &gt; 0
+        order by stock - stock_locked desc
+    </select>
+
+    <!-- 乐观锁锁定库存 -->
+    <update id="lockStock">
+        update wms_ware_sku
+        set stock_locked = stock_locked + #{num}
+        where id = #{id}
+          and stock - stock_locked &gt;= #{num}
+    </update>
+
+    <!-- 解锁库存 -->
+    <update id="unlockStock">
+        update wms_ware_sku
+        set stock_locked = stock_locked - #{num}
+        where id = #{id}
+          and stock_locked &gt;= #{num}
+    </update>
+
 </mapper>

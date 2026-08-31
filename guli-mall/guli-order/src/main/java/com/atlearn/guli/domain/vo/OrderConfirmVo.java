@@ -40,4 +40,9 @@ public class OrderConfirmVo implements Serializable {
      */
     private BigDecimal payAmount;
 
+    /**
+     * 防重令牌
+     */
+    private String orderToken;
+
 }
