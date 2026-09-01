@@ -55,8 +55,6 @@
         <anyline.version>8.7.3-20260319</anyline.version>
         <!-- 工作流配置 -->
         <warm-flow.version>1.8.5</warm-flow.version>
-        <!-- mq配置 -->
-        <rocketmq.version>2.3.5</rocketmq.version>
         <!-- 插件版本 -->
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
@@ -150,15 +148,6 @@
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-api-bom</artifactId>
-                <version>${revision}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- guli 的依赖配置-->
-            <dependency>
-                <groupId>com.atlearn.guli</groupId>
-                <artifactId>guli-bom</artifactId>
                 <version>${revision}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -362,13 +351,6 @@
                 <groupId>io.github.linpeilie</groupId>
                 <artifactId>mapstruct-plus-spring-boot-starter</artifactId>
                 <version>${mapstruct-plus.version}</version>
-            </dependency>
-
-            <!--消息队列-->
-            <dependency>
-                <groupId>org.apache.rocketmq</groupId>
-                <artifactId>rocketmq-spring-boot-starter</artifactId>
-                <version>${rocketmq.version}</version>
             </dependency>
 
             <!-- Warm-Flow国产工作流引擎, 在线文档：http://warm-flow.cn/ -->

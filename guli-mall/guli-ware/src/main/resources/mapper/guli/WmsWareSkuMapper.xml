@@ -33,16 +33,4 @@
         order by availableStock desc
     </select>
 
-    <update id="lockWareSkuBatch">
-        <foreach collection="list" item="bo" separator=";">
-            <foreach collection="bo.wareDistribute" item="dist" separator=";">
-                update wms_ware_sku
-                set stock_locked = stock_locked + #{dist.lockNum}
-                where ware_id = #{dist.wareId}
-                  and sku_id = #{bo.skuId}
-                  and stock - stock_locked >= #{dist.lockNum}
-            </foreach>
-        </foreach>
-    </update>
-
 </mapper>

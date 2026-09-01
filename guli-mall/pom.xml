@@ -31,4 +31,25 @@
         <module>guli-pay</module>
     </modules>
 
+    <!-- 依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- guli 的依赖配置 -->
+            <dependency>
+                <groupId>com.atlearn.guli</groupId>
+                <artifactId>guli-bom</artifactId>
+                <version>${revision}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- rabbitmq 消息队列 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 </project>

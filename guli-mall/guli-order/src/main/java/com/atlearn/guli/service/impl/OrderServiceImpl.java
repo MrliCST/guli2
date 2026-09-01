@@ -9,6 +9,7 @@ import com.atlearn.guli.core.UserInfoContext;
 import com.atlearn.guli.domain.OmsOrder;
 import com.atlearn.guli.domain.OmsOrderItem;
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
+import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.bo.SubmitOrderBo;
 import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.domain.vo.RmeCartItemVo;
@@ -133,7 +134,7 @@ public class OrderServiceImpl implements IOrderService {
 
     /**
      * 提交订单
-     * 链路：防重Token校验 → 获取购物车+地址 → 价格校验（实时价格对比） → 生成订单号 → 保存订单+订单项 → 远程锁库存
+     * 链路：防重Token校验 → 获取购物车+地址 → 验库存 → 生成订单号+锁库存 → 价格校验 → 保存订单+订单项
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -176,7 +177,7 @@ public class OrderServiceImpl implements IOrderService {
             throw new BusinessException(ErrorCodeEnum.CART_EMPTY);  
         }
 
-        // ===============  4. 锁定库存  ===============
+        // ===============  4. 生成订单号 + 锁定库存  ===============
         // 每个 sku 需要锁定的数量
         Map<Long, Integer> skuIdToNeedLockedNumMap = selectedCartItems.stream()
             .collect(Collectors.toMap(RmeCartItemVo::getSkuId, RmeCartItemVo::getCount));
@@ -190,10 +191,21 @@ public class OrderServiceImpl implements IOrderService {
         // 分配仓库，构建锁定信息
         List<RmeLockWareBo> lockWareBoList = buildLockWareBoList(skuIdToNeedLockedNumMap, WareSkuInfoGroup);
 
-        // 远程锁定库存
-        boolean lockSuccess = remoteWareService.lockWareSkuBatch(lockWareBoList);
+        // 生成订单号（提前生成，用于库存工作单关联）
+        String orderSn = String.valueOf(IdGeneratorUtil.nextLongId());
+
+        // 远程锁定库存（携带订单冗余信息，服务端任意一条失败即抛异常回滚）
+        RmeOrderInfoBo orderInfo = RmeOrderInfoBo.builder()
+            .orderSn(orderSn)
+            .consignee(address.getName())
+            .consigneeTel(address.getPhone())
+            .deliveryAddress(address.getProvince() + address.getCity() + address.getRegion() + address.getDetailAddress())
+            .paymentWay(bo.getPayType())
+            .orderBody("商品数:" + selectedCartItems.size())
+            .build();
+        boolean lockSuccess = remoteWareService.lockWareSkuBatch(orderInfo, lockWareBoList);
         if (!lockSuccess) {
-            throw new BusinessException(ErrorCodeEnum.STOCK_LOCK_FAILED); // ===> 库存锁定失败
+            throw new BusinessException(ErrorCodeEnum.ORDER_CONFIRM_FAILED);
         }
 
         // ===============  5. 价格校验  ===============
@@ -221,10 +233,7 @@ public class OrderServiceImpl implements IOrderService {
         // ===============  6. 优惠打折 (不做)  ===============
         BigDecimal payAmount = totalAmount;
 
-        // ===============  7. 生成订单号（雪花算法）  ===============
-        String orderSn = String.valueOf(IdGeneratorUtil.nextLongId());
-
-        // ===============  8. 构建 OmsOrder(订单主表) 并插入  ===============
+        // ===============  7. 构建 OmsOrder(订单主表) 并插入  ===============
         OmsOrder order = OmsOrder.builder()
             .memberId(memberId)
             .orderSn(orderSn)
@@ -271,7 +280,7 @@ public class OrderServiceImpl implements IOrderService {
             .build();
         omsOrderMapper.insert(order);
 
-        // ===============  9. 构建订单项并插入  ===============
+        // ===============  8. 构建订单项并插入  ===============
         List<OmsOrderItem> orderItems = selectedCartItems.stream()
             .map(cartItem -> {
                 RmeSkuInfoVo skuInfo = skuIdToInfoMap.get(cartItem.getSkuId());

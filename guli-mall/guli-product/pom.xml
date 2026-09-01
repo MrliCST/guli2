@@ -41,6 +41,12 @@
             <artifactId>ruoyi-common-dubbo</artifactId>
         </dependency>
 
+        <!-- 分布式事务 Seata -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-seata</artifactId>
+        </dependency>
+
         <!-- guli-api 远程调用接口 -->
         <dependency>
             <groupId>com.atlearn.guli</groupId>

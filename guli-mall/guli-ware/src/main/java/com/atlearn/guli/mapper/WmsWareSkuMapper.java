@@ -3,7 +3,6 @@ package com.atlearn.guli.mapper;
 import java.util.List;
 
 import com.atlearn.guli.domain.WmsWareSku;
-import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.dto.SkuIdToStockDTO;
 import com.atlearn.guli.domain.vo.RmeWareSkuVo;
 import com.atlearn.guli.domain.vo.WmsWareSkuVo;
@@ -33,14 +32,6 @@ public interface WmsWareSkuMapper extends BaseMapperPlus<WmsWareSku, WmsWareSkuV
      * @return 仓库库存列表
      */
     List<RmeWareSkuVo> getWareSkuListBySkuIds(@Param("skuIds") List<Long> skuIds);
-
-    /**
-     * 批量锁定仓库库存（增加 stock_locked）
-     *
-     * @param list 锁定信息
-     * @return 受影响总行数
-     */
-    int lockWareSkuBatch(@Param("list") List<RmeLockWareBo> list);
 
 }
 

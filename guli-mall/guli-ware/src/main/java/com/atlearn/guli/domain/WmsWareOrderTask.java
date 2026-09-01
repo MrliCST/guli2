@@ -2,8 +2,11 @@ package com.atlearn.guli.domain;
 
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 
@@ -13,6 +16,9 @@ import java.io.Serial;
  * @author guli
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @TableName("wms_ware_order_task")
 public class WmsWareOrderTask extends BaseEntity {

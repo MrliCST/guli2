@@ -1,6 +1,7 @@
 package com.atlearn.guli;
 
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
+import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.vo.RmeWareSkuVo;
 
 import java.math.BigDecimal;
@@ -25,12 +26,13 @@ public interface RemoteWareService {
     List<RmeWareSkuVo> getWareSkuListBySkuIds(List<Long> skuIds);
 
     /**
-     * 批量CAS锁定仓库库存
+     * 批量CAS锁定仓库库存，同时插入库存工作单及明细
      *
+     * @param orderInfo      订单冗余信息（用于工作单主表）
      * @param lockWareBoList 锁定信息
-     * @return true=锁定成功
+     * @return true=全部锁定成功，失败时抛异常并回滚
      */
-    boolean lockWareSkuBatch(List<RmeLockWareBo> lockWareBoList);
+    boolean lockWareSkuBatch(RmeOrderInfoBo orderInfo, List<RmeLockWareBo> lockWareBoList);
 
     /**
      * 模拟获取运费

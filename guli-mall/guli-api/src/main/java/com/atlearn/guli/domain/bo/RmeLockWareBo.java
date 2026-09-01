@@ -27,7 +27,6 @@ public class RmeLockWareBo {
      *          { "wareId" : 1, "lockNum": 5 }
      *          { "wareId" : 2, "lockNum": 4 }
      *          { "wareId" : 3, "lockNum": 1 }
-     *          { "wareId" : 4, "lockNum": 0 }
      *      ]
      * }
      */
