@@ -3,11 +3,13 @@ package com.atlearn.guli.rabbitmq;
 import com.atlearn.guli.RemoteOrderService;
 import com.atlearn.guli.constant.OrderConstant;
 import com.atlearn.guli.constant.RabbitMqConstant;
+import com.atlearn.guli.domain.WmsWareOrderTask;
 import com.atlearn.guli.domain.WmsWareOrderTaskDetail;
 import com.atlearn.guli.domain.dto.LockItemDto;
 import com.atlearn.guli.domain.mq.RmeWareOrderTask;
 import com.atlearn.guli.mapper.WmsWareLockerMapper;
 import com.atlearn.guli.mapper.WmsWareOrderTaskDetailMapper;
+import com.atlearn.guli.mapper.WmsWareOrderTaskMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.rabbitmq.client.Channel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class RabbitMQListener {
 
     private final WmsWareLockerMapper wmsWareLockerMapper;
     private final WmsWareOrderTaskDetailMapper wmsWareOrderTaskDetailMapper;
+    private final WmsWareOrderTaskMapper wmsWareOrderTaskMapper;
 
     @SuppressWarnings("null")//null抑制警告
     @RabbitListener(queues = RabbitMqConstant.STOCK_RELEASE_QUEUE)
@@ -49,13 +52,28 @@ public class RabbitMQListener {
 
             // 订单不存在/已取消 → 释放库存
             if (orderStatus == null || orderStatus.equals(OrderConstant.ORDER_STATUS_CANCELLED)) {
-                //  查询工作单明细
+                // 若消息中没有 taskId，则通过 orderSn 查询工作单（一个订单对应一条库存工作单）
+                Long taskId = task.getId();
+                if (taskId == null) {
+                    WmsWareOrderTask orderTask = wmsWareOrderTaskMapper.selectOne(
+                        Wrappers.<WmsWareOrderTask>lambdaQuery()
+                            .eq(WmsWareOrderTask::getOrderSn, task.getOrderSn())
+                    );
+                    if (orderTask == null) {
+                        log.warn("未找到对应库存工作单，跳过解锁: orderSn={}", task.getOrderSn());
+                        channel.basicAck(deliveryTag, false);
+                        return;
+                    }
+                    taskId = orderTask.getId();
+                }
+
+                // 查询工作单明细
                 List<WmsWareOrderTaskDetail> detailList = wmsWareOrderTaskDetailMapper.selectList(
                     Wrappers.<WmsWareOrderTaskDetail>lambdaQuery()
-                        .eq(x->x.getTaskId(), task.getId())
+                        .eq(x -> x.getTaskId(), taskId)
                 );
 
-                //  转为 DTO + 排序防死锁
+                // 转为 DTO + 排序防死锁
                 List<LockItemDto> items = detailList.stream()
                     .map(detail -> LockItemDto.builder()
                         .wareId(detail.getWareId())
@@ -72,11 +90,11 @@ public class RabbitMQListener {
                 // 任一条明细解锁失败（影响行数为 0）即抛异常，触发消息拒收重新入队
                 for (int updateCount : updateCounts) {
                     if (updateCount == 0) {
-                        throw new IllegalStateException("库存解锁失败，存在未解锁明细: taskId=" + task.getId());
+                        throw new IllegalStateException("库存解锁失败，存在未解锁明细: taskId=" + taskId);
                     }
                 }
 
-                log.info("库存解锁成功: taskId={}, 明细数={}", task.getId(), items.size());
+                log.info("库存解锁成功: taskId={}, 明细数={}", taskId, items.size());
             }
 
             // 消费消息

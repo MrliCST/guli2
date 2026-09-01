@@ -5,12 +5,14 @@ import com.atlearn.guli.RemoteProductService;
 import com.atlearn.guli.RemoteShopCartService;
 import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.constant.OrderConstant;
+import com.atlearn.guli.constant.RabbitMqConstant;
 import com.atlearn.guli.core.UserInfoContext;
 import com.atlearn.guli.domain.OmsOrder;
 import com.atlearn.guli.domain.OmsOrderItem;
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.bo.SubmitOrderBo;
+import com.atlearn.guli.domain.mq.RmeOrderTo;
 import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.domain.vo.RmeCartItemVo;
 import com.atlearn.guli.domain.vo.RmeMemberReceiveAddressVO;
@@ -28,10 +30,13 @@ import org.dromara.common.mybatis.utils.IdGeneratorUtil;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.redisson.api.RScript;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -69,6 +74,7 @@ public class OrderServiceImpl implements IOrderService {
 
     private final OmsOrderMapper omsOrderMapper;
     private final OmsOrderItemMapper omsOrderItemMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Autowired
     @Qualifier("executor")
@@ -313,6 +319,29 @@ public class OrderServiceImpl implements IOrderService {
 
         // ===============  9. 清除确认页缓存  ===============
         RedisUtils.deleteObject(CONFIRM_KEY_PREFIX + memberId);
+
+        // =============== 10. 事务提交后发送订单延迟消息（超时自动取消） ===============
+        RmeOrderTo orderTo = RmeOrderTo.builder()
+            .id(order.getId())
+            .orderSn(orderSn)
+            .memberId(memberId)
+            .status(OrderConstant.ORDER_STATUS_PENDING_PAYMENT)
+            .payAmount(payAmount)
+            .payType(bo.getPayType())
+            .receiverName(address.getName())
+            .receiverPhone(address.getPhone())
+            .build();
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                rabbitTemplate.convertAndSend(
+                    RabbitMqConstant.ORDER_EVENT_EXCHANGE,
+                    RabbitMqConstant.ORDER_CREATE_ROUTING_KEY,
+                    orderTo
+                );
+                log.info("订单延迟消息已发送: orderSn={}, ttl={}ms", orderSn, RabbitMqConstant.ORDER_TTL);
+            }
+        });
 
         log.info("订单提交成功，orderSn={}, 商品数={}", orderSn, orderItems.size());
         return orderSn;

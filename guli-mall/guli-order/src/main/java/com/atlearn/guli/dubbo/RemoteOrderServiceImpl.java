@@ -23,6 +23,7 @@ public class RemoteOrderServiceImpl implements RemoteOrderService {
     private final OmsOrderMapper orderMapper;
 
     @Override
+    @SuppressWarnings("null")//null抑制警告
     public Integer getOrderStatusBySn(String orderSn) {
         OmsOrder order = orderMapper.selectOne(
             new LambdaQueryWrapper<OmsOrder>()
