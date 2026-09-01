@@ -43,9 +43,9 @@ public class WmsWareOrderTaskDetail extends BaseEntity {
     private String skuName;
 
     /**
-     * 购买个数
+     * 该仓库被锁定的个数
      */
-    private Integer skuNum;
+    private Integer lockNum;
 
     /**
      * 工作单id

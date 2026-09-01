@@ -31,8 +31,8 @@ public class WmsWareOrderTaskDetailVo implements Serializable {
     @ExcelProperty(value = "sku_name")
     private String skuName;
 
-    @ExcelProperty(value = "购买个数")
-    private Integer skuNum;
+    @ExcelProperty(value = "锁定个数")
+    private Integer lockNum;
 
     @ExcelProperty(value = "工作单id")
     private Long taskId;
