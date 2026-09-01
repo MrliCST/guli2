@@ -38,6 +38,7 @@ public class RabbitMQListener {
     private final WmsWareLockerMapper wmsWareLockerMapper;
     private final WmsWareOrderTaskDetailMapper wmsWareOrderTaskDetailMapper;
 
+    @SuppressWarnings("null")//null抑制警告
     @RabbitListener(queues = RabbitMqConstant.STOCK_RELEASE_QUEUE)
     public void handleStockRelease(RmeWareOrderTask task, Message message, Channel channel) throws IOException {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
@@ -51,7 +52,7 @@ public class RabbitMQListener {
                 //  查询工作单明细
                 List<WmsWareOrderTaskDetail> detailList = wmsWareOrderTaskDetailMapper.selectList(
                     Wrappers.<WmsWareOrderTaskDetail>lambdaQuery()
-                        .eq(WmsWareOrderTaskDetail::getTaskId, task.getId())
+                        .eq(x->x.getTaskId(), task.getId())
                 );
 
                 //  转为 DTO + 排序防死锁

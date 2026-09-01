@@ -89,6 +89,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
+    @SuppressWarnings("null")//null抑制警告
     public boolean lockWareSkuBatch(RmeOrderInfoBo orderInfo, List<RmeLockWareBo> lockWareBoList) {
         if (lockWareBoList == null || lockWareBoList.isEmpty()) {
             return true;
