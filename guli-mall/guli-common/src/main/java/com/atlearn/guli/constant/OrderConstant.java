@@ -33,4 +33,25 @@ public class OrderConstant {
 
     /** 确认状态：未确认 */
     public static final Integer CONFIRM_STATUS_NORMAL = 0;
+
+    /** 订单状态：待付款 */
+    public static final Integer ORDER_STATUS_PENDING_PAYMENT = 0;
+
+    /** 订单状态：已付款 */
+    public static final Integer ORDER_STATUS_PAID = 1;
+
+    /** 订单状态：已发货 */
+    public static final Integer ORDER_STATUS_SHIPPED = 2;
+
+    /** 订单状态：已完成 */
+    public static final Integer ORDER_STATUS_COMPLETED = 3;
+
+    /** 订单状态：已取消 */
+    public static final Integer ORDER_STATUS_CANCELLED = 4;
+
+    /** 订单状态：售后中 */
+    public static final Integer ORDER_STATUS_AFTER_SALE = 5;
+
+    /** 订单状态：售后完成 */
+    public static final Integer ORDER_STATUS_AFTER_SALE_DONE = 6;
 }

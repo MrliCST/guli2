@@ -6,6 +6,7 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
+import com.atlearn.guli.constant.RabbitMqConstant;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,26 +27,13 @@ import java.util.Map;
 @Configuration
 public class RabbitMQInit {
 
-    public static final String STOCK_EVENT_EXCHANGE = "stock-event-exchange";
-
-    public static final String STOCK_DELAY_QUEUE = "stock-delay-queue";
-
-    public static final String STOCK_RELEASE_QUEUE = "stock-release-queue";
-
-    public static final String STOCK_LOCK_ROUTING_KEY = "stock.lock";
-
-    public static final String STOCK_RELEASE_ROUTING_KEY = "stock.release";
-
-    /** 延迟时间（毫秒），订单超时后自动释放库存，默认 1 分钟 */
-    public static final Long TTL = 60000L;
-    
     /**
      * stock-event-exchange 交换机
      * @return
      */
     @Bean
     public DirectExchange stockEventExchange() {
-        return ExchangeBuilder.directExchange(STOCK_EVENT_EXCHANGE)
+        return ExchangeBuilder.directExchange(RabbitMqConstant.STOCK_EVENT_EXCHANGE)
             .durable(true)
             .build();
     }
@@ -57,10 +45,10 @@ public class RabbitMQInit {
     @Bean
     public Queue stockDelayQueue() {
         Map<String, Object> args = new HashMap<>();
-        args.put("x-message-ttl", TTL);
-        args.put("x-dead-letter-exchange", STOCK_EVENT_EXCHANGE);
-        args.put("x-dead-letter-routing-key", STOCK_RELEASE_ROUTING_KEY);
-        return QueueBuilder.durable(STOCK_DELAY_QUEUE)
+        args.put("x-message-ttl", RabbitMqConstant.TTL);
+        args.put("x-dead-letter-exchange", RabbitMqConstant.STOCK_EVENT_EXCHANGE);
+        args.put("x-dead-letter-routing-key", RabbitMqConstant.STOCK_RELEASE_ROUTING_KEY);
+        return QueueBuilder.durable(RabbitMqConstant.STOCK_DELAY_QUEUE)
             .withArguments(args)
             .build();
     }
@@ -71,7 +59,7 @@ public class RabbitMQInit {
      */
     @Bean
     public Queue stockReleaseQueue() {
-        return QueueBuilder.durable(STOCK_RELEASE_QUEUE)
+        return QueueBuilder.durable(RabbitMqConstant.STOCK_RELEASE_QUEUE)
             .build();
     }
 
@@ -80,7 +68,7 @@ public class RabbitMQInit {
                                      @Qualifier("stockEventExchange") DirectExchange stockEventExchange) {
         return BindingBuilder.bind(stockDelayQueue)  // 队列
             .to(stockEventExchange)  // 路由
-            .with(STOCK_LOCK_ROUTING_KEY); // 路由键
+            .with(RabbitMqConstant.STOCK_LOCK_ROUTING_KEY); // 路由键
     }
 
     @Bean
@@ -88,6 +76,6 @@ public class RabbitMQInit {
                                        @Qualifier("stockEventExchange") DirectExchange stockEventExchange) {
         return BindingBuilder.bind(stockReleaseQueue)  // 队列
             .to(stockEventExchange)  // 路由
-            .with(STOCK_RELEASE_ROUTING_KEY);  // 路由键
+            .with(RabbitMqConstant.STOCK_RELEASE_ROUTING_KEY);  // 路由键
     }
 }

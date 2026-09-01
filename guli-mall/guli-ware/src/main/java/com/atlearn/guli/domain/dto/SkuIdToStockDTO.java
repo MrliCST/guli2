@@ -7,6 +7,7 @@ import lombok.Data;
 
 /**
  * sku 可用库存统计视图对象
+ * 封装为实体太重，临时接一下mapper的返回值，之后转为 map 传递
  *
  * @author mayao
  * @date 2026-08-15

@@ -16,7 +16,6 @@ import com.atlearn.guli.domain.vo.RmeCartItemVo;
 import com.atlearn.guli.domain.vo.RmeMemberReceiveAddressVO;
 import com.atlearn.guli.domain.vo.RmeSkuInfoVo;
 import com.atlearn.guli.domain.vo.RmeWareSkuVo;
-import com.atlearn.guli.enums.OrderStatusEnum;
 import com.atlearn.guli.exception.BusinessException;
 import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.mapper.OmsOrderItemMapper;
@@ -272,7 +271,7 @@ public class OrderServiceImpl implements IOrderService {
             .receiverDetailAddress(address.getDetailAddress())
             .note(bo.getNote())
             // 状态相关
-            .status(OrderStatusEnum.UNPAID.getCode())
+            .status(OrderConstant.ORDER_STATUS_PENDING_PAYMENT)
             .confirmStatus(OrderConstant.CONFIRM_STATUS_NORMAL)
             .deleteStatus(OrderConstant.DELETE_STATUS_NORMAL)
             .autoConfirmDay(7)
@@ -312,7 +311,7 @@ public class OrderServiceImpl implements IOrderService {
             }).collect(Collectors.toList());
         omsOrderItemMapper.insertBatch(orderItems);
 
-        // ===============  10. 清除确认页缓存  ===============
+        // ===============  9. 清除确认页缓存  ===============
         RedisUtils.deleteObject(CONFIRM_KEY_PREFIX + memberId);
 
         log.info("订单提交成功，orderSn={}, 商品数={}", orderSn, orderItems.size());

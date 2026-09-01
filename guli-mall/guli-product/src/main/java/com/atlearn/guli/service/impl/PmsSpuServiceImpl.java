@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.seata.spring.annotation.GlobalTransactional;
 import org.dromara.resource.api.domain.RemoteFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,6 +91,7 @@ public class PmsSpuServiceImpl implements IPmsSpuService {
 
     @Override
     @Transactional
+    @GlobalTransactional
     public Boolean insertByBo(PmsSpuBo bo) {
         // 提取bo中的内容
         PmsSpuBo.SpuInfo spuInfo = bo.getSpu();

@@ -96,6 +96,17 @@ spring:
     port: 5672
     username: ruoyi
     password: ruoyi123
+    virtual-host: /
+    # 发布者确认（correlated = 异步回调确认消息到达 Broker）
+    publisher-confirm-type: correlated
+    # 发布者返回（消息无法路由时退回生产者）
+    publisher-returns: true
+    listener:
+      simple:
+        # 手动确认
+        acknowledge-mode: manual
+        # 每次只投递一条，配合手动 ack 保证可靠消费
+        prefetch: 1
 
   # redis(存储层) 通用配置: 子服务可以自行配置进行覆盖
   data:

@@ -2,10 +2,6 @@ package com.atlearn.guli.dubbo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,32 +9,31 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
-
 import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.domain.WmsWareOrderTask;
 import com.atlearn.guli.domain.WmsWareOrderTaskDetail;
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
+import com.atlearn.guli.domain.dto.LockItemDto;
+import com.atlearn.guli.domain.mq.RmeWareOrderTask;
 import com.atlearn.guli.domain.vo.RmeWareSkuVo;
 import com.atlearn.guli.exception.BusinessException;
 import com.atlearn.guli.exception.ErrorCodeEnum;
+import com.atlearn.guli.mapper.WmsWareLockerMapper;
 import com.atlearn.guli.mapper.WmsWareOrderTaskDetailMapper;
 import com.atlearn.guli.mapper.WmsWareOrderTaskMapper;
 import com.atlearn.guli.mapper.WmsWareSkuMapper;
 
-import com.atlearn.guli.rabbitmq.RabbitMQInit;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.atlearn.guli.constant.RabbitMqConstant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Service
@@ -52,7 +47,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
     private final WmsWareSkuMapper wareSkuMapper;
     private final WmsWareOrderTaskMapper wareOrderTaskMapper;
     private final WmsWareOrderTaskDetailMapper wareOrderTaskDetailMapper;
-    private final DataSource dataSource;
+    private final WmsWareLockerMapper wmsWareLockerMapper;
     private final RabbitTemplate rabbitTemplate;
 
     /**
@@ -87,9 +82,10 @@ public class RemoteWareServiceImpl implements RemoteWareService {
     }
 
     /**
-     * 批量CAS锁定库存（JDBC addBatch + 排序防死锁）
+     * 批量CAS锁定库存
      * 任意一条失败（0=库存不足）则抛异常，@Transactional 回滚全部
      * 锁定成功后插入库存工作单（wms_ware_order_task）和明细（wms_ware_order_task_detail）
+     * MQ 延迟消息在事务 afterCommit 后发送，避免回滚后消息已发
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -98,51 +94,33 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             return true;
         }
 
-        // 1. 展平并按 wareId, skuId 升序排序（保证并发加锁顺序一致，防死锁）
-        List<LockItem> items = lockWareBoList.stream()
+        // 1. 展平并按 (wareId, skuId) 升序排序（保证并发加锁顺序一致，防死锁）
+        List<LockItemDto> items = lockWareBoList.stream()
             .flatMap(bo -> bo.getWareDistribute().stream()
-                .map(dist -> {
-                    return LockItem.builder()
-                        .wareId(dist.getWareId())
-                        .skuId(bo.getSkuId())
-                        .lockNum(dist.getLockNum())
-                        .skuName(bo.getSkuName())
-                        .build();
-                }))
-            .sorted(Comparator.comparing(LockItem::getWareId)
-                .thenComparing(LockItem::getSkuId))
+                .map(dist -> LockItemDto.builder()
+                    .wareId(dist.getWareId())
+                    .skuId(bo.getSkuId())
+                    .lockNum(dist.getLockNum())
+                    .skuName(bo.getSkuName())
+                    .build()))
+            .sorted(Comparator.comparing(LockItemDto::getWareId)
+                .thenComparing(LockItemDto::getSkuId))
             .collect(Collectors.toList());
 
-        String sql = "UPDATE wms_ware_sku SET stock_locked = stock_locked + ? "
-                   + "WHERE ware_id = ? AND sku_id = ? AND (stock - stock_locked) >= ?";
+        // 2. 批量 CAS 锁定库存
+        int[] updateCounts = wmsWareLockerMapper.batchLockStock(items);
 
-        // 2. 标准 JDBC Batch 执行
-        Connection conn = DataSourceUtils.getConnection(dataSource);
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (LockItem item : items) {
-                ps.setInt(1, item.getLockNum());
-                ps.setLong(2, item.getWareId());
-                ps.setLong(3, item.getSkuId());
-                ps.setInt(4, item.getLockNum());
-                ps.addBatch();
+        // 3. 校验锁定结果
+        for (int i = 0; i < updateCounts.length; i++) {
+            if (updateCounts[i] <= 0) {
+                LockItemDto failedItem = items.get(i);
+                log.error("库存锁定失败，库存不足或记录不存在: wareId={}, skuId={}, lockNum={}",
+                    failedItem.getWareId(), failedItem.getSkuId(), failedItem.getLockNum());
+                throw new BusinessException(ErrorCodeEnum.STOCK_NOT_ENOUGH);
             }
-
-            int[] updateCounts = ps.executeBatch();
-            for (int i = 0; i < updateCounts.length; i++) {
-                if (updateCounts[i] <= 0 && updateCounts[i] != Statement.SUCCESS_NO_INFO) {
-                    log.error("库存锁定失败，第{}条UPDATE未命中/库存不足，wareId={}，skuId={}",
-                        i + 1, items.get(i).getWareId(), items.get(i).getSkuId());
-                    throw new BusinessException(ErrorCodeEnum.STOCK_NOT_ENOUGH);
-                }
-            }
-        } catch (SQLException e) {
-            log.error("批量锁定库存SQL执行失败", e);
-            throw new BusinessException(ErrorCodeEnum.STOCK_NOT_ENOUGH);
-        } finally {
-            DataSourceUtils.releaseConnection(conn, dataSource);
         }
 
-        // 3. 插入库存工作单主表
+        // 4. 插入库存工作单主表
         WmsWareOrderTask task = WmsWareOrderTask.builder()
             .orderId(orderInfo.getOrderId())
             .orderSn(orderInfo.getOrderSn())
@@ -155,7 +133,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             .build();
         wareOrderTaskMapper.insert(task);
 
-        // 4. 插入库存工作单明细
+        // 5. 插入库存工作单明细
         List<WmsWareOrderTaskDetail> detailList = items.stream()
             .map(item -> WmsWareOrderTaskDetail.builder()
                 .skuId(item.getSkuId())
@@ -168,12 +146,19 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             .collect(Collectors.toList());
         wareOrderTaskDetailMapper.insertBatch(detailList);
 
-        // 5. 向 RabbitMQ 延迟队列发送 taskId，到期后触发库存释放检查
-        rabbitTemplate.convertAndSend(
-            RabbitMQInit.STOCK_EVENT_EXCHANGE,   // 目标交换机
-            RabbitMQInit.STOCK_LOCK_ROUTING_KEY, // 路由键
-            String.valueOf(task.getId())
-        );
+        // 6. 事务提交成功后再发送 MQ 延迟消息，避免回滚后消息已发
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                RmeWareOrderTask mqTask = new RmeWareOrderTask();
+                BeanUtils.copyProperties(task, mqTask);
+                rabbitTemplate.convertAndSend(
+                    RabbitMqConstant.STOCK_EVENT_EXCHANGE,
+                    RabbitMqConstant.STOCK_LOCK_ROUTING_KEY,
+                    mqTask
+                );
+            }
+        });
 
         return true;
     }
@@ -190,18 +175,6 @@ public class RemoteWareServiceImpl implements RemoteWareService {
 
         // 分转为元，保留两位小数
         return BigDecimal.valueOf(cents).divide(BigDecimal.valueOf(CENTS_PER_YUAN), 2, RoundingMode.HALF_UP);
-    }
-
-    /** 展平后的锁定项，用于排序 */
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    private static class LockItem {
-        private Long wareId;
-        private Long skuId;
-        private String skuName;
-        private Integer lockNum;
     }
 
 }
