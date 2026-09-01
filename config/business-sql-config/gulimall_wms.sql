@@ -129,7 +129,7 @@ CREATE TABLE `wms_ware_order_task_detail` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `sku_id` bigint(20) DEFAULT NULL COMMENT 'sku_id',
   `sku_name` varchar(255) DEFAULT NULL COMMENT 'sku_name',
-  `sku_num` int(11) DEFAULT NULL COMMENT '购买个数',
+  `lock_num` int(11) DEFAULT NULL COMMENT '该仓库被锁定的个数',
   `task_id` bigint(20) DEFAULT NULL COMMENT '工作单id',
   `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
   `lock_status` int(1) DEFAULT NULL COMMENT '1-已锁定  2-已解锁  3-扣减',
