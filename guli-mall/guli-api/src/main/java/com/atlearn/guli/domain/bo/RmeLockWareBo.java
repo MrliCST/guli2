@@ -37,6 +37,11 @@ public class RmeLockWareBo {
     private Long skuId;
 
     /**
+     * 需要锁定的商品名称
+     */
+    private String skuName;
+
+    /**
      * 分配的锁定信息
      */
     private List<WareDistribute> wareDistribute;

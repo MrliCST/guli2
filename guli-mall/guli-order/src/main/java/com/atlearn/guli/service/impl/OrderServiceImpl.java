@@ -365,6 +365,7 @@ public class OrderServiceImpl implements IOrderService {
             Long skuId = entry.getKey();
             int needLockNum = entry.getValue();
 
+            // skuid 对应的 仓库存储明细表
             List<RmeWareSkuVo> wareList = wareSkuInfoGroup.get(skuId);
             if (wareList == null || wareList.isEmpty()) {
                 log.warn("skuId={} 没有可用的仓库库存", skuId);
@@ -385,8 +386,11 @@ public class OrderServiceImpl implements IOrderService {
                 if (remaining <= 0) break;
             }
 
+            // 同一个skuid分组下的，skuName一定都是一样的
+            String skuName = wareList.get(0).getSkuName();
             result.add(RmeLockWareBo.builder()
                 .skuId(skuId)
+                .skuName(skuName)
                 .wareDistribute(distributes)
                 .build());
         }

@@ -83,11 +83,6 @@ public class WmsWareOrderTask extends BaseEntity {
     private String trackingNo;
 
     /**
-     * 仓库id
-     */
-    private Long wareId;
-
-    /**
      * 工作单备注
      */
     private String taskComment;

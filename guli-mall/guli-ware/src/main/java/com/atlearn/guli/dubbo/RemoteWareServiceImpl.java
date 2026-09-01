@@ -18,7 +18,6 @@ import javax.sql.DataSource;
 import com.atlearn.guli.RemoteWareService;
 import com.atlearn.guli.domain.WmsWareOrderTask;
 import com.atlearn.guli.domain.WmsWareOrderTaskDetail;
-import com.atlearn.guli.domain.WmsWareSku;
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.vo.RmeWareSkuVo;
@@ -28,12 +27,15 @@ import com.atlearn.guli.mapper.WmsWareOrderTaskDetailMapper;
 import com.atlearn.guli.mapper.WmsWareOrderTaskMapper;
 import com.atlearn.guli.mapper.WmsWareSkuMapper;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.atlearn.guli.rabbitmq.RabbitMQInit;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,6 +53,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
     private final WmsWareOrderTaskMapper wareOrderTaskMapper;
     private final WmsWareOrderTaskDetailMapper wareOrderTaskDetailMapper;
     private final DataSource dataSource;
+    private final RabbitTemplate rabbitTemplate;
 
     /**
      * 查询sku商品，对应的总可用库存
@@ -95,23 +98,17 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             return true;
         }
 
-        // 1. 收集 skuId，查询 sku_name
-        List<Long> skuIds = lockWareBoList.stream()
-            .map(RmeLockWareBo::getSkuId)
-            .collect(Collectors.toList());
-        Map<Long, String> skuNameMap = wareSkuMapper.selectList(
-            new LambdaQueryWrapper<WmsWareSku>().in(WmsWareSku::getSkuId, skuIds)
-        ).stream()
-            .collect(Collectors.toMap(
-                WmsWareSku::getSkuId,
-                WmsWareSku::getSkuName,
-                (existing, replacement) -> existing
-            ));
-
-        // 2. 展平并按 wareId, skuId 升序排序（保证并发加锁顺序一致，防死锁）
+        // 1. 展平并按 wareId, skuId 升序排序（保证并发加锁顺序一致，防死锁）
         List<LockItem> items = lockWareBoList.stream()
             .flatMap(bo -> bo.getWareDistribute().stream()
-                .map(dist -> new LockItem(dist.getWareId(), bo.getSkuId(), dist.getLockNum())))
+                .map(dist -> {
+                    return LockItem.builder()
+                        .wareId(dist.getWareId())
+                        .skuId(bo.getSkuId())
+                        .lockNum(dist.getLockNum())
+                        .skuName(bo.getSkuName())
+                        .build();
+                }))
             .sorted(Comparator.comparing(LockItem::getWareId)
                 .thenComparing(LockItem::getSkuId))
             .collect(Collectors.toList());
@@ -119,7 +116,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
         String sql = "UPDATE wms_ware_sku SET stock_locked = stock_locked + ? "
                    + "WHERE ware_id = ? AND sku_id = ? AND (stock - stock_locked) >= ?";
 
-        // 3. 标准 JDBC Batch 执行
+        // 2. 标准 JDBC Batch 执行
         Connection conn = DataSourceUtils.getConnection(dataSource);
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (LockItem item : items) {
@@ -131,8 +128,6 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             }
 
             int[] updateCounts = ps.executeBatch();
-
-            // 4. 校验每条结果
             for (int i = 0; i < updateCounts.length; i++) {
                 if (updateCounts[i] <= 0 && updateCounts[i] != Statement.SUCCESS_NO_INFO) {
                     log.error("库存锁定失败，第{}条UPDATE未命中/库存不足，wareId={}，skuId={}",
@@ -147,7 +142,7 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             DataSourceUtils.releaseConnection(conn, dataSource);
         }
 
-        // 5. 插入库存工作单主表
+        // 3. 插入库存工作单主表
         WmsWareOrderTask task = WmsWareOrderTask.builder()
             .orderId(orderInfo.getOrderId())
             .orderSn(orderInfo.getOrderSn())
@@ -160,11 +155,11 @@ public class RemoteWareServiceImpl implements RemoteWareService {
             .build();
         wareOrderTaskMapper.insert(task);
 
-        // 6. 插入库存工作单明细
+        // 4. 插入库存工作单明细
         List<WmsWareOrderTaskDetail> detailList = items.stream()
             .map(item -> WmsWareOrderTaskDetail.builder()
                 .skuId(item.getSkuId())
-                .skuName(skuNameMap.get(item.getSkuId()))
+                .skuName(item.getSkuName())
                 .lockNum(item.getLockNum())
                 .taskId(task.getId())
                 .wareId(item.getWareId())
@@ -172,6 +167,13 @@ public class RemoteWareServiceImpl implements RemoteWareService {
                 .build())
             .collect(Collectors.toList());
         wareOrderTaskDetailMapper.insertBatch(detailList);
+
+        // 5. 向 RabbitMQ 延迟队列发送 taskId，到期后触发库存释放检查
+        rabbitTemplate.convertAndSend(
+            RabbitMQInit.STOCK_EVENT_EXCHANGE,   // 目标交换机
+            RabbitMQInit.STOCK_LOCK_ROUTING_KEY, // 路由键
+            String.valueOf(task.getId())
+        );
 
         return true;
     }
@@ -193,9 +195,12 @@ public class RemoteWareServiceImpl implements RemoteWareService {
     /** 展平后的锁定项，用于排序 */
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     private static class LockItem {
         private Long wareId;
         private Long skuId;
+        private String skuName;
         private Integer lockNum;
     }
 

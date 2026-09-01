@@ -6,6 +6,7 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,7 +38,11 @@ public class RabbitMQInit {
 
     /** 延迟时间（毫秒），订单超时后自动释放库存，默认 1 分钟 */
     public static final Long TTL = 60000L;
-
+    
+    /**
+     * stock-event-exchange 交换机
+     * @return
+     */
     @Bean
     public DirectExchange stockEventExchange() {
         return ExchangeBuilder.directExchange(STOCK_EVENT_EXCHANGE)
@@ -46,6 +51,7 @@ public class RabbitMQInit {
     }
 
     /**
+     * stock-delay-queue 延迟队列
      * 延迟队列：消息进入后等待 TTL 过期，变成死信转发回交换机
      */
     @Bean
@@ -60,6 +66,7 @@ public class RabbitMQInit {
     }
 
     /**
+     * stock-release-queue 消费队列 
      * 消费队列：接收延迟队列过期后转发的死信消息
      */
     @Bean
@@ -69,16 +76,18 @@ public class RabbitMQInit {
     }
 
     @Bean
-    public Binding stockDelayBinding(Queue stockDelayQueue, DirectExchange stockEventExchange) {
-        return BindingBuilder.bind(stockDelayQueue)
-            .to(stockEventExchange)
-            .with(STOCK_LOCK_ROUTING_KEY);
+    public Binding stockDelayBinding(@Qualifier("stockDelayQueue") Queue stockDelayQueue,
+                                     @Qualifier("stockEventExchange") DirectExchange stockEventExchange) {
+        return BindingBuilder.bind(stockDelayQueue)  // 队列
+            .to(stockEventExchange)  // 路由
+            .with(STOCK_LOCK_ROUTING_KEY); // 路由键
     }
 
     @Bean
-    public Binding stockReleaseBinding(Queue stockReleaseQueue, DirectExchange stockEventExchange) {
-        return BindingBuilder.bind(stockReleaseQueue)
-            .to(stockEventExchange)
-            .with(STOCK_RELEASE_ROUTING_KEY);
+    public Binding stockReleaseBinding(@Qualifier("stockReleaseQueue") Queue stockReleaseQueue,
+                                       @Qualifier("stockEventExchange") DirectExchange stockEventExchange) {
+        return BindingBuilder.bind(stockReleaseQueue)  // 队列
+            .to(stockEventExchange)  // 路由
+            .with(STOCK_RELEASE_ROUTING_KEY);  // 路由键
     }
 }

@@ -55,9 +55,6 @@ public class WmsWareOrderTaskVo implements Serializable {
     @ExcelProperty(value = "物流单号")
     private String trackingNo;
 
-    @ExcelProperty(value = "仓库id")
-    private Long wareId;
-
     @ExcelProperty(value = "工作单备注")
     private String taskComment;
 

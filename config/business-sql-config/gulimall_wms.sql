@@ -112,7 +112,6 @@ CREATE TABLE `wms_ware_order_task` (
   `order_body` varchar(255) DEFAULT NULL COMMENT '订单描述',
   `tracking_no` char(30) DEFAULT NULL COMMENT '物流单号',
   `create_time` datetime DEFAULT NULL COMMENT 'create_time',
-  `ware_id` bigint(20) DEFAULT NULL COMMENT '仓库id',
   `task_comment` varchar(500) DEFAULT NULL COMMENT '工作单备注',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='库存工作单';
