@@ -13,6 +13,7 @@ import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.bo.SubmitOrderBo;
 import com.atlearn.guli.domain.mq.RmeOrderTo;
+import com.atlearn.guli.domain.mq.RmeWareOrderTask;
 import com.atlearn.guli.domain.vo.OrderConfirmVo;
 import com.atlearn.guli.domain.vo.RmeCartItemVo;
 import com.atlearn.guli.domain.vo.RmeMemberReceiveAddressVO;
@@ -23,6 +24,7 @@ import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.mapper.OmsOrderItemMapper;
 import com.atlearn.guli.mapper.OmsOrderMapper;
 import com.atlearn.guli.service.IOrderService;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -345,6 +347,70 @@ public class OrderServiceImpl implements IOrderService {
 
         log.info("订单提交成功，orderSn={}, 商品数={}", orderSn, orderItems.size());
         return orderSn;
+    }
+
+    /**
+     * 用户主动取消订单
+     * <p>
+     * 链路：查订单 → 校验归属权 → 带条件原子更新状态（待付款→已取消） →
+     * 事务提交后发送 MQ 通知库存服务解锁库存
+     *
+     * @param orderSn 订单号
+     * @return 是否取消成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @SuppressWarnings("null")
+    public Boolean cancelOrder(String orderSn) {
+        // 1. 查询订单
+        OmsOrder order = omsOrderMapper.selectOne(
+            Wrappers.<OmsOrder>lambdaQuery()
+                .eq(OmsOrder::getOrderSn, orderSn)
+                .last("LIMIT 1")
+        );
+        if (order == null) {
+            log.warn("订单号={} 不存在，无法取消", orderSn);
+            return false;
+        }
+
+        // 2. 校验归属：只能取消自己的订单
+        Long memberId = UserInfoContext.getUserId();
+        if (!order.getMemberId().equals(memberId)) {
+            log.warn("用户={} 无权取消订单={}, 订单所属人={}", memberId, orderSn, order.getMemberId());
+            throw new BusinessException(ErrorCodeEnum.ORDER_ACCESS_DENIED);
+        }
+
+        // 3. 带条件原子更新（数据库层面 CAS，避免先查后改的并发问题）
+        //    仅当状态为"待付款"时才更新为"已取消"
+        OmsOrder update = OmsOrder.builder()
+            .status(OrderConstant.ORDER_STATUS_CANCELLED)
+            .modifyTime(new Date())
+            .build();
+        int rows = omsOrderMapper.update(update,
+            Wrappers.<OmsOrder>lambdaUpdate()
+                .eq(OmsOrder::getId, order.getId())
+                .eq(OmsOrder::getStatus, OrderConstant.ORDER_STATUS_PENDING_PAYMENT)
+        );
+        if (rows == 0) {
+            log.warn("订单={} 当前状态={}，不允许取消", orderSn, order.getStatus());
+            throw new BusinessException(ErrorCodeEnum.ORDER_STATUS_INVALID);
+        }
+
+        // 4. 事务提交后发送 MQ 通知库存服务解锁库存
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                rabbitTemplate.convertAndSend(
+                    RabbitMqConstant.ORDER_EVENT_EXCHANGE,
+                    RabbitMqConstant.ORDER_RELEASE_OTHER_ROUTING_KEY,
+                    RmeWareOrderTask.builder().orderSn(orderSn).build()
+                );
+                log.info("订单取消库存释放消息已发送: orderSn={}", orderSn);
+            }
+        });
+
+        log.info("用户取消订单成功, orderSn={}", orderSn);
+        return true;
     }
 
     /**

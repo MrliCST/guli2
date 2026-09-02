@@ -28,4 +28,12 @@ public interface IOrderService {
      */
     String submitOrder(SubmitOrderBo bo);
 
+    /**
+     * 取消订单
+     *
+     * @param orderSn 订单号
+     * @return 是否取消成功
+     */
+    Boolean cancelOrder(String orderSn);
+
 }

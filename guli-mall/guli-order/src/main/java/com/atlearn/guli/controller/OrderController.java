@@ -35,6 +35,17 @@ public class OrderController {
     }
 
     /**
+     * 取消订单
+     *
+     * @param orderSn 订单号
+     * @return 是否取消成功
+     */
+    @PostMapping("/order/cancel")
+    public R<Boolean> cancelOrder(@RequestBody String orderSn) {
+        return R.ok(orderService.cancelOrder(orderSn));
+    }
+
+    /**
      * 提交订单
      *
      * @param bo 提交订单参数

@@ -79,6 +79,12 @@ public enum ErrorCodeEnum {
     /** 库存不足，锁定失败 */
     STOCK_NOT_ENOUGH(10023, "库存不足，锁定失败"),
 
+    /** 无权操作该订单 */
+    ORDER_ACCESS_DENIED(10024, "无权操作该订单"),
+
+    /** 订单状态不支持该操作 */
+    ORDER_STATUS_INVALID(10025, "订单状态不支持此操作"),
+
     /** 未知错误 */
     UNKNOWN_ERROR(99999, "未知错误");
 
