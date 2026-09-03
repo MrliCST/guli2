@@ -9,6 +9,7 @@ import com.atlearn.guli.constant.RabbitMqConstant;
 import com.atlearn.guli.core.UserInfoContext;
 import com.atlearn.guli.domain.OmsOrder;
 import com.atlearn.guli.domain.OmsOrderItem;
+import com.atlearn.guli.domain.RmeReliableMessage;
 import com.atlearn.guli.domain.bo.RmeLockWareBo;
 import com.atlearn.guli.domain.bo.RmeOrderInfoBo;
 import com.atlearn.guli.domain.bo.SubmitOrderBo;
@@ -24,7 +25,9 @@ import com.atlearn.guli.exception.ErrorCodeEnum;
 import com.atlearn.guli.mapper.OmsOrderItemMapper;
 import com.atlearn.guli.mapper.OmsOrderMapper;
 import com.atlearn.guli.service.IOrderService;
+import com.atlearn.guli.service.ReliableMessageService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -48,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
@@ -77,6 +81,8 @@ public class OrderServiceImpl implements IOrderService {
     private final OmsOrderMapper omsOrderMapper;
     private final OmsOrderItemMapper omsOrderItemMapper;
     private final RabbitTemplate rabbitTemplate;
+    private final ReliableMessageService reliableMessageService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     @Qualifier("executor")
@@ -322,7 +328,7 @@ public class OrderServiceImpl implements IOrderService {
         // ===============  9. 清除确认页缓存  ===============
         RedisUtils.deleteObject(CONFIRM_KEY_PREFIX + memberId);
 
-        // =============== 10. 事务提交后发送订单延迟消息（超时自动取消） ===============
+        // =============== 10. 构建订单 MQ 消息对象 ===============
         RmeOrderTo orderTo = RmeOrderTo.builder()
             .id(order.getId())
             .orderSn(orderSn)
@@ -333,15 +339,36 @@ public class OrderServiceImpl implements IOrderService {
             .receiverName(address.getName())
             .receiverPhone(address.getPhone())
             .build();
+
+        // =============== 11. 保存可靠消息到本地消息表（事务内） ===============
+        String messageId = UUID.randomUUID().toString();
+        String messageBody;
+        try {
+            messageBody = objectMapper.writeValueAsString(orderTo);
+        } catch (Exception e) {
+            log.error("订单消息序列化失败：orderSn={}", orderSn, e);
+            throw new BusinessException(ErrorCodeEnum.ORDER_CONFIRM_FAILED);
+        }
+        
+        RmeReliableMessage reliableMessage = RmeReliableMessage.builder()
+            .messageId(messageId)
+            .exchange(RabbitMqConstant.ORDER_EVENT_EXCHANGE)
+            .routingKey(RabbitMqConstant.ORDER_CREATE_ROUTING_KEY)
+            .messageBody(messageBody)
+            .messageType("ORDER_CREATE")
+            .status(0) // 待发送
+            .retryCount(0)
+            .build();
+        reliableMessageService.saveMessage(reliableMessage);
+
+        // =============== 12. 事务提交后发送订单延迟消息（超时自动取消） ===============
+        final Long finalMessageId = reliableMessage.getId();
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                rabbitTemplate.convertAndSend(
-                    RabbitMqConstant.ORDER_EVENT_EXCHANGE,
-                    RabbitMqConstant.ORDER_CREATE_ROUTING_KEY,
-                    orderTo
-                );
-                log.info("订单延迟消息已发送: orderSn={}, ttl={}ms", orderSn, RabbitMqConstant.ORDER_TTL);
+                // 使用可靠消息服务发送消息
+                reliableMessageService.sendMessage(finalMessageId);
+                log.info("订单延迟消息已发送：orderSn={}, ttl={}ms, messageId={}", orderSn, RabbitMqConstant.ORDER_TTL, messageId);
             }
         });
 
@@ -396,16 +423,38 @@ public class OrderServiceImpl implements IOrderService {
             throw new BusinessException(ErrorCodeEnum.ORDER_STATUS_INVALID);
         }
 
-        // 4. 事务提交后发送 MQ 通知库存服务解锁库存
+        // 4. 保存可靠消息到本地消息表（事务内）
+        String messageId = UUID.randomUUID().toString();
+        String messageBody;
+        try {
+            RmeWareOrderTask wareOrderTask = RmeWareOrderTask.builder()
+                .orderSn(orderSn)
+                .build();
+            messageBody = objectMapper.writeValueAsString(wareOrderTask);
+        } catch (Exception e) {
+            log.error("取消订单消息序列化失败：orderSn={}", orderSn, e);
+            throw new BusinessException(ErrorCodeEnum.ORDER_CONFIRM_FAILED);
+        }
+
+        RmeReliableMessage reliableMessage = RmeReliableMessage.builder()
+            .messageId(messageId)
+            .exchange(RabbitMqConstant.ORDER_EVENT_EXCHANGE)
+            .routingKey(RabbitMqConstant.ORDER_RELEASE_OTHER_ROUTING_KEY)
+            .messageBody(messageBody)
+            .messageType("ORDER_CANCEL")
+            .status(0) // 待发送
+            .retryCount(0)
+            .build();
+        reliableMessageService.saveMessage(reliableMessage);
+
+        // 5. 事务提交后发送 MQ 通知库存服务解锁库存
+        final Long finalMessageId = reliableMessage.getId();
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                rabbitTemplate.convertAndSend(
-                    RabbitMqConstant.ORDER_EVENT_EXCHANGE,
-                    RabbitMqConstant.ORDER_RELEASE_OTHER_ROUTING_KEY,
-                    RmeWareOrderTask.builder().orderSn(orderSn).build()
-                );
-                log.info("订单取消库存释放消息已发送: orderSn={}", orderSn);
+                // 使用可靠消息服务发送消息
+                reliableMessageService.sendMessage(finalMessageId);
+                log.info("订单取消库存释放消息已发送：orderSn={}, messageId={}", orderSn, messageId);
             }
         });
 
